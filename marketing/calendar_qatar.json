@@ -1,0 +1,778 @@
+{
+  "meta": {
+    "title": "Zizo Circle — 30-day social calendar (Qatar)",
+    "version": "1.0",
+    "generated": "2026-05-02",
+    "audience": "Doha-resident expats and young Qatari nationals, ages 22-35, smartphone-first, primarily English-speaking with significant Arabic / Hindi / Tagalog audiences",
+    "tone": "Warm, specific, low-key confident, multilingual-aware. Group-first, never dating-coded. No alcohol, no orientalist imagery.",
+    "pillars": [
+      { "name": "Belonging", "share_pct": 30, "desc": "Human stories about finding your people in Qatar" },
+      { "name": "Discovery", "share_pct": 25, "desc": "Specific Doha venue / activity recommendations" },
+      { "name": "Educational", "share_pct": 20, "desc": "How Zizo works, AI matching, cashback, safety" },
+      { "name": "Cultural", "share_pct": 15, "desc": "Qatar lifestyle moments, multilingual Doha, anchor dates" },
+      { "name": "Promotional", "share_pct": 10, "desc": "Venue partners, referral, Zizo Nights, launches" }
+    ],
+    "scheduling_notes": [
+      "Qatar work week is Sunday-Thursday. Friday-Saturday is the weekend.",
+      "All times listed in Arabia Standard Time (AST, UTC+3). No DST in Qatar.",
+      "Pause all paid push and notifications during 5 daily prayer windows. Use a Qatar prayer-time API.",
+      "No paid push Friday 11:30-13:30 AST (Jumu'ah).",
+      "Instagram and Snapchat are the primary discovery surfaces in Qatar; LinkedIn is founder/B2B credibility; Twitter has lower engagement here but is still useful for tech / journalist reach.",
+      "Best post times observed in GCC: LinkedIn Sun-Wed 08:00-10:00; Twitter Sun-Thu 12:00-13:00 and 20:00-22:00; Instagram Sun-Thu 19:00-21:00 (post-dinner peak)."
+    ],
+    "image_prompt_engine": "Flux 1.1 Pro / Flux Dev — prompts written for editorial-realistic style; render 9:16 for Reels/Stories, 1:1 for grid. Always specify modest dress and Qatar setting.",
+    "review_required": [
+      "All Arabic copy MUST be reviewed by a native Khaleeji speaker before publishing.",
+      "Image generations MUST be reviewed for cultural appropriateness before any are scheduled.",
+      "Run final pass against brand-identity-qatar.md §6 do/don't list."
+    ],
+    "platforms": ["linkedin", "twitter", "instagram"]
+  },
+  "days": [
+    {
+      "day": 1,
+      "weekday": "Sunday",
+      "pillar": "Discovery",
+      "theme": "Best quiet brunch spots in Doha",
+      "posts": {
+        "linkedin": {
+          "copy": "Doha has 200+ brunch spots. Most of them are loud, packed, and impossible to actually have a conversation in.\n\nWe asked 50 Zizo Circle users where they go when they actually want to *talk*. Three names came up over and over:\n\n→ Toro Toro at The St. Regis (the patio, not the main room)\n→ Sukar Pasha Ottoman Lounge in Souq Waqif\n→ The garden side of Cafe #999 in Msheireb\n\nWhat's the one place in Doha you'd take someone you actually want to listen to?",
+          "hashtags": ["#Doha", "#Qatar", "#DohaLife", "#QatarFood"],
+          "best_time_qatar": "Sunday 08:30 AST"
+        },
+        "twitter": {
+          "copy": "Quiet brunch in Doha — actually possible.\n\n3 spots Zizo users keep going back to:\n• Toro Toro patio @ St. Regis\n• Sukar Pasha @ Souq Waqif\n• Café #999 garden, Msheireb\n\nWhere do you go when you want to hear the other person?",
+          "hashtags": ["#Doha", "#Qatar"],
+          "best_time_qatar": "Sunday 12:30 AST"
+        },
+        "instagram": {
+          "format": "Carousel (5 slides)",
+          "caption": "Doha is loud. Brunch doesn't have to be.\n\nFive places we send Zizo Circle users when they want to actually hear the person across the table. Save this one for next Friday morning.\n\nWhich would you add? ↓\n\n#Doha #DohaBrunch #Qatar #QatarLife #ThingsToDoInDoha #DohaCafes",
+          "hashtags": ["#Doha", "#DohaBrunch", "#Qatar", "#QatarLife", "#ThingsToDoInDoha", "#DohaCafes", "#ZizoCircle"],
+          "image_prompt_flux": "Editorial photo, golden hour patio at a Doha cafe in Msheireb Downtown, two friends mid-conversation over Arabic coffee and dates, modest dress, mixed Filipino and Qatari demographic, soft warm light, 35mm, photorealistic, no logos, 1:1 aspect"
+        }
+      }
+    },
+    {
+      "day": 2,
+      "weekday": "Monday",
+      "pillar": "Educational",
+      "theme": "How AI matching actually works (no magic, just interests)",
+      "posts": {
+        "linkedin": {
+          "copy": "Most 'AI matching' apps are just swipe-and-pray with extra steps.\n\nAt Zizo Circle we built it differently. Three things go into a match:\n\n1) Your interests (the 34 things we ask you about)\n2) Your distance (people who can actually meet you in Doha tonight, not 90km away)\n3) Your availability rhythm (do you go out Thursdays or Saturdays?)\n\nNo photos in the first pass. No height. No 'vibe.' Just whether you'd both have something to do together at 7pm on a Wednesday.\n\nThe match score is a number. We show it because the math should be visible.",
+          "hashtags": ["#AI", "#ProductDesign", "#Qatar", "#Doha"],
+          "best_time_qatar": "Monday 09:00 AST"
+        },
+        "twitter": {
+          "copy": "Our 'AI match score' is just three things:\n\n— how much your interests overlap\n— how close you are right now\n— whether your usual going-out time matches\n\nNo photos, no swiping, no vibe-guessing. The math is visible because it should be.",
+          "hashtags": ["#BuildInPublic", "#AI"],
+          "best_time_qatar": "Monday 20:30 AST"
+        },
+        "instagram": {
+          "format": "Reel (30 sec)",
+          "caption": "What the 94% actually means 👇\n\nNo magic. Just three things:\n• interest overlap\n• you're both nearby\n• you both go out around the same time\n\nThe score is a real number. We show it because the math should be visible.\n\n#ZizoCircle #Doha #Qatar #HowItWorks",
+          "hashtags": ["#ZizoCircle", "#Doha", "#Qatar", "#HowItWorks", "#AppLife"],
+          "image_prompt_flux": "Vertical mobile app screen mockup of Zizo Circle, dark purple background #0B0914, '94% match' lime green badge prominent, two avatar circles connected by a dashed arc, clean editorial product shot, 9:16 aspect, no real faces",
+          "video_script": "[0-3s VISUAL: phone screen with '94% MATCH' badge, lime green pulsing] VOICE: '94% — what does that actually mean?' [3-10s: three icons appear one by one — overlapping circles, location pin, clock] 'Three things: how much your interests overlap. How close you are. When you usually go out.' [10-25s: tap-through showing matched profiles in a Doha map view, blurred faces] 'No photos in the first round. No swiping. Just whether you'd both want to do something at 7pm on a Wednesday.' [25-30s: app logo + CTA] 'Zizo Circle. The math is visible.'"
+        }
+      }
+    },
+    {
+      "day": 3,
+      "weekday": "Tuesday",
+      "pillar": "Belonging",
+      "theme": "First-week-in-Doha story",
+      "posts": {
+        "linkedin": {
+          "copy": "I moved to Doha three years ago.\n\nMy first week, I sat in a café in West Bay and realized I had no one to text. Not 'no friends yet' — I mean *no one*. The friend group I'd left in Manila had already moved on to a Friday night I wasn't part of.\n\nI ended up on Bumble BFF. Met two great people. Both moved away within a year.\n\nI started Zizo Circle for the version of me who landed at Hamad International with two suitcases and a contract. The app I wish someone had told me about on day one.\n\nIf you just landed: welcome. We'll find your people.",
+          "hashtags": ["#Doha", "#Qatar", "#Founder", "#Expat"],
+          "best_time_qatar": "Tuesday 08:30 AST"
+        },
+        "twitter": {
+          "copy": "Just landed in Doha?\n\nYou will, at some point in your first month, sit in a café and realize you have no one to text.\n\nThis is the part nobody warns you about. We built Zizo Circle for that week.",
+          "hashtags": ["#Doha", "#Qatar"],
+          "best_time_qatar": "Tuesday 13:00 AST"
+        },
+        "instagram": {
+          "format": "Reel (45 sec, talking-head)",
+          "caption": "The week nobody warns you about. 🇶🇦\n\nIf you just moved to Doha — this one's for you.\n\n#ZizoCircle #Doha #Qatar #NewInDoha #ExpatLife",
+          "hashtags": ["#ZizoCircle", "#Doha", "#Qatar", "#NewInDoha", "#ExpatLife", "#DohaLife"],
+          "image_prompt_flux": "Editorial photo, person in their late 20s sitting alone at a café table in West Bay Doha at golden hour, looking at phone, modest dress, single coffee cup, soft melancholy mood, Doha skyline soft-blurred behind, 35mm, photorealistic, 9:16",
+          "video_script": "[0-3s: face on camera, no text] 'Three years ago I moved to Doha and the first week broke me a little.' [3-15s: B-roll of West Bay café, single coffee, phone screen with no notifications] 'I had no one to text. The friends I left in Manila had already moved on.' [15-30s: B-roll of Doha night markets, phone screen with Zizo app] 'I built Zizo Circle for that week. So you don't have to sit there refreshing nothing.' [30-45s: face on camera] 'If you just landed — welcome. We'll find your people.'"
+        }
+      }
+    },
+    {
+      "day": 4,
+      "weekday": "Wednesday",
+      "pillar": "Cultural",
+      "theme": "Qatar weekend prep (Thu evening → Fri-Sat)",
+      "posts": {
+        "linkedin": {
+          "copy": "Three things I plan every Thursday afternoon as a Doha resident:\n\n1. Friday morning — quiet. Either Aspire Park walk or coffee at a place I know won't be packed.\n\n2. Friday afternoon — nothing scheduled until after Asr. The city is asleep and that's the point.\n\n3. Saturday — the social one. The brunch, the padel, the catch-up.\n\nThe rhythm of Doha weekends is something you only learn by living here. What's your Friday-Saturday shape look like?",
+          "hashtags": ["#Doha", "#QatarLife", "#WorkLife"],
+          "best_time_qatar": "Wednesday 09:00 AST"
+        },
+        "twitter": {
+          "copy": "The Doha weekend rhythm:\n\nThu evening — slow start\nFri morning — quiet\nFri afternoon — nothing until after Asr\nSat — the social day\n\nLearned this the hard way. What's yours look like?",
+          "hashtags": ["#Doha", "#Qatar"],
+          "best_time_qatar": "Wednesday 20:00 AST"
+        },
+        "instagram": {
+          "format": "Carousel (4 slides)",
+          "caption": "Doha weekend, mapped 🗺️\n\nFour panels for the rhythm only locals figure out. Save it; share it with someone who just moved.\n\n#ZizoCircle #DohaWeekend #Qatar #DohaLife",
+          "hashtags": ["#ZizoCircle", "#DohaWeekend", "#Qatar", "#DohaLife", "#ThingsToDoInDoha"],
+          "image_prompt_flux": "Flat-lay editorial illustration, four panels showing Doha weekend rhythm: Thursday evening Souq Waqif lanterns, Friday morning empty Aspire Park path, Friday afternoon closed shop shutters, Saturday brunch table with Arabic coffee, dark plum background #0B0914, lime and purple accent colors #C8F53B and #7B5CF6, modern editorial style, 1:1 aspect"
+        }
+      }
+    },
+    {
+      "day": 5,
+      "weekday": "Thursday",
+      "pillar": "Discovery",
+      "theme": "Padel partner finding",
+      "posts": {
+        "linkedin": {
+          "copy": "Padel in Qatar grew from 4 courts in 2019 to over 200 in 2025. The bottleneck now isn't court availability — it's finding three other people at your level on a Thursday night.\n\nThis is exactly the discovery problem Zizo Circle was built for. Filter by sport, level, neighborhood, time window. We surface the four people nearby tonight whose match score with each other is high enough that the game will actually be good.\n\nThe Qatar Padel scene is one of the best examples of why interest-matching beats interest-listing.",
+          "hashtags": ["#Padel", "#Qatar", "#Doha", "#Sports"],
+          "best_time_qatar": "Thursday 09:00 AST"
+        },
+        "twitter": {
+          "copy": "Need a 4th for padel tonight in Doha?\n\nZizo Circle finds 3 nearby players at your level whose schedules match yours. Filter by court, time, language preference.\n\nThe game starts in 5 mins instead of 5 days of WhatsApp groups.",
+          "hashtags": ["#Padel", "#Doha", "#Qatar"],
+          "best_time_qatar": "Thursday 17:00 AST"
+        },
+        "instagram": {
+          "format": "Reel (15 sec)",
+          "caption": "POV: it's Thursday night, you want to play padel, you have no fourth.\n\nTap. Match. Court booked. Game on. 🎾\n\n#Padel #Doha #Qatar #ZizoCircle #PadelQatar",
+          "hashtags": ["#Padel", "#Doha", "#Qatar", "#ZizoCircle", "#PadelQatar", "#PadelLife"],
+          "image_prompt_flux": "Editorial action photo, four padel players mid-game on a glass-walled court in Doha at evening, modest sportswear, mixed nationalities including South Asian and Arab players, court lights on, motion blur on the ball, 35mm, photorealistic, 9:16",
+          "video_script": "[0-3s: vertical phone screen showing 'No 4th player' WhatsApp message thread, frustrated tap] [3-7s: switch to Zizo app, three matched player cards appear with match scores] [7-12s: cut to action — four players mid-rally on a Doha padel court] [12-15s: text overlay 'Zizo Circle. Find your fourth.']"
+        }
+      }
+    },
+    {
+      "day": 6,
+      "weekday": "Sunday",
+      "pillar": "Educational",
+      "theme": "Cashback explained — the wallet",
+      "posts": {
+        "linkedin": {
+          "copy": "Going out in Doha isn't cheap. The average Zizo Circle user spends QAR 1,800/month on cafés, meals, padel, and social activities.\n\nWe think going out should give back. So every visit to a partner venue earns QR straight to your in-app wallet:\n\n• Café visit: 5-10% back\n• Restaurant: 8-15% back\n• Padel court: 10-20% back\n• Group bookings (3+): bonus QAR 25 boost\n\nNo points. No tier games. No 'expires in 30 days.' Just real Qatari Riyals you can spend at the next partner venue.\n\nIf you're a venue in Doha and this fits your model, we'd love to talk.",
+          "hashtags": ["#Doha", "#Qatar", "#Cashback", "#FinTech"],
+          "best_time_qatar": "Sunday 08:30 AST"
+        },
+        "twitter": {
+          "copy": "Cashback ≠ points.\n\nZizo Circle gives you actual QAR. Spend at a partner café, get 5-10% back in your wallet. Spend at a partner padel court, get 10-20% back.\n\nNo expiry. No tier games. Just QR you spend at the next venue.",
+          "hashtags": ["#Doha", "#Qatar", "#Cashback"],
+          "best_time_qatar": "Sunday 13:00 AST"
+        },
+        "instagram": {
+          "format": "Reel (20 sec)",
+          "caption": "+QAR 14 added. ✨\n\nNo points. No tiers. Just real Qatari Riyals you spend at the next partner venue.\n\nGoing out should give back.\n\n#ZizoCircle #Cashback #Doha #Qatar",
+          "hashtags": ["#ZizoCircle", "#Cashback", "#Doha", "#Qatar", "#DohaCafes"],
+          "image_prompt_flux": "Editorial close-up photo, hand holding a phone showing the Zizo Circle wallet screen with '+QAR 14' notification in lime green #C8F53B on dark plum background #0B0914, café table backdrop with karak chai cup and dates, soft natural light, 35mm, photorealistic, 9:16, no real faces"
+        }
+      }
+    },
+    {
+      "day": 7,
+      "weekday": "Monday",
+      "pillar": "Belonging",
+      "theme": "First friend you make in Qatar",
+      "posts": {
+        "linkedin": {
+          "copy": "There's a question I ask every Doha resident I meet: 'Who was the first real friend you made here?'\n\nThe answers are always specific. 'Aisha — we sat next to each other in a yoga class at Aspire.' 'Vinod, my colleague's brother-in-law.' 'A guy named Hassan who I met in line at Karak.'\n\nNobody ever says 'I made friends through Bumble BFF.' Or 'I posted in a Facebook group.'\n\nThe first real friend always shows up sideways — through a thing you were already doing.\n\nThat's the design principle behind Zizo Circle. Don't make people do friendship-finding as a separate task. Plug it into the things they were going to do anyway: padel, brunch, the run club, the chess group, the iftar.",
+          "hashtags": ["#Doha", "#Qatar", "#ProductDesign", "#Founder"],
+          "best_time_qatar": "Monday 08:30 AST"
+        },
+        "twitter": {
+          "copy": "Nobody ever says 'I made my first real Doha friend on a friend-finding app.'\n\nThe first friend always shows up sideways — through a thing you were already doing.\n\nWe designed Zizo Circle around that.",
+          "hashtags": ["#Doha", "#BuildInPublic"],
+          "best_time_qatar": "Monday 20:00 AST"
+        },
+        "instagram": {
+          "format": "Carousel (6 slides — quote-style)",
+          "caption": "We asked 30 Doha residents: who was your first real friend here?\n\nNot one answer was 'someone I met on an app.' Every story was sideways — through padel, through the run club, through karak in line at 11pm.\n\nThat's the design principle.\n\n#ZizoCircle #Doha #Qatar #NewInDoha",
+          "hashtags": ["#ZizoCircle", "#Doha", "#Qatar", "#NewInDoha", "#DohaLife"],
+          "image_prompt_flux": "Editorial photo, two friends laughing over karak chai at an outdoor stand in Doha at night, mixed South Asian demographic, modest dress, motion blur on hands, warm street lights, 35mm, photorealistic, 1:1"
+        }
+      }
+    },
+    {
+      "day": 8,
+      "weekday": "Tuesday",
+      "pillar": "Discovery",
+      "theme": "Best majlis-style cafés in Doha",
+      "posts": {
+        "linkedin": {
+          "copy": "Majlis-style cafés are quietly the best meeting venues in Doha. Floor seating, small groups, no rush.\n\nFour we recommend to Zizo Circle users for first meetups:\n\n→ Shay Al Shomous, Souq Waqif — the legendary one\n→ Argan, Katara — Moroccan twist\n→ Al-Mourjan Lebanese Restaurant — the lounge upstairs\n→ House of Tea, Lusail — newer, beautifully designed\n\nNo loud music. No dress code anxiety. The conversation is the meal.",
+          "hashtags": ["#Doha", "#Qatar", "#Majlis", "#DohaCafes"],
+          "best_time_qatar": "Tuesday 09:00 AST"
+        },
+        "twitter": {
+          "copy": "Majlis-style cafés in Doha are the most underrated meeting venue in the city.\n\n4 to know:\n• Shay Al Shomous (Souq Waqif)\n• Argan (Katara)\n• Al-Mourjan lounge\n• House of Tea (Lusail)\n\nNo loud music. The conversation is the point.",
+          "hashtags": ["#Doha", "#Qatar"],
+          "best_time_qatar": "Tuesday 12:30 AST"
+        },
+        "instagram": {
+          "format": "Carousel (5 slides)",
+          "caption": "The quietest place in Doha to meet someone new isn't a café.\n\nIt's a majlis-style café. Floor seating, slow tea, no music. We send first-time Zizo meet-ups here on purpose.\n\n4 favorites in carousel ↓\n\n#ZizoCircle #Doha #Qatar #Majlis #DohaCafes #SouqWaqif #Katara",
+          "hashtags": ["#ZizoCircle", "#Doha", "#Qatar", "#Majlis", "#DohaCafes", "#SouqWaqif", "#Katara"],
+          "image_prompt_flux": "Editorial interior photo, traditional Qatari majlis seating with floor cushions and a low table, ornate Arabic tea set with Moroccan glasses and dates, soft warm lamp light, no people visible, geometric patterns on walls, 35mm, photorealistic, 1:1"
+        }
+      }
+    },
+    {
+      "day": 9,
+      "weekday": "Wednesday",
+      "pillar": "Promotional",
+      "theme": "Venue partner spotlight #1 (placeholder café)",
+      "posts": {
+        "linkedin": {
+          "copy": "Spotlight: [PARTNER VENUE NAME] in [NEIGHBORHOOD].\n\nThey were one of our first partners because they understood the brief immediately: a quiet, well-lit, well-priced spot built around long conversations rather than fast turnover.\n\nZizo Circle members get [X]% cashback automatically — no code, no QR scan dance. Just walk in, order, pay with the in-app wallet, done.\n\nIf you're a Doha venue with a similar profile, our partnerships team is reading the comments.",
+          "hashtags": ["#Doha", "#Qatar", "#Partnerships"],
+          "best_time_qatar": "Wednesday 09:00 AST",
+          "notes": "PLACEHOLDER — fill with actual launch partner once signed."
+        },
+        "twitter": {
+          "copy": "Partner spotlight: [PARTNER VENUE].\n\n[X]% cashback for Zizo Circle members. No code, no scan. Just pay with the wallet.\n\nIf your venue fits the brief, our DMs are open.",
+          "hashtags": ["#Doha", "#Qatar"],
+          "best_time_qatar": "Wednesday 13:00 AST",
+          "notes": "PLACEHOLDER"
+        },
+        "instagram": {
+          "format": "Reel (20 sec, venue tour)",
+          "caption": "First partner spotlight 🎉\n\n[PARTNER VENUE] in [NEIGHBORHOOD] — [X]% cashback for Zizo members, automatic.\n\nGo. Order. Get money back. ✨\n\n#ZizoCircle #Doha #Qatar #DohaCafes #Partner",
+          "hashtags": ["#ZizoCircle", "#Doha", "#Qatar", "#DohaCafes"],
+          "image_prompt_flux": "Editorial venue tour photo, interior of a contemporary Doha café in Msheireb Downtown style, warm wood, plants, single barista at counter, late afternoon light through floor-to-ceiling windows, no logos visible, 35mm, photorealistic, 9:16",
+          "notes": "Replace with actual venue B-roll once partner is live."
+        }
+      }
+    },
+    {
+      "day": 10,
+      "weekday": "Thursday",
+      "pillar": "Educational",
+      "theme": "Privacy & safety — who can see your profile",
+      "posts": {
+        "linkedin": {
+          "copy": "Three things we built into Zizo Circle from day one because Qatar deserves a serious answer to 'who can see me?':\n\n1) Phone-verified only. No fake accounts created from a throwaway email.\n\n2) Your phone number is *never* shown to other users. Matches happen inside the app.\n\n3) You choose your visibility radius. 1km, 5km, 10km, off. Want to disappear during work hours? Do that.\n\nWe also do not match you with anyone in your contact list by default. The 'don't match me with my colleague' problem is solved at the source.\n\nSafety isn't a settings page. It's the design.",
+          "hashtags": ["#Privacy", "#Qatar", "#ProductDesign"],
+          "best_time_qatar": "Thursday 09:00 AST"
+        },
+        "twitter": {
+          "copy": "Things Zizo Circle does so you don't have to:\n\n• Phone-verified — no fake accounts\n• Your number is never shown to other users\n• You set your visibility radius (or turn it off)\n• We don't match you with people in your contact list\n\nSafety is design, not a settings page.",
+          "hashtags": ["#Privacy", "#Qatar"],
+          "best_time_qatar": "Thursday 12:30 AST"
+        },
+        "instagram": {
+          "format": "Carousel (5 slides — explainer)",
+          "caption": "Who can see you on Zizo Circle? 🔒\n\nFive slides on how we built privacy into the core. If something on this list bothers you, we want to hear about it.\n\n#ZizoCircle #Privacy #Doha #Qatar",
+          "hashtags": ["#ZizoCircle", "#Privacy", "#Doha", "#Qatar"],
+          "image_prompt_flux": "Minimalist editorial design, dark plum #0B0914 background, single lock icon in lime #C8F53B at center, geometric concentric circles representing radius around it, clean typography space at top, 1:1"
+        }
+      }
+    },
+    {
+      "day": 11,
+      "weekday": "Sunday",
+      "pillar": "Belonging",
+      "theme": "Filipino community in Qatar",
+      "posts": {
+        "linkedin": {
+          "copy": "There are over 250,000 Filipinos living in Qatar. The community is one of the most active, organized, and joyful in the country — Sunday gatherings, basketball leagues, choir groups, food markets at Asian Town.\n\nIf you're Filipino and new to Doha, you don't need to start from scratch. Tito and Tita have already built it.\n\nZizo Circle works with the community here, not parallel to it. We're proud to have Filipino-Doha creators among our launch partners.\n\nMabuhay.",
+          "hashtags": ["#Doha", "#Qatar", "#FilipinoCommunity", "#Mabuhay"],
+          "best_time_qatar": "Sunday 09:00 AST"
+        },
+        "twitter": {
+          "copy": "250,000+ Filipinos in Qatar. The community here is already built — Sunday gatherings, basketball leagues, Asian Town food.\n\nZizo Circle works with that community, not parallel to it. Mabuhay 🇵🇭🇶🇦",
+          "hashtags": ["#FilipinoCommunity", "#Doha", "#Qatar"],
+          "best_time_qatar": "Sunday 13:00 AST"
+        },
+        "instagram": {
+          "format": "Reel (30 sec)",
+          "caption": "Mabuhay sa Doha 🇵🇭🇶🇦\n\nThe Filipino community here is one of the most active in the GCC. Sunday gatherings, basketball, choir, Asian Town food markets — already built.\n\nIf you just landed and you're Filipino — welcome. Tag a Tito or Tita who's been here a while.\n\n#FilipinoDoha #Mabuhay #ZizoCircle #Qatar",
+          "hashtags": ["#FilipinoDoha", "#Mabuhay", "#ZizoCircle", "#Qatar", "#PinoyInQatar"],
+          "image_prompt_flux": "Editorial group photo, joyful Filipino community gathering at a Doha park on a Sunday afternoon, mixed-age group sharing food on a picnic blanket, modest dress, golden afternoon light, candid laughter, 35mm, photorealistic, 9:16"
+        }
+      }
+    },
+    {
+      "day": 12,
+      "weekday": "Monday",
+      "pillar": "Discovery",
+      "theme": "Best chess clubs in Doha",
+      "posts": {
+        "linkedin": {
+          "copy": "Doha has a quietly serious chess scene. Three places to know:\n\n→ Qatar Chess Association weekly opens at the QCA hall in Aspire Zone\n→ Café Bateel branches sometimes host evening sessions\n→ Education City Library Sunday club (open to non-students)\n\nIf you play, Zizo Circle now lets you filter matches by 'Chess' as an interest and see who's playing within 5km tonight. The 4th-player problem is real for chess too.",
+          "hashtags": ["#Chess", "#Doha", "#Qatar"],
+          "best_time_qatar": "Monday 09:00 AST"
+        },
+        "twitter": {
+          "copy": "Chess in Doha — quietly serious scene.\n\n• Qatar Chess Association opens (Aspire)\n• Café Bateel evening sessions\n• Education City library club\n\nFilter Zizo by 'Chess' to see who's playing within 5km tonight. ♟️",
+          "hashtags": ["#Chess", "#Doha"],
+          "best_time_qatar": "Monday 20:00 AST"
+        },
+        "instagram": {
+          "format": "Single",
+          "caption": "Doha's quietly serious chess scene ♟️\n\nIf you play, save this. Three spots, one filter, four people who'd actually rather be at a board than scrolling.\n\n#Chess #Doha #Qatar #ZizoCircle",
+          "hashtags": ["#Chess", "#Doha", "#Qatar", "#ZizoCircle", "#ChessDoha"],
+          "image_prompt_flux": "Editorial overhead photo, two hands moving pieces on a wooden chess board on a Doha café table at evening, single karak chai cup beside it, soft warm lamp light, 35mm, photorealistic, no faces visible, 1:1"
+        }
+      }
+    },
+    {
+      "day": 13,
+      "weekday": "Tuesday",
+      "pillar": "Cultural",
+      "theme": "What makes Doha unique (without orientalism)",
+      "posts": {
+        "linkedin": {
+          "copy": "Doha is the only city I've lived in where I can:\n\n• Walk along a marina that didn't exist 20 years ago (Pearl)\n• Buy a saffron the same week from three different countries' communities\n• Hear five languages on a single 10-minute Karwa taxi ride\n• Watch the sunrise over the Gulf at 5:30am from a public corniche\n• Pay for a coffee in QAR using Apple Pay tied to a US card with no FX surcharge\n\nIt's a small city pretending to be a big one, then quietly becoming one.",
+          "hashtags": ["#Doha", "#Qatar", "#CityLife"],
+          "best_time_qatar": "Tuesday 08:30 AST"
+        },
+        "twitter": {
+          "copy": "Doha: a small city pretending to be a big one, then quietly becoming one.\n\n5 languages in one taxi ride. 3 countries' communities at one supermarket. A skyline that didn't exist 20 years ago.\n\nWhat city do you want to live in 10 years from now?",
+          "hashtags": ["#Doha", "#Qatar"],
+          "best_time_qatar": "Tuesday 13:00 AST"
+        },
+        "instagram": {
+          "format": "Reel (20 sec, b-roll montage)",
+          "caption": "Doha, in a minute. 🇶🇦\n\nNot the postcard version. The version where you actually live.\n\n#Doha #Qatar #DohaLife #ZizoCircle",
+          "hashtags": ["#Doha", "#Qatar", "#DohaLife", "#ZizoCircle", "#ThingsToDoInDoha"],
+          "image_prompt_flux": "Editorial montage frame, Doha Corniche at sunrise with skyline, single jogger silhouette, dawn light over the Gulf, modest dress, 35mm, photorealistic, 9:16",
+          "video_script": "[0-3s: drone shot Doha Corniche sunrise] [3-6s: hands paying with phone in a Souq Waqif shop] [6-9s: Karwa taxi window with Lusail Boulevard passing] [9-12s: rooftop view of Pearl Marina] [12-15s: faces of three different Doha residents in succession, candid] [15-20s: text card 'Doha. The version where you live.' Zizo logo]"
+        }
+      }
+    },
+    {
+      "day": 14,
+      "weekday": "Wednesday",
+      "pillar": "Discovery",
+      "theme": "Quiet study spots — Education City + beyond",
+      "posts": {
+        "linkedin": {
+          "copy": "Final exams happen across Education City over the next 6 weeks. Five quiet study spots that aren't your university library:\n\n1. Qatar National Library main reading room (free, all day)\n2. The reading garden at Msheireb Museums\n3. Argan café at Katara — order one mint tea, stay four hours, nobody minds\n4. The upper-level lounge at Doha Festival City near the Hamleys side\n5. Lusail Marina library room (newer; never crowded)\n\nWhich did we miss?",
+          "hashtags": ["#EducationCity", "#Doha", "#StudentLife"],
+          "best_time_qatar": "Wednesday 14:00 AST"
+        },
+        "twitter": {
+          "copy": "5 quiet study spots in Doha that aren't your campus library:\n\n1. Qatar National Library main hall\n2. Msheireb Museums reading garden\n3. Argan café (Katara)\n4. Doha Festival City upper lounge\n5. Lusail Marina library\n\nWhich did I miss?",
+          "hashtags": ["#Doha", "#StudyInQatar"],
+          "best_time_qatar": "Wednesday 14:30 AST"
+        },
+        "instagram": {
+          "format": "Carousel (6 slides — one per spot + cover)",
+          "caption": "Final exams at Education City start soon ✏️\n\nFive quiet study spots that aren't your campus library. Save it. Tag the friend who needs it.\n\n#EducationCity #Doha #Qatar #ZizoCircle #StudyInQatar #QU #GUQ #CMUQ",
+          "hashtags": ["#EducationCity", "#Doha", "#Qatar", "#ZizoCircle", "#StudyInQatar"],
+          "image_prompt_flux": "Editorial photo, interior of Qatar National Library main reading hall, students at long wooden tables with laptops and books, dramatic geometric architecture, modest dress, soft daylight from skylights, 35mm, photorealistic, 1:1"
+        }
+      }
+    },
+    {
+      "day": 15,
+      "weekday": "Thursday",
+      "pillar": "Belonging",
+      "theme": "Mid-month milestone (aspirational placeholder)",
+      "posts": {
+        "linkedin": {
+          "copy": "[NUMBER] circles formed on Zizo Circle this month in Doha.\n\nThat means [NUMBER] times that two or more people in Qatar — who would not have met otherwise — went out together because we put them in the same room.\n\nA padel four-some in Lusail. A chess pair in Msheireb. A weekend hiking group from Aspire to Singing Sand Dunes. A movie night at the Doha Film Institute.\n\nWe think a lot about that number. It's the only one that matters.",
+          "hashtags": ["#Doha", "#Qatar", "#ZizoCircle", "#Milestone"],
+          "best_time_qatar": "Thursday 09:00 AST",
+          "notes": "PLACEHOLDER — fill with actual numbers at time of post."
+        },
+        "twitter": {
+          "copy": "[NUMBER] circles formed on Zizo Circle this month in Doha.\n\nA padel four-some. A chess pair. A weekend hiking group. A movie night.\n\nIt's the only number that matters to us.",
+          "hashtags": ["#Doha", "#Qatar"],
+          "best_time_qatar": "Thursday 13:00 AST",
+          "notes": "PLACEHOLDER"
+        },
+        "instagram": {
+          "format": "Reel (30 sec — montage of UGC if available, otherwise illustrated)",
+          "caption": "[NUMBER] circles formed in Doha this month. ✨\n\nPadel four-somes. Chess pairs. Hiking weekends. Movie nights.\n\nThank you for making this a real thing.\n\n#ZizoCircle #Doha #Qatar",
+          "hashtags": ["#ZizoCircle", "#Doha", "#Qatar"],
+          "image_prompt_flux": "Editorial collage of 6 small candid moments in Doha — padel court, chess board, hiking dunes, movie theater seats, café table, marina walk — arranged in a 2x3 grid, mixed Qatar demographics, modest dress, warm color grade, photorealistic, 1:1",
+          "notes": "PLACEHOLDER content"
+        }
+      }
+    },
+    {
+      "day": 16,
+      "weekday": "Sunday",
+      "pillar": "Educational",
+      "theme": "Why 70% interest match is the magic threshold",
+      "posts": {
+        "linkedin": {
+          "copy": "Why does Zizo Circle only show you matches above 70%?\n\nWe ran the numbers on our internal alpha:\n\n• Below 50% match: 12% of meet-ups led to a second hangout\n• 50-69% match: 31%\n• 70-84% match: 64%\n• 85%+: 71%\n\nThe jump between 'mediocre match' and 'good match' happens at 70%. Below it, you're forcing it. Above it, the second meet-up basically schedules itself.\n\nSo we cut the noise. You'll see fewer matches than other apps. Each one will be worth showing up for.",
+          "hashtags": ["#ProductDesign", "#AI", "#Qatar"],
+          "best_time_qatar": "Sunday 08:30 AST"
+        },
+        "twitter": {
+          "copy": "Why we only show matches above 70%:\n\nBelow 50% — 12% led to a second hangout\n50-69% — 31%\n70-84% — 64%\n85%+ — 71%\n\nThe jump happens at 70. Below it you're forcing it. Above it the second meet-up schedules itself.",
+          "hashtags": ["#ProductDesign", "#AI"],
+          "best_time_qatar": "Sunday 13:00 AST"
+        },
+        "instagram": {
+          "format": "Carousel (4 slides — data viz)",
+          "caption": "70% is the magic line.\n\nFour slides showing why Zizo only surfaces matches above it. Save for later 📊\n\n#ZizoCircle #HowItWorks #AI #Doha",
+          "hashtags": ["#ZizoCircle", "#HowItWorks", "#AI", "#Doha", "#Qatar"],
+          "image_prompt_flux": "Editorial data visualization, clean bar chart on dark plum #0B0914 background showing four bars at increasing heights labeled with percentages, accent bars in lime #C8F53B for 70%+, clean sans-serif typography space at top, 1:1, no real data labels"
+        }
+      }
+    },
+    {
+      "day": 17,
+      "weekday": "Monday",
+      "pillar": "Discovery",
+      "theme": "Best souks for first-timers",
+      "posts": {
+        "linkedin": {
+          "copy": "Souq Waqif gets all the attention. Three other Doha souks worth your Friday morning:\n\n→ Souq Al Wakra — 30 minutes south, half the crowd, full character\n→ Gold Souq (in Souq Waqif but the back lanes) — even if you're not buying\n→ The Falcon Souq — yes really, and the courtyard café is excellent\n\nGo before 11am or after Asr. Go with someone who'll actually look at things with you.",
+          "hashtags": ["#Doha", "#Qatar", "#SouqWaqif"],
+          "best_time_qatar": "Monday 09:00 AST"
+        },
+        "twitter": {
+          "copy": "Souqs in Doha that aren't just Souq Waqif:\n\n• Souq Al Wakra (30min south)\n• Gold Souq back lanes\n• Falcon Souq (yes, really)\n\nBefore 11am or after Asr. With someone who'll look at things with you.",
+          "hashtags": ["#Doha", "#Qatar"],
+          "best_time_qatar": "Monday 12:30 AST"
+        },
+        "instagram": {
+          "format": "Carousel (5 slides)",
+          "caption": "Souq Waqif gets all the attention. Three others worth your Friday morning ↓\n\n#Doha #Qatar #SouqWaqif #SouqAlWakra #ZizoCircle",
+          "hashtags": ["#Doha", "#Qatar", "#SouqWaqif", "#SouqAlWakra", "#ZizoCircle"],
+          "image_prompt_flux": "Editorial photo, Souq Al Wakra waterfront at golden hour, traditional dhow boats in background, lantern-lit narrow alley with locally crafted goods, mixed Qatari and expat demographic, modest dress, 35mm, photorealistic, 1:1"
+        }
+      }
+    },
+    {
+      "day": 18,
+      "weekday": "Tuesday",
+      "pillar": "Promotional",
+      "theme": "Venue partner spotlight #2 (placeholder padel court)",
+      "posts": {
+        "linkedin": {
+          "copy": "Spotlight: [PADEL CLUB NAME], [NEIGHBORHOOD].\n\nThree reasons we partnered:\n\n1) Court booking that actually integrates with Zizo Circle (no double-booking, no WhatsApp confirmations)\n2) Coaching available for beginners — book through Zizo, [X]% off\n3) [Y]% wallet cashback on every game\n\nIf you've been wanting to start padel but don't know three other people at your level — this is the one to start at.",
+          "hashtags": ["#Padel", "#Doha", "#Qatar"],
+          "best_time_qatar": "Tuesday 09:00 AST",
+          "notes": "PLACEHOLDER"
+        },
+        "twitter": {
+          "copy": "Partner spotlight: [PADEL CLUB].\n\n[Y]% cashback on every game. Coaching for beginners [X]% off. Booking integrates with Zizo so no double-booking ever.\n\nNew to padel? This is the one to start at.",
+          "hashtags": ["#Padel", "#Doha"],
+          "best_time_qatar": "Tuesday 18:00 AST",
+          "notes": "PLACEHOLDER"
+        },
+        "instagram": {
+          "format": "Reel (15 sec)",
+          "caption": "Partner #2: [PADEL CLUB] 🎾\n\n[Y]% cashback. Beginner coaching. Court booking that just works.\n\nNew to padel? Start here.\n\n#Padel #Doha #ZizoCircle",
+          "hashtags": ["#Padel", "#Doha", "#Qatar", "#ZizoCircle", "#PadelLife"],
+          "image_prompt_flux": "Editorial action photo, padel court at evening with two doubles teams mid-rally, modern glass-walled facility in Lusail or Aspire Zone, motion blur, court lights, modest sportswear, mixed nationalities, 35mm, photorealistic, 9:16",
+          "notes": "PLACEHOLDER"
+        }
+      }
+    },
+    {
+      "day": 19,
+      "weekday": "Wednesday",
+      "pillar": "Cultural",
+      "theme": "Multilingual Doha — 10 hellos",
+      "posts": {
+        "linkedin": {
+          "copy": "How to say hello in Doha:\n\nمرحبا — Marhaba (Arabic)\nKamusta — Filipino (Tagalog)\nनमस्ते — Namaste (Hindi)\nஹலோ — Hello (Tamil)\nVanakkam — Tamil greeting\nഹലോ — Malayalam\nHello — English (the lingua franca)\nKuzdedh — Polish (smaller community, but real)\nHola — Spanish (yes, there's a Latin community here)\nمرحبا یا حبیبی — Khaleeji warmth\n\nThe number of accents on a single Karwa taxi ride is a feature, not a bug. Zizo Circle was designed for it.",
+          "hashtags": ["#Doha", "#Qatar", "#Multicultural"],
+          "best_time_qatar": "Wednesday 09:00 AST"
+        },
+        "twitter": {
+          "copy": "Hello in Doha:\n\nمرحبا · Kamusta · नमस्ते · Vanakkam · ഹലോ · Hello · Hola · Cześć\n\n10+ ways before 9am most days. The accents on one taxi ride are a feature, not a bug.",
+          "hashtags": ["#Doha", "#Qatar"],
+          "best_time_qatar": "Wednesday 13:00 AST"
+        },
+        "instagram": {
+          "format": "Carousel (10 slides, one hello per slide)",
+          "caption": "10 ways to say hello in Doha 👋\n\nSwipe through. Tag a friend whose hello belongs in this list.\n\n#Doha #Qatar #Multicultural #ZizoCircle",
+          "hashtags": ["#Doha", "#Qatar", "#Multicultural", "#ZizoCircle", "#DohaLife"],
+          "image_prompt_flux": "Editorial typographic poster, large hand-lettered word 'Marhaba' in Arabic script on dark plum #0B0914 background, lime green #C8F53B accent underline, minimalist, 1:1"
+        }
+      }
+    },
+    {
+      "day": 20,
+      "weekday": "Thursday",
+      "pillar": "Educational",
+      "theme": "How venue cashback works (founder PoV)",
+      "posts": {
+        "linkedin": {
+          "copy": "How does Zizo Circle make cashback economics work?\n\nThree pieces:\n\n1) Partner venues fund roughly half. Why they agree: a Zizo-introduced customer comes back 2.4x more often than a walk-in. We bring qualified discovery, not coupon-clipping tourists.\n\n2) Zizo funds the other half during the launch period. We treat it as CAC.\n\n3) Cap per user per month: QAR 200. Real users hit this rarely; protects unit economics.\n\nThe model only works if our matches are good (you actually go) and our venue picks are good (you actually like the place). Both of those are product problems we already have to solve. Cashback is the byproduct.",
+          "hashtags": ["#Founder", "#UnitEconomics", "#Qatar"],
+          "best_time_qatar": "Thursday 09:00 AST"
+        },
+        "twitter": {
+          "copy": "How Zizo cashback economics work:\n\n• Venue funds ~half (we bring repeat customers, not coupon tourists)\n• Zizo funds the other half during launch (CAC)\n• Cap: QAR 200/user/month\n\nIt only works if matches are good and venues are good. Both are problems we already solve.",
+          "hashtags": ["#BuildInPublic", "#Qatar"],
+          "best_time_qatar": "Thursday 20:30 AST"
+        },
+        "instagram": {
+          "format": "Reel (40 sec, founder talking-head)",
+          "caption": "How does the cashback actually work? 🤔\n\nFounder explainer in 40 seconds. No fluff.\n\n#ZizoCircle #Doha #Qatar #Founder",
+          "hashtags": ["#ZizoCircle", "#Doha", "#Qatar", "#Founder", "#BuildInPublic"],
+          "image_prompt_flux": "Editorial portrait, founder in casual modest dress at a Doha co-working space, soft window light, plants in background, looking at camera, 35mm, photorealistic, 9:16",
+          "video_script": "[0-3s: founder face on camera] 'How does Zizo cashback actually work?' [3-15s: split-screen with simple animation showing 50/50 split between venue and Zizo] 'The venue funds about half because we bring them repeat customers — not coupon-clippers.' [15-30s: animation of cap meter at QAR 200] 'We fund the other half during launch. Cap per user per month: 200 riyals.' [30-40s: face on camera] 'It only works if our matches are good. That's the real product problem. Cashback is the byproduct.'"
+        }
+      }
+    },
+    {
+      "day": 21,
+      "weekday": "Sunday",
+      "pillar": "Belonging",
+      "theme": "Indian + South Asian community story",
+      "posts": {
+        "linkedin": {
+          "copy": "South Asians make up the largest expat group in Qatar — Indians, Bangladeshis, Nepalis, Pakistanis, Sri Lankans. Over a million people, most of whom built parts of this country with their hands.\n\nIf you're new to Doha and South Asian, the community is everywhere — Asian Town, the Indian Cultural Centre, the cricket grounds at Aspire and Hamad bin Khalifa, every Friday at the Mughal Garden.\n\nZizo Circle's first language localization after Arabic will be Hindi. Then Bengali. Then Tagalog. Because the people who built this country deserve software that meets them where they are.",
+          "hashtags": ["#Doha", "#Qatar", "#IndiansInQatar", "#SouthAsianCommunity"],
+          "best_time_qatar": "Sunday 09:00 AST"
+        },
+        "twitter": {
+          "copy": "Hindi is the second language we're shipping after Arabic. Bengali third. Tagalog fourth.\n\nThe people who built this country deserve software that meets them where they are.",
+          "hashtags": ["#Doha", "#Qatar"],
+          "best_time_qatar": "Sunday 13:00 AST"
+        },
+        "instagram": {
+          "format": "Reel (30 sec)",
+          "caption": "नमस्ते, Doha. 🇮🇳🇶🇦\n\nIndians, Bangladeshis, Nepalis, Pakistanis, Sri Lankans — over a million strong here. The community is everywhere if you know where to look.\n\nHindi localization shipping next. Bengali after.\n\n#IndiansInQatar #DohaLife #ZizoCircle #SouthAsianCommunity",
+          "hashtags": ["#IndiansInQatar", "#DohaLife", "#ZizoCircle", "#SouthAsianCommunity", "#Qatar"],
+          "image_prompt_flux": "Editorial group photo, South Asian families and friends gathered at a cricket match at Aspire Park on a Friday afternoon, modest dress, kids playing in foreground, golden light, candid joy, 35mm, photorealistic, 9:16"
+        }
+      }
+    },
+    {
+      "day": 22,
+      "weekday": "Monday",
+      "pillar": "Discovery",
+      "theme": "Lusail Boulevard guide",
+      "posts": {
+        "linkedin": {
+          "copy": "Lusail Boulevard at night is the closest thing Doha has to a European-style city walk. Six things to do there that aren't 'eat at the same three restaurants':\n\n1. The fountain show at the central plaza (synchronized; underrated)\n2. Cycling along the marina path (rentals near the central station)\n3. Bookstore browsing at the new Magrudy's branch\n4. The art installations near Place Vendôme — they rotate quarterly\n5. Sunset karak at the kiosk by the marina (QAR 5; the locals' choice)\n6. Live music nights at the boulevard plaza (Thursdays in cooler months)",
+          "hashtags": ["#Lusail", "#Doha", "#Qatar"],
+          "best_time_qatar": "Monday 09:00 AST"
+        },
+        "twitter": {
+          "copy": "Lusail Boulevard guide for people who've already eaten at the same three places:\n\n1. Fountain show at central plaza\n2. Marina cycling\n3. Magrudy's bookstore\n4. Art installations near Place Vendôme\n5. Karak kiosk by the marina\n6. Thursday live music\n\nThe night version is better than the day version.",
+          "hashtags": ["#Lusail", "#Doha"],
+          "best_time_qatar": "Monday 18:00 AST"
+        },
+        "instagram": {
+          "format": "Carousel (7 slides — cover + 6 spots)",
+          "caption": "Lusail Boulevard, beyond the obvious 🌃\n\nSix things to do there that aren't the same three restaurants. Save for next Thursday night.\n\n#Lusail #Doha #Qatar #LusailBoulevard #ZizoCircle",
+          "hashtags": ["#Lusail", "#Doha", "#Qatar", "#LusailBoulevard", "#ZizoCircle"],
+          "image_prompt_flux": "Editorial photo, Lusail Boulevard at blue hour with the central fountain mid-show, mixed crowd of strollers in modest dress, neon-lit storefronts, contemporary architecture, 35mm, photorealistic, 1:1"
+        }
+      }
+    },
+    {
+      "day": 23,
+      "weekday": "Tuesday",
+      "pillar": "Promotional",
+      "theme": "Referral program launch",
+      "posts": {
+        "linkedin": {
+          "copy": "We just turned on referrals.\n\nInvite a friend to Zizo Circle. When they join and complete their profile, you both get QAR 50 in your wallets. No cap on how many friends you can invite.\n\nWhy we built it this way:\n\n• Friends-of-friends are the highest-quality matches in our data. The match score with someone your friend invited is on average 14% higher than with a cold join.\n• Wallet credit converts to real venue spend, which means real reasons to use the app, which means retention.\n\nGo. Invite the three people you'd actually want to grab brunch with this Friday.",
+          "hashtags": ["#Doha", "#Qatar", "#Launch", "#ZizoCircle"],
+          "best_time_qatar": "Tuesday 09:00 AST"
+        },
+        "twitter": {
+          "copy": "Referrals are live.\n\nInvite a friend → both of you get QAR 50 wallet credit. No cap.\n\nFriends-of-friends are 14% better matches than cold joins. The math wants you to share this.",
+          "hashtags": ["#Doha", "#Qatar"],
+          "best_time_qatar": "Tuesday 13:00 AST"
+        },
+        "instagram": {
+          "format": "Reel (15 sec)",
+          "caption": "QAR 50. For you. For them. For every friend you invite. ✨\n\nReferrals are live. Tap your profile → 'Invite friends.'\n\n#ZizoCircle #Doha #Qatar #Referral",
+          "hashtags": ["#ZizoCircle", "#Doha", "#Qatar", "#DohaLife"],
+          "image_prompt_flux": "Editorial product mockup, two phone screens side by side both showing '+QAR 50' in lime green #C8F53B on dark plum #0B0914 background, gift icon connecting them, clean editorial composition, 9:16",
+          "video_script": "[0-3s: text overlay 'Invite a friend'] [3-7s: phone screen showing 'Share' button tap, then WhatsApp share sheet] [7-12s: split screen — both wallets ping '+QAR 50'] [12-15s: 'No cap. Yalla.' + Zizo logo]"
+        }
+      }
+    },
+    {
+      "day": 24,
+      "weekday": "Wednesday",
+      "pillar": "Educational",
+      "theme": "How to write a profile that actually matches",
+      "posts": {
+        "linkedin": {
+          "copy": "Three things that make a Zizo Circle profile actually match:\n\n1) Pick at least 6 interests, not the minimum 3. The match algorithm needs surface area.\n\n2) In your bio, say *one specific thing*. 'Looking for padel partners on Thursday nights' beats 'love sports' every time.\n\n3) Set your visibility radius to 5km, not 10km. Closer matches actually meet up. Far ones don't.\n\nThat's it. The product does the rest.",
+          "hashtags": ["#Tips", "#Doha", "#ZizoCircle"],
+          "best_time_qatar": "Wednesday 09:00 AST"
+        },
+        "twitter": {
+          "copy": "How to actually match on Zizo:\n\n1. Pick 6+ interests, not 3\n2. Bio = one specific thing ('padel Thursday nights' > 'love sports')\n3. Radius = 5km, not 10\n\nThe product does the rest.",
+          "hashtags": ["#Tips", "#Doha"],
+          "best_time_qatar": "Wednesday 13:00 AST"
+        },
+        "instagram": {
+          "format": "Carousel (4 slides)",
+          "caption": "Profile that actually matches — 3 rules ✏️\n\nSwipe for the bad/good examples.\n\n#ZizoCircle #Tips #Doha #Qatar",
+          "hashtags": ["#ZizoCircle", "#Tips", "#Doha", "#Qatar"],
+          "image_prompt_flux": "Editorial app mockup, side-by-side comparison of two Zizo Circle profile screens — left labeled 'meh' with vague bio, right labeled 'matches more' with specific bio, dark plum #0B0914 background, clean typography, 1:1, no real names or faces"
+        }
+      }
+    },
+    {
+      "day": 25,
+      "weekday": "Thursday",
+      "pillar": "Belonging",
+      "theme": "Couples meeting couples",
+      "posts": {
+        "linkedin": {
+          "copy": "Half of Zizo Circle's most active users are couples looking for other couples.\n\nWhich makes sense. Couples in Doha hit a wall too — your single friends move away, the friends from the gym have kids and disappear, your colleagues' partners aren't necessarily your match.\n\nFour-person dinner. Padel doubles. Couples-night-out at Katara. Beach weekend at Sealine.\n\nWe added a 'Couple' filter last month. The match scores are different — we factor in both partners' interests against both partners' interests. The math gets fun.",
+          "hashtags": ["#Doha", "#Qatar", "#CouplesInDoha"],
+          "best_time_qatar": "Thursday 09:00 AST"
+        },
+        "twitter": {
+          "copy": "'Couples filter' is one of our most-used features.\n\nDoha couples hit the same wall: your single friends leave, gym friends have kids, colleagues' partners aren't your match.\n\nWe match four-against-four interests. The math gets fun.",
+          "hashtags": ["#Doha", "#Qatar"],
+          "best_time_qatar": "Thursday 20:00 AST"
+        },
+        "instagram": {
+          "format": "Reel (25 sec)",
+          "caption": "Couples in Doha hit a wall too 💛\n\nWe added a couples filter. Four-against-four match math. Way more fun.\n\n#ZizoCircle #Doha #Qatar #CouplesInDoha",
+          "hashtags": ["#ZizoCircle", "#Doha", "#Qatar", "#CouplesInDoha"],
+          "image_prompt_flux": "Editorial photo, two couples sharing a long restaurant table at a Doha venue, mixed nationalities, modest dress, candid laughter, plates of mezze in foreground, soft warm lighting, 35mm, photorealistic, 9:16"
+        }
+      }
+    },
+    {
+      "day": 26,
+      "weekday": "Sunday",
+      "pillar": "Discovery",
+      "theme": "Pearl-Qatar walking guide",
+      "posts": {
+        "linkedin": {
+          "copy": "Pearl-Qatar at sunset is one of the great underrated city walks in the GCC.\n\nThe loop:\n\nStart at Porto Arabia Marina (north end). Walk south along the boardwalk past the yachts. Cut across to Qanat Quartier — the Venetian-style canal area is genuinely beautiful at golden hour. End at Medina Centrale for karak or fresh juice. ~45 minutes at a slow pace.\n\nFree. Open to everyone. Walkable in any weather Oct–April.",
+          "hashtags": ["#ThePearl", "#Doha", "#Qatar"],
+          "best_time_qatar": "Sunday 09:00 AST"
+        },
+        "twitter": {
+          "copy": "The Pearl walking loop:\n\nPorto Arabia Marina → boardwalk south → Qanat Quartier canals → Medina Centrale for karak.\n\n45 mins. Free. Best at sunset. Walkable Oct-April.",
+          "hashtags": ["#ThePearl", "#Doha"],
+          "best_time_qatar": "Sunday 17:00 AST"
+        },
+        "instagram": {
+          "format": "Reel (30 sec — golden-hour walk-through)",
+          "caption": "The Pearl walking loop 🚶\n\n45 minutes. Free. Best at golden hour. Save for the next time someone asks 'what should we do tonight?'\n\n#ThePearl #Doha #Qatar #ZizoCircle",
+          "hashtags": ["#ThePearl", "#Doha", "#Qatar", "#ZizoCircle", "#PortoArabia"],
+          "image_prompt_flux": "Editorial photo, Pearl-Qatar Qanat Quartier Venetian-style canals at golden hour, gondola in foreground on still water, pastel-painted Mediterranean facades, 35mm, photorealistic, 9:16"
+        }
+      }
+    },
+    {
+      "day": 27,
+      "weekday": "Monday",
+      "pillar": "Cultural",
+      "theme": "Group activity day (Sports Day style)",
+      "posts": {
+        "linkedin": {
+          "copy": "Qatar's National Sports Day every February is a national reminder of something we believe year-round: groups beat individuals.\n\nA padel four. A walking five. A board game six. A team of any size, doing a thing together.\n\nIf you've been meaning to find your group, this is the prompt. Open the app. Filter by 'group friendly' interests. Pick three. Send it.",
+          "hashtags": ["#Doha", "#Qatar", "#NationalSportsDay"],
+          "best_time_qatar": "Monday 09:00 AST"
+        },
+        "twitter": {
+          "copy": "Groups beat individuals.\n\nA padel four. A walking five. A board game six.\n\nIf you've been meaning to find your group — open the app, filter by group-friendly, pick three, send.",
+          "hashtags": ["#Doha", "#Qatar"],
+          "best_time_qatar": "Monday 13:00 AST"
+        },
+        "instagram": {
+          "format": "Reel (20 sec)",
+          "caption": "Groups > individuals 👯\n\nA four-some, a five-walk, a six-game. Bigger circles. More cashback. More fun.\n\n#ZizoCircle #Doha #Qatar",
+          "hashtags": ["#ZizoCircle", "#Doha", "#Qatar"],
+          "image_prompt_flux": "Editorial group photo, six friends mid-laughter at a Doha rooftop gathering, mixed Qatar demographics, modest dress, board games and karak chai on a low table, golden hour skyline behind, 35mm, photorealistic, 9:16"
+        }
+      }
+    },
+    {
+      "day": 28,
+      "weekday": "Tuesday",
+      "pillar": "Promotional",
+      "theme": "Zizo Night announcement",
+      "posts": {
+        "linkedin": {
+          "copy": "We're hosting our first Zizo Night.\n\n[DATE] · [PARTNER VENUE] · 7-10pm.\n\n80 active Zizo Circle members from Doha. Three planned activities (board game corner, padel intro court, conversation cards table). Food and karak on us. QAR 100 wallet credit just for showing up.\n\nThis is for the people who've been asking 'is anyone actually using this thing?' Yes. They'll be there.\n\nRSVP in the app — Profile → Events → Zizo Night.",
+          "hashtags": ["#Doha", "#Qatar", "#Event"],
+          "best_time_qatar": "Tuesday 09:00 AST",
+          "notes": "PLACEHOLDER — fill date and venue once confirmed."
+        },
+        "twitter": {
+          "copy": "Zizo Night #1: [DATE] @ [VENUE]. 7-10pm.\n\n80 Zizo members. Board games. Padel intro. Conversation cards. Food on us. QAR 100 wallet credit just for showing up.\n\nRSVP in-app: Profile → Events.",
+          "hashtags": ["#Doha", "#Qatar"],
+          "best_time_qatar": "Tuesday 13:00 AST",
+          "notes": "PLACEHOLDER"
+        },
+        "instagram": {
+          "format": "Single (event poster)",
+          "caption": "ZIZO NIGHT #1 ✨\n\n[DATE] · [VENUE] · 7-10pm\n\n80 of you. Board games. Padel intro. Karak. QAR 100 wallet credit just for showing up.\n\nRSVP in-app → Profile → Events.\n\n#ZizoCircle #ZizoNight #Doha #Qatar",
+          "hashtags": ["#ZizoCircle", "#ZizoNight", "#Doha", "#Qatar"],
+          "image_prompt_flux": "Editorial event poster, dark plum #0B0914 background, 'ZIZO NIGHT' in large lime green #C8F53B sans-serif, purple #7B5CF6 circle motif, abstract geometric pattern, modern minimalist, 1:1",
+          "notes": "PLACEHOLDER"
+        }
+      }
+    },
+    {
+      "day": 29,
+      "weekday": "Wednesday",
+      "pillar": "Belonging",
+      "theme": "User testimonial story (placeholder)",
+      "posts": {
+        "linkedin": {
+          "copy": "[USER NAME], [PROFESSION], [NEIGHBORHOOD]:\n\n'I moved to Doha in [YEAR]. My closest friend in this city for the first 18 months was my colleague's husband, mostly because there was nobody else around. \n\nI signed up for Zizo three weeks ago. Match #4 was someone who lives 600 meters from me, runs the same route at the same hour, and works in the same industry. We've now run together six times and she introduced me to her padel four.\n\nI didn't realize how much I'd been holding my breath until I exhaled.'\n\nThis is the only metric we care about.",
+          "hashtags": ["#Doha", "#Qatar", "#ZizoCircle"],
+          "best_time_qatar": "Wednesday 09:00 AST",
+          "notes": "PLACEHOLDER — replace with real testimonial only with explicit user permission."
+        },
+        "twitter": {
+          "copy": "'I didn't realize how much I'd been holding my breath until I exhaled.'\n\n— Zizo user, three weeks in.",
+          "hashtags": ["#Doha", "#Qatar"],
+          "best_time_qatar": "Wednesday 20:00 AST",
+          "notes": "PLACEHOLDER"
+        },
+        "instagram": {
+          "format": "Carousel (3 slides — quote-style)",
+          "caption": "'I didn't realize how much I'd been holding my breath until I exhaled.'\n\n— [USER], 3 weeks in.\n\n#ZizoCircle #Doha #Qatar",
+          "hashtags": ["#ZizoCircle", "#Doha", "#Qatar"],
+          "image_prompt_flux": "Editorial typographic poster, large open quote mark in lime #C8F53B on dark plum #0B0914 background, generous white space below for the quote text, minimalist editorial design, 1:1",
+          "notes": "PLACEHOLDER"
+        }
+      }
+    },
+    {
+      "day": 30,
+      "weekday": "Thursday",
+      "pillar": "Promotional",
+      "theme": "Month wrap + CTA",
+      "posts": {
+        "linkedin": {
+          "copy": "30 days in Doha with Zizo Circle.\n\n[NUMBER] new circles. [NUMBER] padel games. [NUMBER] brunches. [NUMBER] partner cashback redemptions. [NUMBER] friend invites sent.\n\nIf you're reading this and haven't signed up yet — what's the worst case? You meet one person who shares an interest. You eat at a venue you wouldn't have found. You get cashback you didn't expect.\n\nGet started: zizocircle.qa or App Store / Play Store, 'Zizo Circle.'\n\nThank you, Doha. Yalla, next month.",
+          "hashtags": ["#Doha", "#Qatar", "#ZizoCircle"],
+          "best_time_qatar": "Thursday 09:00 AST",
+          "notes": "PLACEHOLDER for numbers."
+        },
+        "twitter": {
+          "copy": "30 days. [N] new circles. [N] padel games. [N] brunches. [N] cashback redemptions.\n\nIf you haven't signed up — what's the worst case?\n\nzizocircle.qa or App/Play Store: 'Zizo Circle.'\n\nThank you, Doha. Yalla, next month.",
+          "hashtags": ["#Doha", "#Qatar"],
+          "best_time_qatar": "Thursday 13:00 AST",
+          "notes": "PLACEHOLDER"
+        },
+        "instagram": {
+          "format": "Reel (45 sec — month recap montage)",
+          "caption": "30 days in Doha. By the numbers. ✨\n\nThank you for showing up. Yalla, next month.\n\nzizocircle.qa or App Store / Play Store: 'Zizo Circle'\n\n#ZizoCircle #Doha #Qatar",
+          "hashtags": ["#ZizoCircle", "#Doha", "#Qatar", "#DohaLife"],
+          "image_prompt_flux": "Editorial collage, montage of 8 small joyful moments from a Doha month — padel court, brunch table, Souq Waqif, Lusail fountain, Pearl marina, board game, karak hand-off, group selfie — arranged in a clean grid, mixed Qatar demographics, modest dress, warm color grade, 9:16",
+          "notes": "PLACEHOLDER",
+          "video_script": "[0-5s: title card '30 days in Doha'] [5-30s: rapid-cut B-roll of the month's moments — padel, brunch, karak, Lusail, Pearl, Souq, faces, wallet pings] [30-40s: numbers card with month stats] [40-45s: 'Yalla, next month.' Zizo logo]"
+        }
+      }
+    }
+  ]
+}
