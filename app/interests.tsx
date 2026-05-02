@@ -94,9 +94,9 @@ export default function InterestsScreen() {
           <Text style={styles.backText}>←</Text>
         </TouchableOpacity>
         <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: isEditing ? '100%' : '57%' }]} />
+          <View style={[styles.progressFill, { width: isEditing ? '100%' : '80%' }]} />
         </View>
-        <Text style={styles.stepText}>{isEditing ? 'Edit' : '4 of 7'}</Text>
+        <Text style={styles.stepText}>{isEditing ? 'Edit' : '4 of 5'}</Text>
       </View>
 
       <View style={styles.titleWrap}>

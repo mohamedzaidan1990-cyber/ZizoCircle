@@ -140,8 +140,9 @@ export default function TermsScreen({ onAccept, onDecline, showActions: showActi
   showActions?: boolean;
 }) {
   const router = useRouter();
-  const params = useLocalSearchParams<{ showActions?: string }>();
+  const params = useLocalSearchParams<{ showActions?: string; from?: string }>();
   const showActions = params.showActions !== undefined ? params.showActions !== 'false' : showActionsProp;
+  const isOnboarding = params.from === 'onboarding';
   const [lang, setLang] = useState<'en' | 'ar'>('en');
   const t = lang === 'en' ? EN : AR;
   const isAr = lang === 'ar';
@@ -199,7 +200,13 @@ export default function TermsScreen({ onAccept, onDecline, showActions: showActi
         <View style={styles.actions}>
           <TouchableOpacity
             style={styles.acceptBtn}
-            onPress={onAccept || (() => router.replace('/(tabs)' as any))}
+            onPress={
+              onAccept ||
+              (() =>
+                isOnboarding
+                  ? router.replace('/profile-setup' as any)
+                  : router.replace('/(tabs)' as any))
+            }
             activeOpacity={0.85}
           >
             <Text style={styles.acceptBtnText}>{t.acceptBtn}</Text>
