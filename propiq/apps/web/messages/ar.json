@@ -1,0 +1,50 @@
+{
+  "app": {
+    "name": "بروب آي كيو",
+    "tagline": "نظام إدارة عقارات يعمل بالذكاء الاصطناعي"
+  },
+  "common": {
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "submit": "إرسال",
+    "cancel": "إلغاء",
+    "loading": "جارٍ التحميل...",
+    "logout": "تسجيل الخروج",
+    "settings": "الإعدادات",
+    "language": "اللغة",
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "auth": {
+    "loginTitle": "مرحباً بعودتك",
+    "loginSubtitle": "سجّل الدخول إلى مساحة عمل بروب آي كيو.",
+    "loginCta": "تسجيل الدخول",
+    "loginNoAccount": "ليس لديك حساب؟",
+    "loginCreateAccount": "أنشئ وكالتك",
+    "registerTitle": "أنشئ وكالتك",
+    "registerSubtitle": "جهّز مساحة العمل خلال أقل من دقيقة.",
+    "registerCta": "إنشاء وكالة",
+    "registerHaveAccount": "لديك حساب بالفعل؟",
+    "registerSignIn": "تسجيل الدخول",
+    "agencyName": "اسم الوكالة",
+    "agencyNameAr": "اسم الوكالة بالعربية",
+    "slug": "معرّف مساحة العمل",
+    "slugHint": "أحرف صغيرة وأرقام وشرطة سفلية فقط.",
+    "errorGeneric": "حدث خطأ ما. حاول مرة أخرى.",
+    "errorInvalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة."
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "welcome": "مرحباً، {name}",
+    "leads": "العملاء المحتملون",
+    "contacts": "جهات الاتصال",
+    "properties": "العقارات",
+    "pipeline": "خط الصفقات",
+    "aiTools": "أدوات الذكاء الاصطناعي",
+    "reports": "التقارير",
+    "settingsNav": "الإعدادات",
+    "summary": "مساحة العمل جاهزة. ابدأ بإضافة أول جهات الاتصال والعقارات."
+  }
+}

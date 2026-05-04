@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Agency {
+  id            String    @id @default(cuid())
+  name          String
+  nameAr        String?
+  slug          String    @unique
+  licenseNumber String?
+  country       String    @default("QA")
+  city          String    @default("Doha")
+  logo          String?
+  primaryColor  String?
+  plan          Plan      @default(STARTER)
+  isActive      Boolean   @default(true)
+  trialEndsAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  users         User[]
+
+  @@index([slug])
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  passwordHash  String
+  firstName     String
+  lastName      String
+  firstNameAr   String?
+  lastNameAr    String?
+  phone         String?
+  avatar        String?
+  role          UserRole       @default(AGENT)
+  language      Language       @default(EN)
+  isActive      Boolean        @default(true)
+  lastLoginAt   DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  agencyId      String
+  agency        Agency         @relation(fields: [agencyId], references: [id])
+  refreshTokens RefreshToken[]
+
+  @@index([agencyId])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+enum Plan {
+  STARTER
+  GROWTH
+  AGENCY
+  ENTERPRISE
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  AGENCY_ADMIN
+  MANAGER
+  AGENT
+  VIEWER
+}
+
+enum Language {
+  EN
+  AR
+}

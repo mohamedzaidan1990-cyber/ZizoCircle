@@ -1,0 +1,50 @@
+{
+  "app": {
+    "name": "PropIQ",
+    "tagline": "AI-Native Real Estate CRM"
+  },
+  "common": {
+    "email": "Email",
+    "password": "Password",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "logout": "Log out",
+    "settings": "Settings",
+    "language": "Language",
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "auth": {
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Sign in to your PropIQ workspace.",
+    "loginCta": "Sign in",
+    "loginNoAccount": "Don't have an account?",
+    "loginCreateAccount": "Create an agency",
+    "registerTitle": "Create your agency",
+    "registerSubtitle": "Set up your workspace in under a minute.",
+    "registerCta": "Create agency",
+    "registerHaveAccount": "Already have an account?",
+    "registerSignIn": "Sign in",
+    "agencyName": "Agency name",
+    "agencyNameAr": "Agency name (Arabic)",
+    "slug": "Workspace slug",
+    "slugHint": "Lowercase letters, numbers, and underscores only.",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "errorInvalidCredentials": "Invalid email or password."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome, {name}",
+    "leads": "Leads",
+    "contacts": "Contacts",
+    "properties": "Properties",
+    "pipeline": "Pipeline",
+    "aiTools": "AI Tools",
+    "reports": "Reports",
+    "settingsNav": "Settings",
+    "summary": "Your workspace is ready. Start by adding your first contacts and properties."
+  }
+}
