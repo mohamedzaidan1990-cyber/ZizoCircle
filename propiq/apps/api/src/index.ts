@@ -9,6 +9,8 @@ import { authRouter } from "./routes/auth";
 import { contactsRouter } from "./routes/contacts";
 import { propertiesRouter } from "./routes/properties";
 import { activitiesRouter } from "./routes/activities";
+import { dealsRouter } from "./routes/deals";
+import { statsRouter } from "./routes/stats";
 import { errorHandler, notFoundHandler } from "./middleware/error";
 import { ok } from "./lib/response";
 import { localUploadsRoot } from "./services/storage";
@@ -55,6 +57,8 @@ app.use("/api/auth", authLimiter, authRouter);
 app.use("/api/contacts", contactsRouter);
 app.use("/api/properties", propertiesRouter);
 app.use("/api/activities", activitiesRouter);
+app.use("/api/deals", dealsRouter);
+app.use("/api/stats", statsRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
