@@ -1,6 +1,13 @@
-import { Pool, PoolClient } from "pg";
+import { Pool, PoolClient, types as pgTypes } from "pg";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+
+// node-postgres returns BIGINT (oid 20) and NUMERIC (oid 1700) as strings by
+// default to preserve precision. Property prices and budgets fit comfortably
+// in JS Number, so coerce them so the API contract matches the camelCase
+// `Contact`/`Property` types in @propiq/shared.
+pgTypes.setTypeParser(20, (val) => (val == null ? null : Number(val)));
+pgTypes.setTypeParser(1700, (val) => (val == null ? null : Number(val)));
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 

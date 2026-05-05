@@ -1,3 +1,5 @@
+import type { PipelineType } from "./contact";
+
 export type DealType = "SALE" | "RENT";
 
 export type DealStage =
@@ -11,10 +13,23 @@ export type DealStage =
   | "CLOSED_WON"
   | "CLOSED_LOST";
 
+export const DEAL_STAGES: DealStage[] = [
+  "NEW_LEAD",
+  "CONTACTED",
+  "VIEWING_SCHEDULED",
+  "VIEWED",
+  "OFFER_MADE",
+  "NEGOTIATING",
+  "CONTRACT_SENT",
+  "CLOSED_WON",
+  "CLOSED_LOST",
+];
+
 export interface Deal {
   id: string;
   title: string;
   dealType: DealType;
+  pipelineType: PipelineType;
   stage: DealStage;
   value?: number | null;
   commissionRate: number;

@@ -2,6 +2,10 @@ export type ContactType = "BUYER" | "SELLER" | "TENANT" | "LANDLORD" | "INVESTOR
 
 export type LeadTier = "HOT" | "WARM" | "COLD";
 
+export type PipelineType = "SALES" | "LEASE";
+
+export type LeadStatus = "ACTIVE" | "DEAD" | "WON" | "LOST";
+
 export interface Contact {
   id: string;
   firstName: string;
@@ -13,6 +17,7 @@ export interface Contact {
   phoneAlt?: string | null;
   nationality?: string | null;
   contactType: ContactType;
+  pipelineType: PipelineType;
   source?: string | null;
   sourceDetail?: string | null;
   budgetMin?: number | null;
@@ -30,6 +35,12 @@ export interface Contact {
   isArchived: boolean;
   createdAt: string;
   updatedAt: string;
+  /** Computed at query time, not stored. */
+  status?: LeadStatus;
+  /** Computed at query time from aiScore. */
+  tier?: LeadTier;
+  /** Computed at query time. ISO timestamp of the most recent activity. */
+  lastActivityAt?: string | null;
 }
 
 export interface LeadScoreResult {
@@ -38,4 +49,10 @@ export interface LeadScoreResult {
   reason: string;
   recommendedAction: string;
   redFlags: string[];
+}
+
+export function tierFromScore(score: number): LeadTier {
+  if (score >= 80) return "HOT";
+  if (score >= 50) return "WARM";
+  return "COLD";
 }

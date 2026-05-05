@@ -28,24 +28,26 @@ model Agency {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  email         String         @unique
-  passwordHash  String
-  firstName     String
-  lastName      String
-  firstNameAr   String?
-  lastNameAr    String?
-  phone         String?
-  avatar        String?
-  role          UserRole       @default(AGENT)
-  language      Language       @default(EN)
-  isActive      Boolean        @default(true)
-  lastLoginAt   DateTime?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  agencyId      String
-  agency        Agency         @relation(fields: [agencyId], references: [id])
-  refreshTokens RefreshToken[]
+  id                 String         @id @default(cuid())
+  email              String         @unique
+  passwordHash       String
+  firstName          String
+  lastName           String
+  firstNameAr        String?
+  lastNameAr         String?
+  phone              String?
+  avatar             String?
+  role               UserRole       @default(AGENT)
+  language           Language       @default(EN)
+  isActive           Boolean        @default(true)
+  lastLoginAt        DateTime?
+  invitedAt          DateTime?
+  notificationPrefs  Json?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  agencyId           String
+  agency             Agency         @relation(fields: [agencyId], references: [id])
+  refreshTokens      RefreshToken[]
 
   @@index([agencyId])
 }
