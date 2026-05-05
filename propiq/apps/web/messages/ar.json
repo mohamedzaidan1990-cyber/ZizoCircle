@@ -271,7 +271,6 @@
     "tab_team": "الفريق",
     "tab_portals": "مزامنة البوابات",
     "tab_notifications": "الإشعارات",
-    "tab_sequences": "الحملات",
     "agencyName": "اسم الوكالة",
     "agencyNameAr": "اسم الوكالة بالعربية",
     "licenseNumber": "رقم الترخيص",
@@ -313,8 +312,11 @@
     "channelWhatsapp": "واتساب",
     "newLeadAssigned": "تم تعيين عميل جديد لك",
     "dealStageChange": "تغيُّر مرحلة صفقة",
-    "activityDue": "موعد نشاط",
-    "sequencesHint": "ابنِ حملات بريدية متسلسلة. كل خطوة قالب وتأخير؛ يضع العامل الخطوة التالية تلقائيًا.",
+    "activityDue": "موعد نشاط"
+  },
+  "sequences": {
+    "title": "الحملات البريدية",
+    "hint": "ابنِ حملات بريدية متسلسلة. كل خطوة قالب وتأخير؛ يضع العامل الخطوة التالية تلقائيًا.",
     "newSequence": "حملة جديدة",
     "sequenceName": "اسم الحملة",
     "step": "خطوة",
@@ -327,7 +329,11 @@
     "saveSequence": "حفظ الحملة",
     "noSequences": "لا توجد حملات بعد.",
     "noTemplates": "أنشئ على الأقل قالبًا واحدًا من نوع EMAIL.",
-    "templatesLink": "إدارة القوالب"
+    "templatesLink": "إدارة القوالب",
+    "active": "نشط",
+    "inactive": "متوقف",
+    "activate": "تفعيل",
+    "deactivate": "إيقاف"
   },
   "ai": {
     "title": "أدوات الذكاء الاصطناعي",
@@ -335,6 +341,7 @@
     "tab_scorer": "مقيِّم العملاء",
     "tab_cma": "تقرير المقارنة",
     "tab_coach": "مدرب التفاوض",
+    "tab_sequences": "الحملات",
     "selectProperty": "اختر عقارًا",
     "selectContact": "اختر جهة اتصال",
     "generate": "توليد",

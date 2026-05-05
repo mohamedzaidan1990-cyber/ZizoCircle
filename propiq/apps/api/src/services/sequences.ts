@@ -66,6 +66,21 @@ export async function deleteSequence(
   if (result.rowCount === 0) throw Errors.notFound("Sequence not found");
 }
 
+export async function setSequenceActive(
+  slug: string,
+  id: string,
+  isActive: boolean,
+): Promise<Sequence> {
+  const result = await withTenant(slug, (client) =>
+    client.query(
+      `UPDATE sequences SET is_active = $1 WHERE id = $2 RETURNING *`,
+      [isActive, id],
+    ),
+  );
+  if (!result.rows[0]) throw Errors.notFound("Sequence not found");
+  return rowToCamel<Sequence>(result.rows[0]);
+}
+
 export interface EmailSequenceJobData {
   agencySlug: string;
   contactId: string;

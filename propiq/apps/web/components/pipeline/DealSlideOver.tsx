@@ -151,7 +151,7 @@ export function DealSlideOver({ dealId, onClose, onChanged }: Props) {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="label">{tCommon("filters")}</label>
                   <select
@@ -183,7 +183,7 @@ export function DealSlideOver({ dealId, onClose, onChanged }: Props) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="label">{t("value")}</label>
                   <input

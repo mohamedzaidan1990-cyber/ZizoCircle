@@ -9,6 +9,7 @@ import {
   deleteSequence,
   enqueueSequence,
   listSequences,
+  setSequenceActive,
 } from "../services/sequences";
 
 export const sequencesRouter = Router();
@@ -66,6 +67,25 @@ sequencesRouter.post(
         req.body.contactId,
       );
       ok(res, r);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+const activeSchema = z.object({ isActive: z.boolean() });
+
+sequencesRouter.patch(
+  "/:id",
+  validate(activeSchema),
+  async (req, res, next) => {
+    try {
+      const s = await setSequenceActive(
+        req.user!.agencySlug,
+        req.params.id!,
+        req.body.isActive,
+      );
+      ok(res, s);
     } catch (err) {
       next(err);
     }

@@ -152,7 +152,7 @@ export function NegotiationCoachPanel() {
           {t("scenario")}
         </label>
         <select
-          className="input flex-1 min-w-[260px]"
+          className="input flex-1 w-full min-w-0 sm:w-auto sm:min-w-[200px]"
           value={scenario}
           onChange={(e) => setScenario(e.target.value as Scenario)}
         >
@@ -162,7 +162,10 @@ export function NegotiationCoachPanel() {
             </option>
           ))}
         </select>
-        <button onClick={reset} className="btn-ghost inline-flex items-center gap-1 text-sm">
+        <button
+          onClick={reset}
+          className="btn-ghost inline-flex items-center gap-1 text-sm w-full sm:w-auto justify-center"
+        >
           <RotateCcw className="h-4 w-4" />
           {t("newSession")}
         </button>
@@ -186,10 +189,10 @@ export function NegotiationCoachPanel() {
         )}
       </div>
 
-      <div className="card p-3 flex gap-2">
+      <div className="card p-3 flex flex-wrap gap-2">
         <input
           type="text"
-          className="input flex-1"
+          className="input flex-1 min-w-[160px] w-full sm:w-auto"
           placeholder={t("yourMove")}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
@@ -201,22 +204,24 @@ export function NegotiationCoachPanel() {
           }}
           disabled={streaming}
         />
-        <button
-          onClick={send}
-          disabled={!draft.trim() || streaming}
-          className="btn-primary inline-flex items-center gap-1"
-        >
-          <Send className="h-4 w-4" />
-          {t("send")}
-        </button>
-        <button
-          onClick={onDebrief}
-          disabled={history.length < 2 || debriefing || streaming}
-          className="btn-ghost inline-flex items-center gap-1 text-sm"
-        >
-          {debriefing ? <Spinner /> : <Trophy className="h-4 w-4" />}
-          {debriefing ? t("debriefing") : t("debrief")}
-        </button>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <button
+            onClick={send}
+            disabled={!draft.trim() || streaming}
+            className="btn-primary inline-flex items-center gap-1 flex-1 sm:flex-initial justify-center"
+          >
+            <Send className="h-4 w-4" />
+            {t("send")}
+          </button>
+          <button
+            onClick={onDebrief}
+            disabled={history.length < 2 || debriefing || streaming}
+            className="btn-ghost inline-flex items-center gap-1 text-sm flex-1 sm:flex-initial justify-center"
+          >
+            {debriefing ? <Spinner /> : <Trophy className="h-4 w-4" />}
+            {debriefing ? t("debriefing") : t("debrief")}
+          </button>
+        </div>
       </div>
 
       {error && (

@@ -271,7 +271,6 @@
     "tab_team": "Team",
     "tab_portals": "Portal Sync",
     "tab_notifications": "Notifications",
-    "tab_sequences": "Sequences",
     "agencyName": "Agency name",
     "agencyNameAr": "Agency name (Arabic)",
     "licenseNumber": "License number",
@@ -313,8 +312,11 @@
     "channelWhatsapp": "WhatsApp",
     "newLeadAssigned": "New lead assigned to you",
     "dealStageChange": "A deal's stage changes",
-    "activityDue": "An activity is due",
-    "sequencesHint": "Build email sequences. Each step picks a template and a delay; the worker enqueues the next step automatically.",
+    "activityDue": "An activity is due"
+  },
+  "sequences": {
+    "title": "Email Sequences",
+    "hint": "Build email sequences. Each step picks a template and a delay; the worker enqueues the next step automatically.",
     "newSequence": "New sequence",
     "sequenceName": "Sequence name",
     "step": "Step",
@@ -327,7 +329,11 @@
     "saveSequence": "Save sequence",
     "noSequences": "No sequences yet.",
     "noTemplates": "Create at least one EMAIL template first.",
-    "templatesLink": "Manage templates"
+    "templatesLink": "Manage templates",
+    "active": "Active",
+    "inactive": "Inactive",
+    "activate": "Activate",
+    "deactivate": "Pause"
   },
   "ai": {
     "title": "AI Tools",
@@ -335,6 +341,7 @@
     "tab_scorer": "Lead Scorer",
     "tab_cma": "CMA Generator",
     "tab_coach": "Negotiation Coach",
+    "tab_sequences": "Sequences",
     "selectProperty": "Select a property",
     "selectContact": "Select a contact",
     "generate": "Generate",

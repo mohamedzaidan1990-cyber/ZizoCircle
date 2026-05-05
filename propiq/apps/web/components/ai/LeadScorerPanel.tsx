@@ -50,7 +50,7 @@ export function LeadScorerPanel() {
 
       <div className="card flex flex-wrap items-center gap-3 p-3">
         <select
-          className="input flex-1 min-w-[260px]"
+          className="input flex-1 w-full min-w-0 sm:w-auto sm:min-w-[200px]"
           value={contactId}
           onChange={(e) => setContactId(e.target.value)}
         >
@@ -64,7 +64,7 @@ export function LeadScorerPanel() {
         <button
           onClick={score}
           disabled={!contactId || loading}
-          className="btn-primary inline-flex items-center gap-1"
+          className="btn-primary inline-flex items-center gap-1 w-full sm:w-auto justify-center"
         >
           {loading ? <Spinner /> : <Sparkles className="h-4 w-4" />}
           {loading ? t("scoring") : t("scoreThis")}

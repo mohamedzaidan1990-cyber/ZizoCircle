@@ -75,7 +75,7 @@ export function ListingWriterPanel() {
 
       <div className="card flex flex-wrap items-center gap-3 p-3">
         <select
-          className="input flex-1 min-w-[260px]"
+          className="input flex-1 w-full min-w-0 sm:w-auto sm:min-w-[200px]"
           value={propertyId}
           onChange={(e) => setPropertyId(e.target.value)}
         >
@@ -90,7 +90,7 @@ export function ListingWriterPanel() {
         <button
           onClick={generate}
           disabled={!propertyId || generating}
-          className="btn-primary inline-flex items-center gap-1"
+          className="btn-primary inline-flex items-center gap-1 w-full sm:w-auto justify-center"
         >
           {generating ? <Spinner /> : <Sparkles className="h-4 w-4" />}
           {generating ? t("generating") : content ? t("regenerate") : t("generate")}

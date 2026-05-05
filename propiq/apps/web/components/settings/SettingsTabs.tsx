@@ -2,20 +2,13 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  Building2,
-  Users,
-  Globe,
-  Bell,
-  Workflow,
-} from "lucide-react";
+import { Building2, Users, Globe, Bell } from "lucide-react";
 import { ProfilePanel } from "./ProfilePanel";
 import { TeamPanel } from "./TeamPanel";
 import { PortalsPanel } from "./PortalsPanel";
 import { NotificationsPanel } from "./NotificationsPanel";
-import { SequencesPanel } from "./SequencesPanel";
 
-type Tab = "profile" | "team" | "portals" | "notifications" | "sequences";
+type Tab = "profile" | "team" | "portals" | "notifications";
 
 export function SettingsTabs() {
   const t = useTranslations("settings");
@@ -25,7 +18,6 @@ export function SettingsTabs() {
     { id: "team", label: t("tab_team"), icon: Users },
     { id: "portals", label: t("tab_portals"), icon: Globe },
     { id: "notifications", label: t("tab_notifications"), icon: Bell },
-    { id: "sequences", label: t("tab_sequences"), icon: Workflow },
   ];
   return (
     <div className="space-y-4">
@@ -52,7 +44,6 @@ export function SettingsTabs() {
       {tab === "team" && <TeamPanel />}
       {tab === "portals" && <PortalsPanel />}
       {tab === "notifications" && <NotificationsPanel />}
-      {tab === "sequences" && <SequencesPanel />}
     </div>
   );
 }

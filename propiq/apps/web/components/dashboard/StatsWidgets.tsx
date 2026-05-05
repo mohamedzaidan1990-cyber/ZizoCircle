@@ -168,20 +168,23 @@ export function StatsWidgets() {
             const data = stats.deals.byStage[stage] ?? { count: 0, value: 0 };
             const pct = (data.count / maxStage) * 100;
             return (
-              <div key={stage} className="flex items-center gap-3 text-xs">
-                <span className="w-36 shrink-0 text-slate-600 truncate">
+              <div
+                key={stage}
+                className="flex items-center gap-2 sm:gap-3 text-xs"
+              >
+                <span className="w-20 sm:w-36 shrink-0 text-slate-600 truncate">
                   {tPipeline(`stage_${stage}`)}
                 </span>
-                <div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden">
+                <div className="flex-1 min-w-[40px] h-2 rounded-full bg-slate-100 overflow-hidden">
                   <div
                     className="h-full bg-brand"
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-                <span className="w-10 text-end font-medium text-slate-700">
+                <span className="w-8 sm:w-10 text-end font-medium text-slate-700">
                   {data.count}
                 </span>
-                <span className="w-24 text-end text-slate-500">
+                <span className="hidden sm:inline-block w-24 text-end text-slate-500">
                   {data.value > 0 ? fmtCurrency(data.value) : "—"}
                 </span>
               </div>
