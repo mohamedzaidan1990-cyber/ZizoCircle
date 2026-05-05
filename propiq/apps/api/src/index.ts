@@ -12,9 +12,17 @@ import { activitiesRouter } from "./routes/activities";
 import { dealsRouter } from "./routes/deals";
 import { statsRouter } from "./routes/stats";
 import { aiRouter } from "./routes/ai";
+import { templatesRouter } from "./routes/templates";
+import { sequencesRouter } from "./routes/sequences";
+import { whatsappRouter } from "./routes/whatsapp";
+import { feedsRouter } from "./routes/feeds";
+import { reportsRouter } from "./routes/reports";
+import { settingsRouter } from "./routes/settings";
 import { errorHandler, notFoundHandler } from "./middleware/error";
 import { ok } from "./lib/response";
 import { localUploadsRoot } from "./services/storage";
+import { startEmailSequenceWorker } from "./jobs/emailSequence.job";
+import { shutdownQueues } from "./services/queue";
 
 const app = express();
 
@@ -54,6 +62,9 @@ if (env.STORAGE_TYPE === "local") {
   app.use("/uploads", express.static(uploadsRoot, { fallthrough: false }));
 }
 
+// Public XML feeds — no auth, listed before the auth-gated routes so portal crawlers can fetch them.
+app.use("/api/feeds", feedsRouter);
+
 app.use("/api/auth", authLimiter, authRouter);
 app.use("/api/contacts", contactsRouter);
 app.use("/api/properties", propertiesRouter);
@@ -61,6 +72,11 @@ app.use("/api/activities", activitiesRouter);
 app.use("/api/deals", dealsRouter);
 app.use("/api/stats", statsRouter);
 app.use("/api/ai", aiRouter);
+app.use("/api/templates", templatesRouter);
+app.use("/api/sequences", sequencesRouter);
+app.use("/api/whatsapp", whatsappRouter);
+app.use("/api/reports", reportsRouter);
+app.use("/api/settings", settingsRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
@@ -70,9 +86,15 @@ const server = app.listen(env.PORT, () => {
   console.log(`[propiq-api] listening on http://localhost:${env.PORT}`);
 });
 
-const shutdown = (signal: string) => {
+// Start the BullMQ workers — one for the email-sequence queue.
+const emailWorker = startEmailSequenceWorker();
+// eslint-disable-next-line no-console
+console.log(`[propiq-api] email-sequence worker started (${emailWorker.name})`);
+
+const shutdown = async (signal: string) => {
   // eslint-disable-next-line no-console
   console.log(`[propiq-api] received ${signal}, shutting down`);
+  await shutdownQueues().catch(() => undefined);
   server.close(() => process.exit(0));
 };
 process.on("SIGINT", () => shutdown("SIGINT"));
