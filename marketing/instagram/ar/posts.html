@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Zizo Circle — Instagram Feed Posts (1080×1350)</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Cairo:wght@400;700;800;900&display=swap" rel="stylesheet" />
+<title>زيزو سيركل — منشورات إنستقرام (1080×1350)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
 <style>
   :root {
     --bg: #0B0914;
@@ -23,7 +23,7 @@
   html, body {
     background: #1a1424;
     color: var(--text);
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Cairo', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     padding: 30px 0;
   }
@@ -32,18 +32,18 @@
     padding: 14px 18px; background: #2a2438;
     border: 1px solid #3a3450; border-radius: 12px;
     color: var(--muted); font-size: 13px;
+    direction: ltr;
   }
   .toolbar strong { color: var(--text); }
-  .toolbar a { color: var(--purple-soft); text-decoration: none; margin-right: 14px; }
+  .toolbar a, .toolbar code { color: var(--purple-soft); }
   .gallery { display: flex; flex-direction: column; align-items: center; gap: 30px; }
   .frame-label {
     color: var(--muted); font-size: 12px; font-weight: 700;
     letter-spacing: 1.5px; text-transform: uppercase;
-    margin-bottom: -16px; align-self: flex-start;
-    margin-left: calc(50% - 270px);
+    margin-bottom: -16px; align-self: flex-end;
+    margin-right: calc(50% - 270px);
   }
 
-  /* Frame: exact 1080×1350 IG feed post */
   .frame {
     width: 1080px; height: 1350px;
     background: var(--bg);
@@ -54,22 +54,20 @@
     margin-bottom: -675px;
     box-shadow: 0 30px 80px rgba(0,0,0,0.5);
   }
-  /* Solo mode: ?solo=N hides everything except one frame, full-size, no scaling */
   body.solo .toolbar, body.solo .frame-label { display: none; }
   body.solo .gallery { gap: 0; }
   body.solo .frame { display: none; transform: none; margin: 0; }
   body.solo .frame.active { display: block; }
 
-  /* Shared decorative orbs */
   .orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
   .orb-purple { background: rgba(123,92,246,0.35); }
   .orb-pink { background: rgba(245,59,143,0.25); }
   .orb-mint { background: rgba(59,245,200,0.18); }
   .orb-lime { background: rgba(200,245,59,0.18); }
 
-  /* Logo lockup */
+  /* Logo on the right (RTL natural placement) */
   .logo {
-    position: absolute; top: 60px; left: 60px;
+    position: absolute; top: 60px; right: 60px;
     display: flex; align-items: center; gap: 16px;
     z-index: 5;
   }
@@ -79,12 +77,11 @@
     display: flex; align-items: center; justify-content: center;
     font-weight: 900; color: #fff; font-size: 28px;
     box-shadow: 0 12px 30px rgba(123,92,246,0.5);
+    font-family: 'Inter', sans-serif;
   }
-  .logo-name {
-    font-weight: 800; font-size: 26px; letter-spacing: -0.01em;
-  }
+  .logo-name { font-weight: 800; font-size: 26px; }
   .pin {
-    position: absolute; top: 60px; right: 60px;
+    position: absolute; top: 60px; left: 60px;
     background: rgba(123,92,246,0.18);
     border: 1.5px solid rgba(123,92,246,0.4);
     color: var(--purple-soft);
@@ -93,7 +90,6 @@
     z-index: 5;
   }
 
-  /* Footer URL strip */
   .urlbar {
     position: absolute; bottom: 60px; left: 60px; right: 60px;
     display: flex; align-items: center; justify-content: space-between;
@@ -101,41 +97,42 @@
     z-index: 5;
   }
   .urlbar .right { color: var(--purple-soft); }
+  .urlbar .url-en { font-family: 'Inter', sans-serif; }
 
-  /* ============== FRAME 1: HOOK ============== */
-  .f1 .orb-1 { width: 700px; height: 700px; top: -200px; right: -200px; }
-  .f1 .orb-2 { width: 600px; height: 600px; bottom: -150px; left: -180px; }
+  /* FRAME 1: HOOK */
+  .f1 .orb-1 { width: 700px; height: 700px; top: -200px; left: -200px; }
+  .f1 .orb-2 { width: 600px; height: 600px; bottom: -150px; right: -180px; }
   .f1-content {
     position: absolute; inset: 240px 90px 200px 90px;
     display: flex; flex-direction: column; justify-content: center;
     z-index: 4;
   }
   .f1-eyebrow {
-    color: var(--lime); font-size: 22px; font-weight: 800;
-    letter-spacing: 3px; margin-bottom: 28px;
+    color: var(--lime); font-size: 24px; font-weight: 800;
+    letter-spacing: 2px; margin-bottom: 28px;
   }
   .f1-headline {
-    font-size: 110px; line-height: 1.02; font-weight: 900;
-    letter-spacing: -0.03em; margin-bottom: 36px;
+    font-size: 100px; line-height: 1.15; font-weight: 900;
+    letter-spacing: -0.02em; margin-bottom: 36px;
   }
   .f1-headline .accent { color: var(--purple-soft); }
   .f1-sub {
-    font-size: 30px; color: var(--muted); line-height: 1.5; max-width: 880px;
+    font-size: 32px; color: var(--muted); line-height: 1.6; max-width: 880px;
   }
 
-  /* ============== FRAME 2: MECHANIC ============== */
-  .f2 .orb-1 { width: 600px; height: 600px; top: -150px; left: -200px; }
-  .f2 .orb-2 { width: 500px; height: 500px; bottom: -100px; right: -150px; }
+  /* FRAME 2: MECHANIC */
+  .f2 .orb-1 { width: 600px; height: 600px; top: -150px; right: -200px; }
+  .f2 .orb-2 { width: 500px; height: 500px; bottom: -100px; left: -150px; }
   .f2-content {
     position: absolute; inset: 220px 90px 180px 90px;
     z-index: 4;
   }
   .f2-eyebrow {
-    color: var(--purple-soft); font-size: 22px; font-weight: 800;
-    letter-spacing: 3px; margin-bottom: 22px;
+    color: var(--purple-soft); font-size: 24px; font-weight: 800;
+    letter-spacing: 2px; margin-bottom: 22px;
   }
   .f2-title {
-    font-size: 84px; line-height: 1.05; font-weight: 900;
+    font-size: 84px; line-height: 1.2; font-weight: 900;
     letter-spacing: -0.02em; margin-bottom: 60px;
   }
   .f2-title .accent { color: var(--purple-soft); }
@@ -149,27 +146,27 @@
     width: 80px; height: 80px; border-radius: 22px;
     flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 36px;
+    font-weight: 900; font-size: 40px;
   }
   .s1 .step-num { background: rgba(123,92,246,0.22); color: var(--purple-soft); }
   .s2 .step-num { background: rgba(245,59,143,0.22); color: var(--pink); }
   .s3 .step-num { background: rgba(200,245,59,0.22); color: var(--lime); }
   .step-title { font-size: 36px; font-weight: 800; margin-bottom: 4px; }
-  .step-desc { font-size: 22px; color: var(--muted); }
+  .step-desc { font-size: 24px; color: var(--muted); }
 
-  /* ============== FRAME 3: LOCAL PROOF (VENUES) ============== */
-  .f3 .orb-1 { width: 600px; height: 600px; top: -160px; right: -180px; }
-  .f3 .orb-2 { width: 500px; height: 500px; bottom: -120px; left: -150px; }
+  /* FRAME 3: VENUES */
+  .f3 .orb-1 { width: 600px; height: 600px; top: -160px; left: -180px; }
+  .f3 .orb-2 { width: 500px; height: 500px; bottom: -120px; right: -150px; }
   .f3-content {
     position: absolute; inset: 220px 90px 180px 90px;
     z-index: 4;
   }
   .f3-title {
-    font-size: 78px; line-height: 1.05; font-weight: 900;
+    font-size: 78px; line-height: 1.15; font-weight: 900;
     letter-spacing: -0.02em; margin-bottom: 14px;
   }
   .f3-title .accent { color: var(--lime); }
-  .f3-sub { font-size: 26px; color: var(--muted); margin-bottom: 50px; }
+  .f3-sub { font-size: 28px; color: var(--muted); margin-bottom: 50px; line-height: 1.5; }
   .venues { display: flex; flex-direction: column; gap: 18px; }
   .venue-row {
     background: var(--card); border: 1.5px solid var(--border);
@@ -181,19 +178,19 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 40px; flex-shrink: 0;
   }
-  .v-name { font-size: 30px; font-weight: 800; margin-bottom: 4px; }
-  .v-loc { font-size: 20px; color: var(--muted); }
+  .v-name { font-size: 32px; font-weight: 800; margin-bottom: 4px; }
+  .v-loc { font-size: 22px; color: var(--muted); }
   .v-cb {
-    margin-left: auto;
+    margin-right: auto;
     background: rgba(200,245,59,0.15); color: var(--lime);
     padding: 12px 20px; border-radius: 999px;
     font-size: 22px; font-weight: 800;
     border: 1.5px solid rgba(200,245,59,0.3);
   }
 
-  /* ============== FRAME 4: EXPAT TRUTH (QUOTE) ============== */
-  .f4 .orb-1 { width: 700px; height: 700px; top: -200px; left: -200px; }
-  .f4 .orb-2 { width: 500px; height: 500px; bottom: -100px; right: -100px; }
+  /* FRAME 4: QUOTE */
+  .f4 .orb-1 { width: 700px; height: 700px; top: -200px; right: -200px; }
+  .f4 .orb-2 { width: 500px; height: 500px; bottom: -100px; left: -100px; }
   .f4-content {
     position: absolute; inset: 240px 100px 200px 100px;
     display: flex; flex-direction: column; justify-content: center;
@@ -205,19 +202,63 @@
     margin-bottom: 20px;
   }
   .f4-quote {
-    font-size: 64px; line-height: 1.2; font-weight: 800;
-    letter-spacing: -0.02em; margin-bottom: 40px;
+    font-size: 60px; line-height: 1.4; font-weight: 800;
+    margin-bottom: 40px;
   }
   .f4-quote .accent { color: var(--purple-soft); }
   .f4-attr {
-    font-size: 24px; color: var(--muted); font-weight: 600;
+    font-size: 26px; color: var(--muted); font-weight: 600;
     display: flex; align-items: center; gap: 14px;
   }
   .f4-attr .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); }
 
-  /* ============== FRAME 6: SUCCESS / WELCOME ============== */
-  .f6 .orb-1 { width: 800px; height: 800px; top: -200px; left: -200px; }
-  .f6 .orb-2 { width: 600px; height: 600px; bottom: -150px; right: -150px; }
+  /* FRAME 5: FOUNDING OFFER */
+  .f5 .orb-1 { width: 700px; height: 700px; top: -180px; left: -180px; }
+  .f5 .orb-2 { width: 500px; height: 500px; bottom: -120px; right: -120px; }
+  .f5-content {
+    position: absolute; inset: 200px 90px 180px 90px;
+    display: flex; flex-direction: column;
+    z-index: 4;
+  }
+  .f5-eyebrow {
+    color: var(--pink); font-size: 24px; font-weight: 800;
+    letter-spacing: 2px; margin-bottom: 30px;
+  }
+  .f5-amount-wrap {
+    background: linear-gradient(135deg, rgba(200,245,59,0.18), rgba(123,92,246,0.18));
+    border: 2px solid rgba(200,245,59,0.35);
+    border-radius: 36px;
+    padding: 50px;
+    margin-bottom: 36px;
+    text-align: center;
+  }
+  .f5-amount-label {
+    font-size: 26px; color: var(--muted); font-weight: 700;
+    letter-spacing: 1.5px; margin-bottom: 14px;
+  }
+  .f5-amount {
+    font-size: 200px; line-height: 1; font-weight: 900;
+    color: var(--lime); letter-spacing: -0.04em;
+    margin-bottom: 14px;
+    font-family: 'Inter', sans-serif;
+  }
+  .f5-amount-currency {
+    font-size: 60px; color: var(--lime); font-weight: 800;
+    margin-left: 12px; vertical-align: middle;
+  }
+  .f5-amount-sub {
+    font-size: 30px; font-weight: 700; color: var(--text);
+  }
+  .f5-headline {
+    font-size: 64px; line-height: 1.25; font-weight: 900;
+    margin-bottom: 18px;
+  }
+  .f5-headline .accent { color: var(--purple-soft); }
+  .f5-sub { font-size: 28px; color: var(--muted); line-height: 1.5; }
+
+  /* FRAME 6: SUCCESS */
+  .f6 .orb-1 { width: 800px; height: 800px; top: -200px; right: -200px; }
+  .f6 .orb-2 { width: 600px; height: 600px; bottom: -150px; left: -150px; }
   .f6-content {
     position: absolute; inset: 200px 90px 180px 90px;
     display: flex; flex-direction: column; justify-content: center;
@@ -232,16 +273,16 @@
     box-shadow: 0 16px 50px rgba(200,245,59,0.4);
   }
   .f6-eyebrow {
-    color: var(--lime); font-size: 22px; font-weight: 800;
-    letter-spacing: 3px; margin-bottom: 22px;
+    color: var(--lime); font-size: 24px; font-weight: 800;
+    letter-spacing: 2px; margin-bottom: 22px;
   }
   .f6-headline {
-    font-size: 110px; line-height: 1.0; font-weight: 900;
-    letter-spacing: -0.03em; margin-bottom: 30px;
+    font-size: 100px; line-height: 1.15; font-weight: 900;
+    letter-spacing: -0.02em; margin-bottom: 30px;
   }
   .f6-headline .accent { color: var(--purple-soft); display: block; }
   .f6-sub {
-    font-size: 28px; color: var(--muted); line-height: 1.5; margin-bottom: 40px;
+    font-size: 30px; color: var(--muted); line-height: 1.6; margin-bottom: 40px;
     max-width: 880px;
   }
   .reward-pill {
@@ -254,252 +295,210 @@
   .reward-pill .amt {
     font-size: 44px; font-weight: 900; color: var(--lime);
     letter-spacing: -0.02em;
+    font-family: 'Inter', sans-serif;
   }
   .reward-pill .lbl {
-    font-size: 22px; font-weight: 700; color: var(--text);
+    font-size: 24px; font-weight: 700; color: var(--text);
   }
-
-  /* ============== FRAME 5: FOUNDING OFFER ============== */
-  .f5 .orb-1 { width: 700px; height: 700px; top: -180px; right: -180px; }
-  .f5 .orb-2 { width: 500px; height: 500px; bottom: -120px; left: -120px; }
-  .f5-content {
-    position: absolute; inset: 200px 90px 180px 90px;
-    display: flex; flex-direction: column;
-    z-index: 4;
-  }
-  .f5-eyebrow {
-    color: var(--pink); font-size: 22px; font-weight: 800;
-    letter-spacing: 3px; margin-bottom: 30px;
-  }
-  .f5-amount-wrap {
-    background: linear-gradient(135deg, rgba(200,245,59,0.18), rgba(123,92,246,0.18));
-    border: 2px solid rgba(200,245,59,0.35);
-    border-radius: 36px;
-    padding: 50px;
-    margin-bottom: 36px;
-    text-align: center;
-  }
-  .f5-amount-label {
-    font-size: 24px; color: var(--muted); font-weight: 700;
-    letter-spacing: 2px; margin-bottom: 14px;
-  }
-  .f5-amount {
-    font-size: 200px; line-height: 1; font-weight: 900;
-    color: var(--lime); letter-spacing: -0.04em;
-    margin-bottom: 14px;
-  }
-  .f5-amount-currency {
-    font-size: 60px; color: var(--lime); font-weight: 800;
-    margin-right: 12px; vertical-align: middle;
-  }
-  .f5-amount-sub {
-    font-size: 28px; font-weight: 700; color: var(--text);
-  }
-  .f5-headline {
-    font-size: 64px; line-height: 1.1; font-weight: 900;
-    letter-spacing: -0.02em; margin-bottom: 18px;
-  }
-  .f5-headline .accent { color: var(--purple-soft); }
-  .f5-sub { font-size: 26px; color: var(--muted); }
 </style>
 </head>
 <body>
 
 <div class="toolbar">
-  <strong>5 Instagram feed posts</strong> · 1080×1350 each. Previews shown at 50%.<br>
-  Export full-size: open <code>?solo=1</code> through <code>?solo=5</code> in Chrome → DevTools → ⋮ → Capture full size screenshot. Or use the <a href="README.md">README</a>.
+  <strong>6 Instagram feed posts (Arabic)</strong> · 1080×1350 each. Previews shown at 50%.<br>
+  Export full-size: <code>?solo=1</code> through <code>?solo=6</code> in Chrome → DevTools → Capture full size screenshot.
 </div>
 
 <div class="gallery">
 
   <!-- ================ FRAME 1: HOOK ================ -->
-  <div class="frame-label">Post 1 · Hook</div>
+  <div class="frame-label">Post 1 · الجملة الأولى</div>
   <div class="frame f1" id="f1">
     <div class="orb orb-purple orb-1"></div>
     <div class="orb orb-pink orb-2"></div>
     <div class="logo">
       <div class="logo-mark">Z</div>
-      <div class="logo-name">Zizo Circle</div>
+      <div class="logo-name">زيزو سيركل</div>
     </div>
-    <div class="pin">📍 LUSAIL</div>
+    <div class="pin">📍 لوسيل</div>
     <div class="f1-content">
-      <div class="f1-eyebrow">FOR EVERYONE NEW IN QATAR</div>
-      <div class="f1-headline">Your group chat is just <span class="accent">your mum?</span></div>
-      <div class="f1-sub">We match you with people in Lusail who love what you love. Then pay you cashback every time you go out.</div>
+      <div class="f1-eyebrow">لكل واحد جديد في قطر</div>
+      <div class="f1-headline">كروب الواتساب الوحيد عندك <span class="accent">أمك؟</span></div>
+      <div class="f1-sub">نطابقك مع ناس في لوسيل يحبون اللي تحبه. ونعطيك كاش باك في كل مرة تطلع.</div>
     </div>
     <div class="urlbar">
-      <span>zizocircle.com</span>
-      <span class="right">Join the waitlist →</span>
+      <span class="url-en">zizocircle.com</span>
+      <span class="right">سجّل في قائمة الانتظار ←</span>
     </div>
   </div>
 
   <!-- ================ FRAME 2: MECHANIC ================ -->
-  <div class="frame-label">Post 2 · How it works</div>
+  <div class="frame-label">Post 2 · كيف يعمل</div>
   <div class="frame f2" id="f2">
     <div class="orb orb-purple orb-1"></div>
     <div class="orb orb-mint orb-2"></div>
     <div class="logo">
       <div class="logo-mark">Z</div>
-      <div class="logo-name">Zizo Circle</div>
+      <div class="logo-name">زيزو سيركل</div>
     </div>
-    <div class="pin">📍 LUSAIL</div>
+    <div class="pin">📍 لوسيل</div>
     <div class="f2-content">
-      <div class="f2-eyebrow">HOW IT WORKS</div>
-      <div class="f2-title">Three steps. <span class="accent">No swiping.</span></div>
+      <div class="f2-eyebrow">كيف يعمل التطبيق</div>
+      <div class="f2-title">ثلاث خطوات. <span class="accent">صفر إحراج.</span></div>
       <div class="steps">
         <div class="step s1">
-          <div class="step-num">1</div>
+          <div class="step-num">١</div>
           <div>
-            <div class="step-title">Match by interests</div>
-            <div class="step-desc">Padel, brunch, books, yoga — pick what you love.</div>
+            <div class="step-title">تطابق حسب الاهتمامات</div>
+            <div class="step-desc">بادل، فطور، كتب، يوغا — اختر اللي تحبه.</div>
           </div>
         </div>
         <div class="step s2">
-          <div class="step-num">2</div>
+          <div class="step-num">٢</div>
           <div>
-            <div class="step-title">Meet at real venues</div>
-            <div class="step-desc">Hand-picked spots across Lusail, ready to book.</div>
+            <div class="step-title">التقِ في أماكن حقيقية</div>
+            <div class="step-desc">أحلى أماكن لوسيل، جاهزة للحجز.</div>
           </div>
         </div>
         <div class="step s3">
-          <div class="step-num">3</div>
+          <div class="step-num">٣</div>
           <div>
-            <div class="step-title">Earn cashback</div>
-            <div class="step-desc">Up to 25% back. Bring a match? Cashback doubles.</div>
+            <div class="step-title">اربح كاش باك</div>
+            <div class="step-desc">حتى ٢٥٪. تجي مع متطابق؟ يتضاعف.</div>
           </div>
         </div>
       </div>
     </div>
     <div class="urlbar">
-      <span>zizocircle.com</span>
-      <span class="right">Free to join →</span>
+      <span class="url-en">zizocircle.com</span>
+      <span class="right">مجاني ←</span>
     </div>
   </div>
 
-  <!-- ================ FRAME 3: LOCAL PROOF ================ -->
-  <div class="frame-label">Post 3 · Lusail venues</div>
+  <!-- ================ FRAME 3: VENUES ================ -->
+  <div class="frame-label">Post 3 · أماكن لوسيل</div>
   <div class="frame f3" id="f3">
     <div class="orb orb-pink orb-1"></div>
     <div class="orb orb-lime orb-2"></div>
     <div class="logo">
       <div class="logo-mark">Z</div>
-      <div class="logo-name">Zizo Circle</div>
+      <div class="logo-name">زيزو سيركل</div>
     </div>
-    <div class="pin">📍 LUSAIL</div>
+    <div class="pin">📍 لوسيل</div>
     <div class="f3-content">
-      <div class="f3-title">Where your <span class="accent">first hangout</span> could be.</div>
-      <div class="f3-sub">Cashback on every visit. Doubles when you bring a match.</div>
+      <div class="f3-title">وين تكون <span class="accent">أول خرجة لك.</span></div>
+      <div class="f3-sub">كاش باك في كل زيارة. يتضاعف لما تجيب متطابق.</div>
       <div class="venues">
         <div class="venue-row">
           <div class="v-emoji" style="background: rgba(200,245,59,0.18);">🎾</div>
           <div>
             <div class="v-name">Smash Padel Club</div>
-            <div class="v-loc">Lusail Marina</div>
+            <div class="v-loc">لوسيل مارينا</div>
           </div>
-          <div class="v-cb">20% back</div>
+          <div class="v-cb">٢٠٪</div>
         </div>
         <div class="venue-row">
           <div class="v-emoji" style="background: rgba(245,165,59,0.18);">☕</div>
           <div>
             <div class="v-name">Sip & Soul Café</div>
-            <div class="v-loc">Fox Hills, Lusail</div>
+            <div class="v-loc">فوكس هيلز، لوسيل</div>
           </div>
-          <div class="v-cb">15% back</div>
+          <div class="v-cb">١٥٪</div>
         </div>
         <div class="venue-row">
           <div class="v-emoji" style="background: rgba(167,139,250,0.18);">📚</div>
           <div>
             <div class="v-name">The Bookroom</div>
-            <div class="v-loc">The Pearl, Doha</div>
+            <div class="v-loc">اللؤلؤة، الدوحة</div>
           </div>
-          <div class="v-cb">10% back</div>
+          <div class="v-cb">١٠٪</div>
         </div>
         <div class="venue-row">
           <div class="v-emoji" style="background: rgba(59,245,200,0.18);">🧘</div>
           <div>
             <div class="v-name">Lusail Yoga Studio</div>
-            <div class="v-loc">Lusail City</div>
+            <div class="v-loc">مدينة لوسيل</div>
           </div>
-          <div class="v-cb">25% back</div>
+          <div class="v-cb">٢٥٪</div>
         </div>
       </div>
     </div>
     <div class="urlbar">
-      <span>zizocircle.com</span>
-      <span class="right">Find your circle →</span>
+      <span class="url-en">zizocircle.com</span>
+      <span class="right">جد دائرتك ←</span>
     </div>
   </div>
 
-  <!-- ================ FRAME 4: EXPAT TRUTH ================ -->
-  <div class="frame-label">Post 4 · The expat truth</div>
+  <!-- ================ FRAME 4: QUOTE ================ -->
+  <div class="frame-label">Post 4 · حقيقة المغترب</div>
   <div class="frame f4" id="f4">
     <div class="orb orb-purple orb-1"></div>
     <div class="orb orb-pink orb-2"></div>
     <div class="logo">
       <div class="logo-mark">Z</div>
-      <div class="logo-name">Zizo Circle</div>
+      <div class="logo-name">زيزو سيركل</div>
     </div>
-    <div class="pin">📍 LUSAIL</div>
+    <div class="pin">📍 لوسيل</div>
     <div class="f4-content">
-      <div class="quote-mark">“</div>
-      <div class="f4-quote">Making friends as an adult expat is hard. WhatsApp groups are dead. Meetups are awkward. <span class="accent">We fixed that.</span></div>
-      <div class="f4-attr"><span class="dot"></span> Built in Qatar · Launching in Lusail</div>
+      <div class="quote-mark">"</div>
+      <div class="f4-quote">تكوين صداقات وأنت كبير صعب. كروبات الواتساب ميتة. اللقاءات محرجة. <span class="accent">سوينا الحل.</span></div>
+      <div class="f4-attr"><span class="dot"></span> صُنع في قطر · إطلاق في لوسيل</div>
     </div>
     <div class="urlbar">
-      <span>zizocircle.com</span>
-      <span class="right">Reserve your spot →</span>
+      <span class="url-en">zizocircle.com</span>
+      <span class="right">احجز مكانك ←</span>
     </div>
   </div>
 
   <!-- ================ FRAME 5: FOUNDING OFFER ================ -->
-  <div class="frame-label">Post 5 · Founding offer</div>
+  <div class="frame-label">Post 5 · عرض المؤسسين</div>
   <div class="frame f5" id="f5">
     <div class="orb orb-lime orb-1"></div>
     <div class="orb orb-purple orb-2"></div>
     <div class="logo">
       <div class="logo-mark">Z</div>
-      <div class="logo-name">Zizo Circle</div>
+      <div class="logo-name">زيزو سيركل</div>
     </div>
-    <div class="pin">🚨 LUSAIL LAUNCH</div>
+    <div class="pin">🚨 إطلاق لوسيل</div>
     <div class="f5-content">
-      <div class="f5-eyebrow">FOUNDING MEMBERS ONLY</div>
+      <div class="f5-eyebrow">للأعضاء المؤسسين فقط</div>
       <div class="f5-amount-wrap">
-        <div class="f5-amount-label">CASHBACK ON US</div>
-        <div class="f5-amount"><span class="f5-amount-currency">QAR</span>50</div>
-        <div class="f5-amount-sub">straight into your wallet on day one</div>
+        <div class="f5-amount-label">كاش باك على حسابنا</div>
+        <div class="f5-amount">50<span class="f5-amount-currency">QAR</span></div>
+        <div class="f5-amount-sub">في محفظتك يوم الإطلاق</div>
       </div>
-      <div class="f5-headline">Join the waitlist. <span class="accent">Get rewarded.</span></div>
-      <div class="f5-sub">First 500 spots only. Lusail residents get priority access.</div>
+      <div class="f5-headline">سجّل واستلم <span class="accent">رصيدك.</span></div>
+      <div class="f5-sub">أول ٥٠٠ مقعد فقط. سكان لوسيل لهم الأولوية.</div>
     </div>
     <div class="urlbar">
-      <span>zizocircle.com</span>
-      <span class="right">Link in bio →</span>
+      <span class="url-en">zizocircle.com</span>
+      <span class="right">الرابط في البايو ←</span>
     </div>
   </div>
 
   <!-- ================ FRAME 6: SUCCESS ================ -->
-  <div class="frame-label">Post 6 · Welcome / sign-up confirmation</div>
+  <div class="frame-label">Post 6 · تأكيد التسجيل</div>
   <div class="frame f6" id="f6">
     <div class="orb orb-lime orb-1"></div>
     <div class="orb orb-purple orb-2"></div>
     <div class="logo">
       <div class="logo-mark">Z</div>
-      <div class="logo-name">Zizo Circle</div>
+      <div class="logo-name">زيزو سيركل</div>
     </div>
-    <div class="pin">📍 LUSAIL</div>
+    <div class="pin">📍 لوسيل</div>
     <div class="f6-content">
       <div class="check-circle">✓</div>
-      <div class="f6-eyebrow">YOU'RE IN</div>
-      <div class="f6-headline">Welcome to <span class="accent">the circle.</span></div>
-      <div class="f6-sub">You're on the founding-member list. We'll DM you the moment Lusail goes live — and your cashback drops in your wallet on day one.</div>
+      <div class="f6-eyebrow">أنت معنا</div>
+      <div class="f6-headline">أهلاً بك في <span class="accent">الدائرة.</span></div>
+      <div class="f6-sub">سجّلناك ضمن الأعضاء المؤسسين. نوصلك بمجرد ما يفتح التطبيق في لوسيل، ورصيدك ينزل في محفظتك يوم الإطلاق.</div>
       <div class="reward-pill">
         <span class="amt">QAR 50</span>
-        <span class="lbl">unlocked · ready to spend</span>
+        <span class="lbl">رصيد جاهز للصرف</span>
       </div>
     </div>
     <div class="urlbar">
-      <span>zizocircle.com</span>
-      <span class="right">Tag a friend who needs this →</span>
+      <span class="url-en">zizocircle.com</span>
+      <span class="right">منشن صديق محتاج هذا ←</span>
     </div>
   </div>
 

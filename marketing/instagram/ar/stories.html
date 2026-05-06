@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Zizo Circle — Instagram Stories (1080×1920)</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+<title>زيزو سيركل — قصص إنستقرام (1080×1920)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
 <style>
   :root {
     --bg: #0B0914;
@@ -23,7 +23,7 @@
   html, body {
     background: #1a1424;
     color: var(--text);
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Cairo', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     padding: 30px 0;
   }
@@ -32,15 +32,15 @@
     padding: 14px 18px; background: #2a2438;
     border: 1px solid #3a3450; border-radius: 12px;
     color: var(--muted); font-size: 13px;
+    direction: ltr;
   }
   .toolbar strong { color: var(--text); }
   .toolbar code { color: var(--purple-soft); }
   .gallery { display: flex; flex-direction: column; align-items: center; gap: 30px; }
   .frame-label {
     color: var(--muted); font-size: 12px; font-weight: 700;
-    letter-spacing: 1.5px; text-transform: uppercase;
-    margin-bottom: -16px; align-self: flex-start;
-    margin-left: calc(50% - 270px);
+    letter-spacing: 1.5px; margin-bottom: -16px;
+    align-self: flex-end; margin-right: calc(50% - 270px);
   }
 
   .frame {
@@ -65,7 +65,7 @@
   .orb-lime { background: rgba(200,245,59,0.22); }
 
   .logo {
-    position: absolute; top: 90px; left: 60px;
+    position: absolute; top: 90px; right: 60px;
     display: flex; align-items: center; gap: 16px;
     z-index: 5;
   }
@@ -75,11 +75,12 @@
     display: flex; align-items: center; justify-content: center;
     font-weight: 900; color: #fff; font-size: 30px;
     box-shadow: 0 12px 30px rgba(123,92,246,0.5);
+    font-family: 'Inter', sans-serif;
   }
   .logo-name { font-weight: 800; font-size: 28px; }
 
   .pin {
-    position: absolute; top: 90px; right: 60px;
+    position: absolute; top: 90px; left: 60px;
     background: rgba(123,92,246,0.18);
     border: 1.5px solid rgba(123,92,246,0.4);
     color: var(--purple-soft);
@@ -98,16 +99,15 @@
     display: inline-block;
   }
   .swipe-up-text {
-    font-size: 28px; font-weight: 800;
+    font-size: 30px; font-weight: 800;
     color: var(--text); letter-spacing: 1px;
-    text-transform: uppercase;
   }
   @keyframes bounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-12px); }
   }
 
-  /* Animated reveal mode (?animate=1). Used by export.js to record MP4s. */
+  /* Animated reveal mode */
   body.animate .frame.active .logo,
   body.animate .frame.active .pin,
   body.animate .frame.active .s1-eyebrow, body.animate .frame.active .s2-eyebrow,
@@ -145,15 +145,14 @@
   body.animate .frame.active .s3-step:nth-child(2) { animation-delay: 1.8s; }
   body.animate .frame.active .s3-step:nth-child(3) { animation-delay: 2.1s; }
   body.animate .frame.active .swipe-up { animation-delay: 2.6s; }
-
   @keyframes revealUp {
     from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* ============== STORY 1: COMING SOON ============== */
-  .s1 .orb-1 { width: 800px; height: 800px; top: -200px; left: -200px; }
-  .s1 .orb-2 { width: 700px; height: 700px; bottom: -200px; right: -200px; }
+  /* STORY 1: COMING SOON */
+  .s1 .orb-1 { width: 800px; height: 800px; top: -200px; right: -200px; }
+  .s1 .orb-2 { width: 700px; height: 700px; bottom: -200px; left: -200px; }
   .s1-content {
     position: absolute; inset: 0;
     display: flex; flex-direction: column;
@@ -162,29 +161,29 @@
     z-index: 4;
   }
   .s1-eyebrow {
-    color: var(--lime); font-size: 28px; font-weight: 800;
-    letter-spacing: 5px; margin-bottom: 50px;
+    color: var(--lime); font-size: 30px; font-weight: 800;
+    letter-spacing: 4px; margin-bottom: 50px;
   }
   .s1-headline {
-    font-size: 180px; line-height: 0.95; font-weight: 900;
+    font-size: 160px; line-height: 1.05; font-weight: 900;
     letter-spacing: -0.04em; margin-bottom: 30px;
   }
   .s1-headline .accent { color: var(--purple-soft); display: block; }
   .s1-sub {
-    font-size: 32px; color: var(--muted); line-height: 1.5;
+    font-size: 34px; color: var(--muted); line-height: 1.6;
     max-width: 800px; margin-bottom: 80px;
   }
   .s1-date {
     background: var(--card); border: 1.5px solid var(--border);
     padding: 20px 36px; border-radius: 999px;
-    font-size: 26px; font-weight: 800; color: var(--text);
-    letter-spacing: 2px;
+    font-size: 28px; font-weight: 800; color: var(--text);
+    letter-spacing: 1.5px;
   }
   .s1-date .dot { color: var(--lime); }
 
-  /* ============== STORY 2: FOUNDING OFFER ============== */
-  .s2 .orb-1 { width: 800px; height: 800px; top: 200px; right: -250px; }
-  .s2 .orb-2 { width: 700px; height: 700px; bottom: -150px; left: -250px; }
+  /* STORY 2: FOUNDING OFFER */
+  .s2 .orb-1 { width: 800px; height: 800px; top: 200px; left: -250px; }
+  .s2 .orb-2 { width: 700px; height: 700px; bottom: -150px; right: -250px; }
   .s2-content {
     position: absolute; inset: 0;
     display: flex; flex-direction: column;
@@ -193,8 +192,8 @@
     z-index: 4;
   }
   .s2-eyebrow {
-    color: var(--pink); font-size: 28px; font-weight: 800;
-    letter-spacing: 5px; margin-bottom: 40px;
+    color: var(--pink); font-size: 30px; font-weight: 800;
+    letter-spacing: 4px; margin-bottom: 40px;
   }
   .s2-amount-wrap {
     background: linear-gradient(135deg, rgba(200,245,59,0.2), rgba(123,92,246,0.2));
@@ -204,29 +203,68 @@
     margin-bottom: 60px;
   }
   .s2-amount-label {
-    font-size: 26px; color: var(--muted); font-weight: 700;
-    letter-spacing: 3px; margin-bottom: 16px;
+    font-size: 28px; color: var(--muted); font-weight: 700;
+    letter-spacing: 2px; margin-bottom: 16px;
   }
   .s2-amount {
     font-size: 280px; line-height: 1; font-weight: 900;
     color: var(--lime); letter-spacing: -0.04em;
     margin-bottom: 18px;
+    font-family: 'Inter', sans-serif;
   }
-  .s2-amount .currency { font-size: 80px; vertical-align: middle; margin-right: 12px; }
+  .s2-amount .currency { font-size: 80px; vertical-align: middle; margin-left: 12px; }
   .s2-amount-sub {
-    font-size: 30px; font-weight: 700; color: var(--text);
+    font-size: 32px; font-weight: 700; color: var(--text);
   }
   .s2-headline {
-    font-size: 72px; line-height: 1.1; font-weight: 900;
+    font-size: 76px; line-height: 1.25; font-weight: 900;
     letter-spacing: -0.02em; margin-bottom: 30px;
     max-width: 880px;
   }
   .s2-headline .accent { color: var(--purple-soft); }
-  .s2-sub { font-size: 28px; color: var(--muted); max-width: 800px; }
+  .s2-sub { font-size: 30px; color: var(--muted); max-width: 800px; line-height: 1.5; }
 
-  /* ============== STORY 4: SUCCESS / WELCOME ============== */
-  .s4 .orb-1 { width: 800px; height: 800px; top: -200px; left: -200px; }
-  .s4 .orb-2 { width: 700px; height: 700px; bottom: -200px; right: -200px; }
+  /* STORY 3: HOW IT WORKS */
+  .s3 .orb-1 { width: 700px; height: 700px; top: -100px; left: -200px; }
+  .s3 .orb-2 { width: 600px; height: 600px; bottom: 100px; right: -200px; }
+  .s3-content {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 240px 80px 280px;
+    z-index: 4;
+  }
+  .s3-eyebrow {
+    color: var(--purple-soft); font-size: 28px; font-weight: 800;
+    letter-spacing: 3px; margin-bottom: 30px;
+    text-align: center;
+  }
+  .s3-title {
+    font-size: 90px; line-height: 1.15; font-weight: 900;
+    letter-spacing: -0.02em; margin-bottom: 80px;
+    text-align: center;
+  }
+  .s3-title .accent { color: var(--purple-soft); }
+  .s3-steps { display: flex; flex-direction: column; gap: 30px; }
+  .s3-step {
+    background: var(--card); border: 1.5px solid var(--border);
+    border-radius: 32px; padding: 36px;
+    display: flex; gap: 30px; align-items: center;
+  }
+  .s3-step-num {
+    width: 100px; height: 100px; border-radius: 28px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 56px;
+  }
+  .s3-step.n1 .s3-step-num { background: rgba(123,92,246,0.22); color: var(--purple-soft); }
+  .s3-step.n2 .s3-step-num { background: rgba(245,59,143,0.22); color: var(--pink); }
+  .s3-step.n3 .s3-step-num { background: rgba(200,245,59,0.22); color: var(--lime); }
+  .s3-step-title { font-size: 48px; font-weight: 800; margin-bottom: 4px; }
+  .s3-step-desc { font-size: 28px; color: var(--muted); }
+
+  /* STORY 4: SUCCESS */
+  .s4 .orb-1 { width: 800px; height: 800px; top: -200px; right: -200px; }
+  .s4 .orb-2 { width: 700px; height: 700px; bottom: -200px; left: -200px; }
   .s4-content {
     position: absolute; inset: 0;
     display: flex; flex-direction: column;
@@ -243,16 +281,16 @@
     box-shadow: 0 20px 60px rgba(200,245,59,0.5);
   }
   .s4-eyebrow {
-    color: var(--lime); font-size: 28px; font-weight: 800;
-    letter-spacing: 5px; margin-bottom: 30px;
+    color: var(--lime); font-size: 30px; font-weight: 800;
+    letter-spacing: 4px; margin-bottom: 30px;
   }
   .s4-headline {
-    font-size: 130px; line-height: 1.0; font-weight: 900;
+    font-size: 130px; line-height: 1.1; font-weight: 900;
     letter-spacing: -0.04em; margin-bottom: 30px;
   }
   .s4-headline .accent { color: var(--purple-soft); display: block; }
   .s4-sub {
-    font-size: 30px; color: var(--muted); line-height: 1.5; margin-bottom: 60px;
+    font-size: 32px; color: var(--muted); line-height: 1.5; margin-bottom: 60px;
     max-width: 800px;
   }
   .s4-pill {
@@ -264,173 +302,136 @@
   .s4-pill .amt {
     font-size: 56px; font-weight: 900; color: var(--lime);
     letter-spacing: -0.02em;
+    font-family: 'Inter', sans-serif;
   }
   .s4-pill .lbl {
-    font-size: 24px; font-weight: 700; color: var(--text);
+    font-size: 26px; font-weight: 700; color: var(--text);
   }
-
-  /* ============== STORY 3: HOW IT WORKS ============== */
-  .s3 .orb-1 { width: 700px; height: 700px; top: -100px; right: -200px; }
-  .s3 .orb-2 { width: 600px; height: 600px; bottom: 100px; left: -200px; }
-  .s3-content {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column; justify-content: center;
-    padding: 240px 80px 280px;
-    z-index: 4;
-  }
-  .s3-eyebrow {
-    color: var(--purple-soft); font-size: 26px; font-weight: 800;
-    letter-spacing: 4px; margin-bottom: 30px;
-    text-align: center;
-  }
-  .s3-title {
-    font-size: 90px; line-height: 1.05; font-weight: 900;
-    letter-spacing: -0.02em; margin-bottom: 80px;
-    text-align: center;
-  }
-  .s3-title .accent { color: var(--purple-soft); }
-  .s3-steps { display: flex; flex-direction: column; gap: 30px; }
-  .s3-step {
-    background: var(--card); border: 1.5px solid var(--border);
-    border-radius: 32px; padding: 36px;
-    display: flex; gap: 30px; align-items: center;
-  }
-  .s3-step-num {
-    width: 100px; height: 100px; border-radius: 28px;
-    flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 48px;
-  }
-  .s3-step.n1 .s3-step-num { background: rgba(123,92,246,0.22); color: var(--purple-soft); }
-  .s3-step.n2 .s3-step-num { background: rgba(245,59,143,0.22); color: var(--pink); }
-  .s3-step.n3 .s3-step-num { background: rgba(200,245,59,0.22); color: var(--lime); }
-  .s3-step-title { font-size: 44px; font-weight: 800; margin-bottom: 4px; }
-  .s3-step-desc { font-size: 26px; color: var(--muted); }
 </style>
 </head>
 <body>
 
 <div class="toolbar">
-  <strong>3 Instagram stories</strong> · 1080×1920 each. Previews at 50%.<br>
-  Export full-size: open <code>?solo=1</code>, <code>?solo=2</code>, or <code>?solo=3</code> in Chrome → DevTools → ⋮ → Capture full size screenshot.
+  <strong>4 Instagram stories (Arabic)</strong> · 1080×1920 each. Previews at 50%.<br>
+  Export full-size: <code>?solo=1</code> through <code>?solo=4</code> in Chrome → Capture full size screenshot.
 </div>
 
 <div class="gallery">
 
-  <!-- ================ STORY 1: COMING SOON ================ -->
-  <div class="frame-label">Story 1 · Lusail launch teaser</div>
+  <!-- STORY 1: COMING SOON -->
+  <div class="frame-label">Story 1 · إطلاق لوسيل قريب</div>
   <div class="frame s1" id="f1">
     <div class="orb orb-purple orb-1"></div>
     <div class="orb orb-pink orb-2"></div>
     <div class="logo">
       <div class="logo-mark">Z</div>
-      <div class="logo-name">Zizo Circle</div>
+      <div class="logo-name">زيزو سيركل</div>
     </div>
-    <div class="pin">📍 LUSAIL</div>
+    <div class="pin">📍 لوسيل</div>
     <div class="s1-content">
-      <div class="s1-eyebrow">YOUR CIRCLE IS COMING</div>
-      <div class="s1-headline">LUSAIL.<span class="accent">SOON.</span></div>
-      <div class="s1-sub">Meet people who love what you love. Get cashback every time you go out.</div>
-      <div class="s1-date"><span class="dot">●</span> LAUNCHING THIS SUMMER</div>
+      <div class="s1-eyebrow">دائرتك على الطريق</div>
+      <div class="s1-headline">لوسيل.<span class="accent">قريباً.</span></div>
+      <div class="s1-sub">تعرّف على ناس يحبون اللي تحبه. واربح كاش باك في كل خرجة.</div>
+      <div class="s1-date"><span class="dot">●</span> الإطلاق هذا الصيف</div>
     </div>
     <div class="swipe-up">
       <div class="swipe-up-arrow">⬆</div>
-      <div class="swipe-up-text">SWIPE UP TO JOIN THE WAITLIST</div>
+      <div class="swipe-up-text">اسحب للأعلى للتسجيل</div>
     </div>
   </div>
 
-  <!-- ================ STORY 2: FOUNDING OFFER ================ -->
-  <div class="frame-label">Story 2 · QAR 50 founding offer</div>
+  <!-- STORY 2: FOUNDING OFFER -->
+  <div class="frame-label">Story 2 · عرض المؤسسين</div>
   <div class="frame s2" id="f2">
     <div class="orb orb-lime orb-1"></div>
     <div class="orb orb-purple orb-2"></div>
     <div class="logo">
       <div class="logo-mark">Z</div>
-      <div class="logo-name">Zizo Circle</div>
+      <div class="logo-name">زيزو سيركل</div>
     </div>
-    <div class="pin">🚨 LUSAIL</div>
+    <div class="pin">🚨 لوسيل</div>
     <div class="s2-content">
-      <div class="s2-eyebrow">FOUNDING MEMBERS ONLY</div>
+      <div class="s2-eyebrow">للأعضاء المؤسسين فقط</div>
       <div class="s2-amount-wrap">
-        <div class="s2-amount-label">CASHBACK ON US</div>
-        <div class="s2-amount"><span class="currency">QAR</span>50</div>
-        <div class="s2-amount-sub">in your wallet on day one</div>
+        <div class="s2-amount-label">كاش باك على حسابنا</div>
+        <div class="s2-amount">50<span class="currency">QAR</span></div>
+        <div class="s2-amount-sub">في محفظتك يوم الإطلاق</div>
       </div>
-      <div class="s2-headline">Join the waitlist.<br><span class="accent">Get rewarded.</span></div>
-      <div class="s2-sub">First 500 spots. Lusail residents get priority.</div>
+      <div class="s2-headline">سجّل الآن.<br><span class="accent">واستلم رصيدك.</span></div>
+      <div class="s2-sub">أول ٥٠٠ مقعد. سكان لوسيل لهم الأولوية.</div>
     </div>
     <div class="swipe-up">
       <div class="swipe-up-arrow">⬆</div>
-      <div class="swipe-up-text">SWIPE UP — CLAIM YOUR SPOT</div>
+      <div class="swipe-up-text">اسحب — احجز مقعدك</div>
     </div>
   </div>
 
-  <!-- ================ STORY 3: HOW IT WORKS ================ -->
-  <div class="frame-label">Story 3 · 3-step how it works</div>
+  <!-- STORY 3: HOW IT WORKS -->
+  <div class="frame-label">Story 3 · كيف يعمل</div>
   <div class="frame s3" id="f3">
     <div class="orb orb-purple orb-1"></div>
     <div class="orb orb-mint orb-2"></div>
     <div class="logo">
       <div class="logo-mark">Z</div>
-      <div class="logo-name">Zizo Circle</div>
+      <div class="logo-name">زيزو سيركل</div>
     </div>
-    <div class="pin">📍 LUSAIL</div>
+    <div class="pin">📍 لوسيل</div>
     <div class="s3-content">
-      <div class="s3-eyebrow">HOW IT WORKS</div>
-      <div class="s3-title">Three steps. <span class="accent">No swiping.</span></div>
+      <div class="s3-eyebrow">كيف يعمل التطبيق</div>
+      <div class="s3-title">ثلاث خطوات. <span class="accent">صفر إحراج.</span></div>
       <div class="s3-steps">
         <div class="s3-step n1">
-          <div class="s3-step-num">1</div>
+          <div class="s3-step-num">١</div>
           <div>
-            <div class="s3-step-title">Match</div>
-            <div class="s3-step-desc">By your real interests</div>
+            <div class="s3-step-title">تطابق</div>
+            <div class="s3-step-desc">حسب اهتماماتك الحقيقية</div>
           </div>
         </div>
         <div class="s3-step n2">
-          <div class="s3-step-num">2</div>
+          <div class="s3-step-num">٢</div>
           <div>
-            <div class="s3-step-title">Meet</div>
-            <div class="s3-step-desc">At hand-picked Lusail venues</div>
+            <div class="s3-step-title">التقِ</div>
+            <div class="s3-step-desc">في أحلى أماكن لوسيل</div>
           </div>
         </div>
         <div class="s3-step n3">
-          <div class="s3-step-num">3</div>
+          <div class="s3-step-num">٣</div>
           <div>
-            <div class="s3-step-title">Earn</div>
-            <div class="s3-step-desc">Up to 25% cashback. Doubles with a match.</div>
+            <div class="s3-step-title">اربح</div>
+            <div class="s3-step-desc">كاش باك حتى ٢٥٪. يتضاعف مع متطابق.</div>
           </div>
         </div>
       </div>
     </div>
     <div class="swipe-up">
       <div class="swipe-up-arrow">⬆</div>
-      <div class="swipe-up-text">SWIPE UP — JOIN FREE</div>
+      <div class="swipe-up-text">اسحب — انضم مجاناً</div>
     </div>
   </div>
 
-  <!-- ================ STORY 4: SUCCESS ================ -->
-  <div class="frame-label">Story 4 · Welcome / sign-up confirmation</div>
+  <!-- STORY 4: SUCCESS -->
+  <div class="frame-label">Story 4 · تأكيد التسجيل</div>
   <div class="frame s4" id="f4">
     <div class="orb orb-lime orb-1"></div>
     <div class="orb orb-purple orb-2"></div>
     <div class="logo">
       <div class="logo-mark">Z</div>
-      <div class="logo-name">Zizo Circle</div>
+      <div class="logo-name">زيزو سيركل</div>
     </div>
-    <div class="pin">📍 LUSAIL</div>
+    <div class="pin">📍 لوسيل</div>
     <div class="s4-content">
       <div class="s4-check">✓</div>
-      <div class="s4-eyebrow">YOU'RE IN</div>
-      <div class="s4-headline">Welcome<span class="accent">to the circle.</span></div>
-      <div class="s4-sub">QAR 50 cashback unlocked. We'll DM you the moment Lusail goes live.</div>
+      <div class="s4-eyebrow">أنت معنا</div>
+      <div class="s4-headline">أهلاً<span class="accent">في الدائرة.</span></div>
+      <div class="s4-sub">رصيد ٥٠ ر.ق جاهز. نوصلك بمجرد ما يفتح التطبيق في لوسيل.</div>
       <div class="s4-pill">
         <span class="amt">QAR 50</span>
-        <span class="lbl">ready to spend</span>
+        <span class="lbl">جاهز للصرف</span>
       </div>
     </div>
     <div class="swipe-up">
       <div class="swipe-up-arrow">⬆</div>
-      <div class="swipe-up-text">SHARE & TAG A FRIEND</div>
+      <div class="swipe-up-text">شارك ومنشن صديق</div>
     </div>
   </div>
 
