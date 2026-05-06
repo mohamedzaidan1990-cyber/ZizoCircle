@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
 import { failure, type ActionState } from "@/lib/actions";
+import { notify } from "@/lib/notify";
 
 async function loadStage(orderId: string, stageNumber: number) {
   const supabase = createClient();
@@ -100,28 +101,36 @@ export async function approveStageAction(
     })
     .eq("id", orderId);
 
-  // Notify client.
   const { data: orderRow } = await supabase
     .from("orders")
-    .select("client_id")
+    .select("client_id, order_number")
     .eq("id", orderId)
     .maybeSingle();
-  if (orderRow) {
+  const orderInfo = orderRow as
+    | { client_id: string; order_number: string }
+    | null;
+  if (orderInfo) {
     const { data: clientRow } = await supabase
       .from("clients")
       .select("user_id")
-      .eq("id", (orderRow as { client_id: string }).client_id)
+      .eq("id", orderInfo.client_id)
       .maybeSingle();
     const clientUserId = (clientRow as { user_id: string | null } | null)?.user_id;
     if (clientUserId) {
-      await supabase.from("notifications").insert({
-        user_id: clientUserId,
-        order_id: orderId,
-        stage_id: stage.id,
-        type: "stage_approved",
-        channel: "push",
-        title: "Stage approved",
-        body: `Stage ${stageNumber} approved.`,
+      await notify({
+        userIds: [clientUserId],
+        type: nextOrderStatus === "completed" ? "order_completed" : "stage_approved",
+        title:
+          nextOrderStatus === "completed"
+            ? `Your order ${orderInfo.order_number} is complete`
+            : `Stage ${stageNumber} approved on ${orderInfo.order_number}`,
+        body:
+          nextOrderStatus === "completed"
+            ? "All stages are approved. We'll be in touch with delivery details."
+            : `Stage ${stageNumber} has been approved. New photos are available in your portal.`,
+        orderId,
+        stageId: stage.id,
+        cta: { label: "View order", href: `/client/orders/${orderId}` },
       });
     }
   }
@@ -160,23 +169,24 @@ export async function reworkStageAction(
     .eq("id", stage.id);
   if (error) return failure(error.message);
 
-  // Notify worker.
   const { data: stageRow } = await supabase
     .from("order_stages")
-    .select("assigned_worker_id")
+    .select("assigned_worker_id, stage_name")
     .eq("id", stage.id)
     .maybeSingle();
-  const workerId = (stageRow as { assigned_worker_id: string | null } | null)
-    ?.assigned_worker_id;
+  const sr = stageRow as
+    | { assigned_worker_id: string | null; stage_name: string }
+    | null;
+  const workerId = sr?.assigned_worker_id;
   if (workerId) {
-    await supabase.from("notifications").insert({
-      user_id: workerId,
-      order_id: orderId,
-      stage_id: stage.id,
+    await notify({
+      userIds: [workerId],
       type: "stage_rework",
-      channel: "push",
-      title: "Rework requested",
+      title: `Rework requested on ${sr?.stage_name ?? "stage"}`,
       body: reason,
+      orderId,
+      stageId: stage.id,
+      cta: { label: "Open stage", href: `/worker/stages/${stage.id}` },
     });
   }
 

@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
 import { failure, type ActionState } from "@/lib/actions";
+import { notify } from "@/lib/notify";
 
 async function ownClientOrder(orderId: string, userId: string) {
   const supabase = createClient();
@@ -96,24 +97,28 @@ export async function signScopeAction(
     .eq("id", orderId);
   if (error) return failure(error.message);
 
-  // Notify owners.
   const { data: owners } = await supabase
     .from("users")
     .select("id")
     .eq("role", "owner")
     .eq("is_active", true);
   const ownerIds = (owners ?? []).map((u) => (u as { id: string }).id);
+  const { data: orderRow } = await supabase
+    .from("orders")
+    .select("order_number")
+    .eq("id", orderId)
+    .maybeSingle();
+  const orderNumber =
+    (orderRow as { order_number: string } | null)?.order_number ?? "";
   if (ownerIds.length) {
-    await supabase.from("notifications").insert(
-      ownerIds.map((uid) => ({
-        user_id: uid,
-        order_id: orderId,
-        type: "scope_signed" as const,
-        channel: "push" as const,
-        title: "Scope signed",
-        body: `${me.full_name} signed the scope.`,
-      }))
-    );
+    await notify({
+      userIds: ownerIds,
+      type: "scope_signed",
+      title: `Scope signed on ${orderNumber}`,
+      body: `${me.full_name} signed the scope from ${ip ?? "an unknown IP"}.`,
+      orderId,
+      cta: { label: "Open order", href: `/owner/orders/${orderId}` },
+    });
   }
 
   revalidatePath(`/client/orders/${orderId}`);

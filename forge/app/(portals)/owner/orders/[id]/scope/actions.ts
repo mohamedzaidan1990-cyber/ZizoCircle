@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
 import { failure, type ActionState } from "@/lib/actions";
+import { notify, sendEmail } from "@/lib/notify";
 
 const CATEGORIES = [
   "design",
@@ -103,6 +104,46 @@ export async function sendScopeAction(formData: FormData) {
     .from("orders")
     .update({ status: "scope_pending" })
     .eq("id", orderId);
+
+  // Notify the client (or email if no portal account yet).
+  const { data: orderRow } = await supabase
+    .from("orders")
+    .select("client_id, order_number")
+    .eq("id", orderId)
+    .maybeSingle();
+  const o = orderRow as
+    | { client_id: string; order_number: string }
+    | null;
+  if (o) {
+    const { data: clientRow } = await supabase
+      .from("clients")
+      .select("user_id, email, full_name")
+      .eq("id", o.client_id)
+      .maybeSingle();
+    const cl = clientRow as
+      | { user_id: string | null; email: string | null; full_name: string }
+      | null;
+    const title = `Scope ready to sign on ${o.order_number}`;
+    const body =
+      "Your workshop has prepared the scope of work for your piece. Review every line and sign in your portal to start production.";
+    if (cl?.user_id) {
+      await notify({
+        userIds: [cl.user_id],
+        type: "scope_ready",
+        title,
+        body,
+        orderId,
+        cta: { label: "Open scope", href: `/client/orders/${orderId}/scope` },
+      });
+    } else if (cl?.email) {
+      await sendEmail({
+        to: cl.email,
+        recipientName: cl.full_name,
+        subject: title,
+        body,
+      });
+    }
+  }
 
   revalidatePath(`/owner/orders/${orderId}`);
   revalidatePath(`/owner/orders/${orderId}/scope`);

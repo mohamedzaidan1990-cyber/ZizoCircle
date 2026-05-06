@@ -10,6 +10,7 @@ import {
   buildStagePhotoPath,
   uploadFile,
 } from "@/lib/storage";
+import { notify } from "@/lib/notify";
 import type { OrderStage } from "@/lib/types";
 
 async function ownStage(stageId: string, workerId: string) {
@@ -209,25 +210,34 @@ export async function submitStageAction(
     .eq("id", stage.id);
   if (error) return failure(error.message);
 
-  // Notify owner(s).
   const { data: owners } = await supabase
     .from("users")
     .select("id")
     .eq("role", "owner")
     .eq("is_active", true);
   const ownerIds = (owners ?? []).map((u) => (u as { id: string }).id);
+  const { data: orderRow } = await supabase
+    .from("orders")
+    .select("order_number")
+    .eq("id", stage.order_id)
+    .maybeSingle();
+  const orderNumber =
+    (orderRow as { order_number: string } | null)?.order_number ?? "";
   if (ownerIds.length) {
-    await supabase.from("notifications").insert(
-      ownerIds.map((uid) => ({
-        user_id: uid,
-        order_id: stage.order_id,
-        stage_id: stage.id,
-        type: "stage_submitted" as const,
-        channel: "push" as const,
-        title: "Stage submitted",
-        body: `${stage.stage_name} submitted by ${me.full_name}.`,
-      }))
-    );
+    await notify({
+      userIds: ownerIds,
+      type: "stage_submitted",
+      title: `${stage.stage_name} submitted on ${orderNumber}`,
+      body: `${me.full_name} submitted ${stage.stage_name}${
+        isRework ? " (rework)" : ""
+      } for review.`,
+      orderId: stage.order_id,
+      stageId: stage.id,
+      cta: {
+        label: "Review stage",
+        href: `/owner/orders/${stage.order_id}/stages/${stage.stage_number}`,
+      },
+    });
   }
 
   revalidatePath(`/worker`);

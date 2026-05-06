@@ -57,12 +57,17 @@ export default async function InvoicesPage() {
                   <th className="px-4 py-3">Balance</th>
                   <th className="px-4 py-3">Due</th>
                   <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3" />
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {invoices.map((i) => (
-                  <tr key={i.id}>
-                    <td className="px-4 py-3 font-medium">{i.invoice_number}</td>
+                  <tr key={i.id} className="hover:bg-muted/30">
+                    <td className="px-4 py-3 font-medium">
+                      <Link href={`/owner/invoices/${i.id}`} className="hover:underline">
+                        {i.invoice_number}
+                      </Link>
+                    </td>
                     <td className="px-4 py-3">{i.orders?.order_number ?? "—"}</td>
                     <td className="px-4 py-3">{i.clients?.full_name ?? "—"}</td>
                     <td className="px-4 py-3">{formatQAR(i.total_qar)}</td>
@@ -70,6 +75,14 @@ export default async function InvoicesPage() {
                     <td className="px-4 py-3">{formatDate(i.due_date)}</td>
                     <td className="px-4 py-3">
                       <Badge variant={variantFor(i.status)}>{statusLabel(i.status)}</Badge>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <Link
+                        href={`/owner/invoices/${i.id}`}
+                        className="text-primary hover:underline"
+                      >
+                        Open
+                      </Link>
                     </td>
                   </tr>
                 ))}

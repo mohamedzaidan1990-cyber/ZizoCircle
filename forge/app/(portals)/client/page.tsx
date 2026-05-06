@@ -40,11 +40,16 @@ export default async function ClientHomePage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">My orders</h1>
-        <p className="text-sm text-muted-foreground">
-          Track your pieces from design to delivery.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold">My orders</h1>
+          <p className="text-sm text-muted-foreground">
+            Track your pieces from design to delivery.
+          </p>
+        </div>
+        <Link href="/client/invoices" className="text-sm text-primary hover:underline">
+          Invoices →
+        </Link>
       </div>
 
       <Card>

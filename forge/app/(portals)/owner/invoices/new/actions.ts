@@ -76,6 +76,5 @@ export async function createInvoiceAction(
   if (error) return failure(error.message);
 
   revalidatePath("/owner/invoices");
-  redirect(`/owner/invoices`);
-  void created;
+  redirect(`/owner/invoices/${(created as { id: string }).id}`);
 }

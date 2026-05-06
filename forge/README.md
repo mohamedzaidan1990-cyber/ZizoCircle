@@ -24,31 +24,50 @@ Open http://localhost:3000 — you'll be redirected to `/login`.
 
 ## One-time Supabase setup
 
-1. Apply your main schema (already done).
-2. Apply the auth bootstrap migration:
+Apply the migrations in order:
 
-   ```bash
-   psql "$DATABASE_URL" -f supabase/migrations/0001_auth_bootstrap.sql
-   ```
+```bash
+psql "$DATABASE_URL" -f supabase/migrations/0001_auth_bootstrap.sql
+psql "$DATABASE_URL" -f supabase/migrations/0002_storage_rls.sql
+```
 
-   This adds an `auth.users → public.users` trigger that:
-   - Links by email to a pre-created users row (owner can pre-create workers and clients with their email).
-   - Otherwise inserts a new users row with `role='client'`.
+- **0001_auth_bootstrap** — `auth.users → public.users` trigger that links a
+  pre-created users row by email or inserts a new one with `role='client'`. Also
+  adds a self-update RLS policy for the users table.
+- **0002_storage_rls** — creates the 5 storage buckets (`forge-stage-photos`,
+  `forge-issue-photos`, `forge-scope-pdfs`, `forge-invoice-pdfs`, `forge-avatars`)
+  and the row-level policies. Path conventions used by app code:
+  `{order_id}/{stage_id}/...` for stage photos, `{order_id}/...` for issue and
+  scope, `{invoice_id}/...` for invoices, `{forge_user_id}/...` for avatars.
 
-3. Promote your first owner manually:
+Then promote your first owner manually:
 
-   ```sql
-   UPDATE public.users SET role = 'owner' WHERE email = 'you@example.com';
-   ```
+```sql
+UPDATE public.users SET role = 'owner' WHERE email = 'you@example.com';
+```
 
-4. Storage buckets (private): `forge-stage-photos`, `forge-issue-photos`,
-   `forge-scope-pdfs`, `forge-invoice-pdfs`. Public: `forge-avatars`. Add storage RLS so:
-   - Owners can read/write all forge buckets.
-   - Workers can write to `forge-stage-photos` and read photos for orders they're assigned to.
-   - Clients can read photos on their own orders.
+## Email (Resend)
 
-   This scaffold uses signed URLs via the server (`lib/storage.ts`), so as long as
-   the server-side client is authenticated, signed URLs will work.
+`lib/notify.ts` writes a `notifications` row for every portal user it can reach
+and, if `RESEND_API_KEY` is set, also fires an email via Resend. Emails contain
+a CTA back to the relevant page (resolved against `NEXT_PUBLIC_APP_URL`).
+
+Without a Resend key the app still works — notifications get persisted, you just
+won't see emails. Verify your sending domain in Resend before going live;
+`onboarding@resend.dev` only delivers to the address that owns the API key.
+
+Notification triggers wired:
+
+| Event                          | Recipient            | Type                |
+| ------------------------------ | -------------------- | ------------------- |
+| Owner sends scope to client    | Client               | `scope_ready`       |
+| Client signs scope             | Owners               | `scope_signed`      |
+| Worker submits a stage         | Owners               | `stage_submitted`   |
+| Owner approves a stage         | Client               | `stage_approved`    |
+| Owner approves the last stage  | Client               | `order_completed`   |
+| Owner requests rework          | Assigned worker      | `stage_rework`      |
+| Owner sends invoice            | Client               | `invoice_sent`      |
+| Owner records deposit/balance  | Client               | `payment_received`  |
 
 ## Schema mapping
 
@@ -88,7 +107,12 @@ All RLS policies are honored by relying on the cookie-bound Supabase client.
 - Approval cascades order status → `in_production` → `quality_check` → `completed` and notifies client
 - Clients: list + create (pre-creates a `users` row by email so the trigger can link on signup)
 - Workers: list + create (pre-creates by email)
-- Invoices: list + create (line items, deposit %, tax %); send + record-payment to come
+- Invoices: list, create draft, send (emails the client), record deposit,
+  record balance, cancel. Each payment writes an `accounting_ledger` row
+  (`deposit_received` / `invoice_payment`, `is_credit=true`,
+  `reference_type='invoice'`) and bumps `clients.total_spent_qar`. Status
+  transitions: `draft → sent → partially_paid → paid` (or skips
+  `partially_paid` when deposit is 0% or 100%).
 
 ### Worker portal (`/worker`)
 - Jobs grouped by status (action / submitted / upcoming)
@@ -106,6 +130,7 @@ All RLS policies are honored by relying on the cookie-bound Supabase client.
 - **Scope sign-off**: tick every line, type your full name, sign. Captures timestamp,
   IP (from `x-forwarded-for` / `x-real-ip`), and user-agent. Sets `scope_locked = true`,
   `status = scope_signed`. Server enforces immutability afterwards.
+- Invoices list + read-only invoice detail (line items, totals, payment status).
 
 ## Project layout
 
@@ -156,11 +181,12 @@ forge/
 
 ## What's still TODO
 
-- Invoice send + payment recording (`status` transitions, deposit_paid_at, balance_paid_at, accounting_ledger entries)
-- Invoice PDF + scope PDF generation (we only persist URLs; generation not wired)
-- Notifications fan-out to push/email/whatsapp/sms (rows are inserted; delivery not wired)
-- Order messages thread
+- Invoice + scope PDF generation (we persist URLs; rendering not wired)
+- Push channel delivery (rows tagged `channel='push'` when user has no email; nothing dispatches them yet)
+- WhatsApp / SMS channels
+- Order messages thread (`order_messages` table is in the schema)
 - Inventory / gold purchase pages
 - Worker profile UI (specialisations, tolerance editing)
+- Overdue auto-flag on invoices (cron / scheduled function)
 - React Query: most reads are server components today; convert highly-interactive flows where it helps
 - Tests
