@@ -58,10 +58,20 @@ export default async function ClientScopePage({
           </Link>{" "}
           / Scope
         </p>
-        <div className="mt-1 flex items-center gap-2">
+        <div className="mt-1 flex flex-wrap items-center gap-2">
           <h1 className="text-2xl font-semibold">Scope of work</h1>
           <OrderStatusBadge status={o.status} />
           {o.scope_locked && <Badge variant="muted">Signed</Badge>}
+          {o.scope_locked && (
+            <a
+              href={`/client/orders/${o.id}/scope/pdf`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-2 text-sm text-primary hover:underline"
+            >
+              Download PDF ↗
+            </a>
+          )}
         </div>
         {o.scope_locked && (
           <p className="text-sm text-muted-foreground">

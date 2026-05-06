@@ -54,10 +54,18 @@ export default async function ScopePage({
           </Link>{" "}
           / Scope
         </p>
-        <div className="mt-1 flex items-center gap-2">
+        <div className="mt-1 flex flex-wrap items-center gap-2">
           <h1 className="text-2xl font-semibold">Scope of work</h1>
           <OrderStatusBadge status={o.status} />
           {locked && <Badge variant="muted">Locked</Badge>}
+          <a
+            href={`/owner/orders/${o.id}/scope/pdf`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-2 text-sm text-primary hover:underline"
+          >
+            Download PDF ↗
+          </a>
         </div>
         {locked && (
           <p className="mt-1 text-sm text-muted-foreground">

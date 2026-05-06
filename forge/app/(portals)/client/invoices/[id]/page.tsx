@@ -58,26 +58,36 @@ export default async function ClientInvoiceDetailPage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div>
-        <p className="text-xs uppercase tracking-wide text-muted-foreground">
-          <Link href="/client/invoices" className="hover:underline">
-            My invoices
-          </Link>{" "}
-          / {inv.invoice_number}
-        </p>
-        <div className="mt-1 flex flex-wrap items-center gap-2">
-          <h1 className="text-2xl font-semibold">{inv.invoice_number}</h1>
-          <Badge variant={variantFor(inv.status)}>{statusLabel(inv.status)}</Badge>
-        </div>
-        {o && (
-          <p className="text-sm text-muted-foreground">
-            For{" "}
-            <Link href={`/client/orders/${o.id}`} className="hover:underline">
-              {o.order_number}
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">
+            <Link href="/client/invoices" className="hover:underline">
+              My invoices
             </Link>{" "}
-            · {o.piece_type} · {o.karat}
+            / {inv.invoice_number}
           </p>
-        )}
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            <h1 className="text-2xl font-semibold">{inv.invoice_number}</h1>
+            <Badge variant={variantFor(inv.status)}>{statusLabel(inv.status)}</Badge>
+          </div>
+          {o && (
+            <p className="text-sm text-muted-foreground">
+              For{" "}
+              <Link href={`/client/orders/${o.id}`} className="hover:underline">
+                {o.order_number}
+              </Link>{" "}
+              · {o.piece_type} · {o.karat}
+            </p>
+          )}
+        </div>
+        <a
+          href={`/client/invoices/${inv.id}/pdf`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm text-primary hover:underline"
+        >
+          Download PDF ↗
+        </a>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">

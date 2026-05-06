@@ -33,10 +33,22 @@ export async function startStageAction(formData: FormData) {
 
   if (stage.status === "not_started") {
     const supabase = createClient();
+    const nowIso = new Date().toISOString();
     await supabase
       .from("order_stages")
-      .update({ status: "in_progress", started_at: new Date().toISOString() })
+      .update({ status: "in_progress", started_at: nowIso })
       .eq("id", stage.id);
+
+    // Advance the parent order so the dashboard reflects production state
+    // immediately, not only after the first approval.
+    await supabase
+      .from("orders")
+      .update({
+        status: "in_production",
+        current_stage_number: stage.stage_number,
+      })
+      .eq("id", stage.order_id)
+      .in("status", ["scope_signed", "draft"]);
   }
   revalidatePath(`/worker/stages/${stageId}`);
   redirect(`/worker/stages/${stageId}`);
@@ -197,18 +209,36 @@ export async function submitStageAction(
   }
 
   const isRework = stage.status === "rework_requested";
+  const nowIso = new Date().toISOString();
+
+  const update: Record<string, unknown> = {
+    gold_in_grams: goldIn,
+    gold_out_grams: goldOut,
+    worker_notes: notes,
+    status: isRework ? "rework_submitted" : "submitted",
+    submitted_at: nowIso,
+  };
+  // Defensive: backfill started_at if the worker submitted without
+  // explicitly clicking "start stage".
+  if (!stage.started_at) update.started_at = nowIso;
 
   const { error } = await supabase
     .from("order_stages")
-    .update({
-      gold_in_grams: goldIn,
-      gold_out_grams: goldOut,
-      worker_notes: notes,
-      status: isRework ? "rework_submitted" : "submitted",
-      submitted_at: new Date().toISOString(),
-    })
+    .update(update)
     .eq("id", stage.id);
   if (error) return failure(error.message);
+
+  // Same dashboard freshness as startStage: ensure the order is in_production.
+  if (!isRework) {
+    await supabase
+      .from("orders")
+      .update({
+        status: "in_production",
+        current_stage_number: stage.stage_number,
+      })
+      .eq("id", stage.order_id)
+      .in("status", ["scope_signed", "draft"]);
+  }
 
   const { data: owners } = await supabase
     .from("users")

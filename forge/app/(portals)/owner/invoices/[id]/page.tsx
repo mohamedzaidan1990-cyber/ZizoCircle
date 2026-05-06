@@ -134,6 +134,14 @@ export default async function OwnerInvoiceDetailPage({
             </p>
           )}
         </div>
+        <a
+          href={`/owner/invoices/${inv.id}/pdf`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm text-primary hover:underline"
+        >
+          Download PDF ↗
+        </a>
       </div>
 
       {searchParams.error === "already-paid" && (

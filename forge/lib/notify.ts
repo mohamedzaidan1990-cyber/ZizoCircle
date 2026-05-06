@@ -19,8 +19,7 @@ type NotificationChannel = "push" | "email" | "whatsapp" | "sms";
 
 const RESEND_KEY = process.env.RESEND_API_KEY;
 const FROM = process.env.RESEND_FROM ?? "Forge <onboarding@resend.dev>";
-const APP_URL =
-  process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 const resend = RESEND_KEY ? new Resend(RESEND_KEY) : null;
 
@@ -36,8 +35,13 @@ export interface NotifyParams {
 }
 
 /**
- * Insert notification rows for portal users and (best-effort) email them.
- * Failures don't throw — errors are logged so caller actions still succeed.
+ * Persist notification rows for portal users and (best-effort) email them.
+ *
+ * Strategy: send the email FIRST, then insert the row with sent_at set if
+ * the email succeeded. This avoids an UPDATE on rows owned by other users
+ * (which is blocked by the per-user RLS policy on notifications).
+ *
+ * Failures are logged; the calling action never throws on email errors.
  */
 export async function notify(params: NotifyParams): Promise<void> {
   const userIds = Array.from(new Set(params.userIds.filter(Boolean)));
@@ -57,71 +61,58 @@ export async function notify(params: NotifyParams): Promise<void> {
 
   const recipients =
     (users as { id: string; email: string | null; full_name: string }[]) ?? [];
+  if (recipients.length === 0) return;
 
-  const rows = recipients.map((u) => ({
-    user_id: u.id,
-    order_id: params.orderId ?? null,
-    stage_id: params.stageId ?? null,
-    type: params.type,
-    channel: (u.email ? "email" : "push") as NotificationChannel,
-    title: params.title,
-    body: params.body,
-    data: (params.data ?? {}) as Record<string, unknown>,
-  }));
+  const rows = await Promise.all(
+    recipients.map(async (u) => {
+      let sentAt: string | null = null;
+      let channel: NotificationChannel = "push";
 
-  if (rows.length === 0) return;
+      if (u.email) {
+        channel = "email";
+        if (resend) {
+          try {
+            await resend.emails.send({
+              from: FROM,
+              to: u.email,
+              subject: params.title,
+              html: renderEmail({
+                recipientName: u.full_name,
+                title: params.title,
+                body: params.body,
+                cta: params.cta,
+              }),
+            });
+            sentAt = new Date().toISOString();
+          } catch (err) {
+            console.error("[notify] email send failed", { to: u.email, err });
+          }
+        } else if (process.env.NODE_ENV !== "production") {
+          console.warn(
+            "[notify] RESEND_API_KEY not set — skipping email to",
+            u.email
+          );
+        }
+      }
 
-  const { data: inserted, error: insertErr } = await supabase
-    .from("notifications")
-    .insert(rows)
-    .select("id, user_id, channel");
+      return {
+        user_id: u.id,
+        order_id: params.orderId ?? null,
+        stage_id: params.stageId ?? null,
+        type: params.type,
+        channel,
+        title: params.title,
+        body: params.body,
+        data: (params.data ?? {}) as Record<string, unknown>,
+        sent_at: sentAt,
+      };
+    })
+  );
 
+  const { error: insertErr } = await supabase.from("notifications").insert(rows);
   if (insertErr) {
     console.error("[notify] insert failed", insertErr);
-    return;
   }
-
-  if (!resend) {
-    if (process.env.NODE_ENV !== "production") {
-      console.warn(
-        "[notify] RESEND_API_KEY not set — skipping email delivery for",
-        rows.length,
-        "notifications"
-      );
-    }
-    return;
-  }
-
-  const insertedRows =
-    (inserted as { id: string; user_id: string; channel: NotificationChannel }[]) ?? [];
-
-  await Promise.all(
-    insertedRows
-      .filter((r) => r.channel === "email")
-      .map(async (row) => {
-        const user = recipients.find((u) => u.id === row.user_id);
-        if (!user?.email) return;
-        try {
-          await resend.emails.send({
-            from: FROM,
-            to: user.email,
-            subject: params.title,
-            html: renderEmail({
-              recipientName: user.full_name,
-              title: params.title,
-              body: params.body,
-              cta: params.cta,
-            }),
-          });
-          await supabase
-            .from("notifications")
-            .update({ sent_at: new Date().toISOString() })
-            .eq("id", row.id);
-        } catch (err) {
-          console.error("[notify] email send failed", { to: user.email, err });
-        }
-      })
-  );
 }
 
 /**
