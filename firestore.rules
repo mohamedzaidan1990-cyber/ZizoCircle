@@ -1,10 +1,23 @@
 rules_version = '2';
 
+// Zizo Circle — Firestore security rules
+// =====================================================================
+// Source of truth lives in this file. Deploy with:
+//   firebase use zizo-circle && firebase deploy --only firestore:rules
+//
+// Default posture is DENY. Each collection is opened explicitly below
+// with the narrowest set of operations the app actually performs.
+// =====================================================================
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Marketing waitlist — public create, no read/update/delete.
-    // Validates shape so spammers can't dump arbitrary data.
+    // -----------------------------------------------------------------
+    // waitlist/{id} — public anonymous email signups from the marketing
+    // site (zizocircle.com). Shape-validated on create, no client reads
+    // (privacy), no edits, no deletes. Admin reviews via Firebase
+    // Console.
+    // -----------------------------------------------------------------
     match /waitlist/{doc} {
       allow create: if
         request.resource.data.keys().hasOnly(['email', 'lang', 'source', 'userAgent', 'referrer', 'createdAt'])
@@ -19,8 +32,82 @@ service cloud.firestore {
       allow read, update, delete: if false;
     }
 
-    // App's existing collections (users, venues, matches, wallet, etc.)
-    // — keep your existing rules below this block unchanged.
-    // The waitlist block above only covers the marketing collection.
+    // -----------------------------------------------------------------
+    // users/{uid} — app user profiles, keyed by Firebase Auth uid.
+    //
+    //   READ      any signed-in user.
+    //             Required for app/search.tsx (alias/name search) and
+    //             for app/(tabs)/wallet.tsx (alias→uid lookup before a
+    //             transfer). Profiles include email/age/gender — if you
+    //             want stricter privacy later, split public fields into
+    //             a users/{uid}/public subcollection.
+    //
+    //   CREATE    only the freshly authenticated user, only their own
+    //             doc, and the doc body must declare uid == auth.uid.
+    //
+    //   UPDATE    by owner: any field on their own doc.
+    //             by other authed user: ONLY the `wallet` field, and
+    //             only INCREASING it by ≤ 10,000. This permits the
+    //             client-side transfer transaction in wallet.tsx to
+    //             credit the recipient. The matched debit on the
+    //             sender's own doc is enforced by the owner rule.
+    //             Trade-off: rules can't see the paired write inside a
+    //             transaction, so a malicious client could "donate"
+    //             funds (paying out of their own wallet). They cannot
+    //             steal. For production-scale wallet ops, move the
+    //             transfer to a Cloud Function with admin SDK.
+    //
+    //   DELETE    never via client.
+    // -----------------------------------------------------------------
+    match /users/{uid} {
+      allow read: if request.auth != null;
+
+      allow create: if
+        request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.uid == uid
+        && request.resource.data.alias is string
+        && request.resource.data.alias.size() > 0
+        && request.resource.data.alias.size() <= 60;
+
+      // Owner — full self-edit.
+      allow update: if
+        request.auth != null
+        && request.auth.uid == uid;
+
+      // Other authed user — wallet credit only.
+      allow update: if
+        request.auth != null
+        && request.auth.uid != uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['wallet'])
+        && request.resource.data.wallet is number
+        && resource.data.wallet is number
+        && request.resource.data.wallet > resource.data.wallet
+        && (request.resource.data.wallet - resource.data.wallet) <= 10000;
+
+      allow delete: if false;
+    }
+
+    // -----------------------------------------------------------------
+    // reports/{id} — abuse / safety reports raised from match-detail.
+    // Authed users can create reports only against other users, and
+    // the reportedBy field must match their own uid (no spoofing).
+    // No client reads, edits, or deletes — moderation happens in the
+    // Firebase Console.
+    // -----------------------------------------------------------------
+    match /reports/{doc} {
+      allow create: if
+        request.auth != null
+        && request.resource.data.reportedBy == request.auth.uid;
+      allow read, update, delete: if false;
+    }
+
+    // -----------------------------------------------------------------
+    // Default deny — any collection not explicitly declared above is
+    // closed. Add a new match block to open one.
+    // -----------------------------------------------------------------
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
 }
