@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
-import { getProfile } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/auth";
 
 export default async function RootPage() {
-  const profile = await getProfile();
-  if (!profile) redirect("/login");
-  redirect(`/${profile.role}`);
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+  redirect(`/${user.role}`);
 }

@@ -1,14 +1,14 @@
 import { create } from "zustand";
-import type { Profile } from "@/lib/types";
+import type { User } from "@/lib/types";
 
 interface AuthState {
-  profile: Profile | null;
-  setProfile: (profile: Profile | null) => void;
+  user: User | null;
+  setUser: (user: User | null) => void;
   clear: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  profile: null,
-  setProfile: (profile) => set({ profile }),
-  clear: () => set({ profile: null }),
+  user: null,
+  setUser: (user) => set({ user }),
+  clear: () => set({ user: null }),
 }));

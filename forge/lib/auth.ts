@@ -1,8 +1,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import type { Profile, UserRole } from "@/lib/types";
+import type { User, UserRole } from "@/lib/types";
 
-export async function getSessionUser() {
+const USER_COLUMNS =
+  "id, supabase_auth_id, full_name, phone, email, role, language_pref, avatar_url, is_active, last_login_at, created_at, updated_at";
+
+export async function getAuthUser() {
   const supabase = createClient();
   const {
     data: { user },
@@ -10,25 +13,32 @@ export async function getSessionUser() {
   return user;
 }
 
-export async function getProfile(): Promise<Profile | null> {
+export async function getCurrentUser(): Promise<User | null> {
   const supabase = createClient();
   const {
-    data: { user },
+    data: { user: authUser },
   } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (!authUser) return null;
 
   const { data } = await supabase
-    .from("profiles")
-    .select("id, role, full_name, email, created_at")
-    .eq("id", user.id)
+    .from("users")
+    .select(USER_COLUMNS)
+    .eq("supabase_auth_id", authUser.id)
     .maybeSingle();
 
-  return (data as Profile | null) ?? null;
+  return (data as User | null) ?? null;
 }
 
-export async function requireRole(role: UserRole): Promise<Profile> {
-  const profile = await getProfile();
-  if (!profile) redirect("/login");
-  if (profile.role !== role) redirect(`/${profile.role}`);
-  return profile;
+export async function requireRole(role: UserRole): Promise<User> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+  if (!user.is_active) redirect("/login?error=inactive");
+  if (user.role !== role) redirect(`/${user.role}`);
+  return user;
+}
+
+export async function requireUser(): Promise<User> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+  return user;
 }

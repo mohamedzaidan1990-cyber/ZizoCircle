@@ -34,23 +34,22 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // IMPORTANT: getUser() revalidates the session token; do not skip.
   const {
-    data: { user },
+    data: { user: authUser },
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
   const isPublic = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
 
-  if (!user && !isPublic) {
+  if (!authUser && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", pathname);
     return NextResponse.redirect(url);
   }
 
-  if (user && (pathname === "/" || pathname === "/login")) {
-    const role = await fetchRole(supabase, user.id);
+  if (authUser && (pathname === "/" || pathname === "/login")) {
+    const role = await fetchRole(supabase, authUser.id);
     const url = request.nextUrl.clone();
     url.pathname = role ? PORTAL_PREFIXES[role] : "/login";
     url.searchParams.delete("next");
@@ -58,10 +57,9 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (user) {
-    const role = await fetchRole(supabase, user.id);
+  if (authUser) {
+    const role = await fetchRole(supabase, authUser.id);
     if (!role) {
-      // Signed in but no role assigned — bounce to login with notice.
       const url = request.nextUrl.clone();
       url.pathname = "/login";
       url.searchParams.set("error", "no-role");
@@ -82,14 +80,17 @@ export async function updateSession(request: NextRequest) {
 
 async function fetchRole(
   supabase: ReturnType<typeof createServerClient>,
-  userId: string
+  authUserId: string
 ): Promise<UserRole | null> {
   const { data } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", userId)
+    .from("users")
+    .select("role, is_active")
+    .eq("supabase_auth_id", authUserId)
     .maybeSingle();
-  const role = (data as { role?: string } | null)?.role;
-  if (role === "owner" || role === "worker" || role === "client") return role;
+  const row = data as { role?: string; is_active?: boolean } | null;
+  if (!row || row.is_active === false) return null;
+  if (row.role === "owner" || row.role === "worker" || row.role === "client") {
+    return row.role;
+  }
   return null;
 }
