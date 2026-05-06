@@ -150,7 +150,7 @@
   <div class="lang-en">
     <div class="eyebrow">YOU'RE IN</div>
     <h1>Welcome to <span class="accent">the circle.</span></h1>
-    <p>You're on the founding-member list. We'll DM you the moment Zizo Circle goes live in Lusail — and your cashback drops in your wallet on day one.</p>
+    <p>You're on the founding-member list<span id="email-en"></span>. We'll DM you the moment Zizo Circle goes live in Lusail — and your cashback drops in your wallet on day one.</p>
     <div class="reward">
       <span class="amt">QAR 50</span>
       <span class="lbl">unlocked · ready to spend</span>
@@ -165,7 +165,7 @@
   <div class="lang-ar" dir="rtl">
     <div class="eyebrow">أنت معنا</div>
     <h1>أهلاً بك في <span class="accent">الدائرة.</span></h1>
-    <p>سجّلناك ضمن الأعضاء المؤسسين. نوصلك بمجرد ما يفتح التطبيق في لوسيل، ورصيد الكاش باك ينزل في محفظتك يوم الإطلاق.</p>
+    <p>سجّلناك ضمن الأعضاء المؤسسين<span id="email-ar"></span>. نوصلك بمجرد ما يفتح التطبيق في لوسيل، ورصيد الكاش باك ينزل في محفظتك يوم الإطلاق.</p>
     <div class="reward">
       <span class="amt">QAR 50</span>
       <span class="lbl">جاهز للصرف</span>
@@ -186,6 +186,13 @@
   document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   document.title = lang === 'ar' ? 'أهلاً بك — زيزو سيركل' : "You're in — Zizo Circle";
   document.getElementById('link-' + lang).classList.add('active');
+
+  const email = params.get('email');
+  if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    const safe = email.replace(/[<>&"]/g, '');
+    document.getElementById('email-en').textContent = ` (${safe})`;
+    document.getElementById('email-ar').textContent = ` (${safe})`;
+  }
 </script>
 
 </body>

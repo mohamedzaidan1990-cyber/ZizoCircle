@@ -363,7 +363,7 @@
       <div class="eyebrow">إطلاق لوسيل — مقاعد محدودة</div>
       <h2>كن أول من يدخل الدائرة.</h2>
       <p>سجّل في قائمة الانتظار وافتح <strong style="color: var(--lime)">كاش باك بقيمة ٥٠ ريال</strong> حصرياً للأعضاء المؤسسين عند الإطلاق.</p>
-      <form class="waitlist" onsubmit="event.preventDefault(); this.querySelector('button').textContent='تم التسجيل ✓'; this.querySelector('button').disabled=true;">
+      <form class="waitlist" id="waitlist-form" novalidate>
         <input type="email" placeholder="بريدك الإلكتروني" required />
         <button type="submit" class="btn btn-primary">سجّل الآن</button>
       </form>
@@ -385,6 +385,11 @@
     </div>
   </div>
 </footer>
+
+<script type="module">
+  import { wireWaitlistForm } from '../firebase-waitlist.js';
+  wireWaitlistForm(document.getElementById('waitlist-form'), { lang: 'ar', source: 'landing-ar' });
+</script>
 
 </body>
 </html>

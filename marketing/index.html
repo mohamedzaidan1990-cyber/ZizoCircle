@@ -354,7 +354,7 @@
       <div class="eyebrow">Lusail launch — limited spots</div>
       <h2>Be first on the circle.</h2>
       <p>Join the waitlist and unlock <strong style="color: var(--lime)">QAR 50 founding-member cashback</strong> when we go live.</p>
-      <form class="waitlist" onsubmit="event.preventDefault(); this.querySelector('button').textContent='You\'re on the list ✓'; this.querySelector('button').disabled=true;">
+      <form class="waitlist" id="waitlist-form" novalidate>
         <input type="email" placeholder="your@email.com" required />
         <button type="submit" class="btn btn-primary">Join waitlist</button>
       </form>
@@ -376,6 +376,11 @@
     </div>
   </div>
 </footer>
+
+<script type="module">
+  import { wireWaitlistForm } from './firebase-waitlist.js';
+  wireWaitlistForm(document.getElementById('waitlist-form'), { lang: 'en', source: 'landing-en' });
+</script>
 
 </body>
 </html>
