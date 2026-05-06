@@ -1,20 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Zizo Circle — Qatar's Social Circle App</title>
-<meta name="description" content="Meet people in Lusail who love what you love. Match by interests, meet at real venues, earn cashback every time you go out." />
+<title>زيزو سيركل — تطبيق الدائرة الاجتماعية في قطر</title>
+<meta name="description" content="تعرّف على ناس في لوسيل يحبون اللي تحبه. تطابُق حسب الاهتمامات، التقِ في أماكن حقيقية، واربح كاش باك في كل مرة تخرج." />
 <meta name="theme-color" content="#0B0914" />
 
-<meta property="og:title" content="Zizo Circle — Qatar's Social Circle App" />
-<meta property="og:description" content="Match. Meet. Earn cashback. Launching in Lusail." />
+<meta property="og:title" content="زيزو سيركل — تطبيق الدائرة الاجتماعية في قطر" />
+<meta property="og:description" content="تطابق. التقِ. اربح كاش باك. الإطلاق في لوسيل." />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://zizocircle.com" />
+<meta property="og:url" content="https://zizocircle.com/ar" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
 
 <style>
   :root {
@@ -33,10 +33,10 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
   body {
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Cairo', system-ui, sans-serif;
     background: var(--bg);
     color: var(--text);
-    line-height: 1.55;
+    line-height: 1.65;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
   }
@@ -47,9 +47,9 @@
   @media (min-width: 768px) { .wrap { max-width: 1100px; padding: 0 40px; } }
 
   .orb { position: absolute; border-radius: 999px; filter: blur(40px); pointer-events: none; z-index: 0; }
-  .orb-1 { width: 340px; height: 340px; background: rgba(123,92,246,0.18); top: -120px; right: -100px; }
-  .orb-2 { width: 280px; height: 280px; background: rgba(245,59,143,0.12); top: 380px; left: -100px; }
-  .orb-3 { width: 320px; height: 320px; background: rgba(59,245,200,0.08); bottom: 200px; right: -80px; }
+  .orb-1 { width: 340px; height: 340px; background: rgba(123,92,246,0.18); top: -120px; left: -100px; }
+  .orb-2 { width: 280px; height: 280px; background: rgba(245,59,143,0.12); top: 380px; right: -100px; }
+  .orb-3 { width: 320px; height: 320px; background: rgba(59,245,200,0.08); bottom: 200px; left: -80px; }
 
   /* Nav */
   nav {
@@ -65,11 +65,16 @@
     display: flex; align-items: center; justify-content: center;
     font-weight: 900; color: #fff; font-size: 16px;
     box-shadow: 0 8px 24px rgba(123,92,246,0.4);
+    font-family: 'Inter', sans-serif;
   }
   .nav-cta {
     background: var(--purple); color: #fff;
     padding: 9px 16px; border-radius: 999px;
     font-size: 13px; font-weight: 700;
+  }
+  .lang-switch {
+    color: var(--muted); font-size: 12px; font-weight: 600;
+    margin-inline-end: 12px;
   }
 
   /* Hero */
@@ -80,15 +85,15 @@
     border: 1px solid rgba(123,92,246,0.3);
     color: var(--purple-soft);
     padding: 6px 14px; border-radius: 999px;
-    font-size: 11px; font-weight: 700; letter-spacing: 1px;
+    font-size: 12px; font-weight: 700;
     margin-bottom: 18px;
   }
   h1 {
-    font-size: 38px; line-height: 1.1; font-weight: 800;
-    letter-spacing: -0.02em; margin-bottom: 16px;
+    font-size: 38px; line-height: 1.2; font-weight: 800;
+    margin-bottom: 16px;
   }
   h1 .accent { color: var(--purple-soft); }
-  .lead { color: var(--muted); font-size: 16px; line-height: 1.6; margin-bottom: 28px; max-width: 38ch; }
+  .lead { color: var(--muted); font-size: 16px; line-height: 1.8; margin-bottom: 28px; max-width: 38ch; }
 
   .ctas { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
   .btn {
@@ -96,6 +101,7 @@
     padding: 16px 22px; border-radius: 16px;
     font-size: 15px; font-weight: 700;
     border: 0; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease;
+    font-family: inherit;
   }
   .btn-primary {
     background: var(--purple); color: #fff;
@@ -123,12 +129,14 @@
     width: 100px; height: 100px; background: var(--purple);
     box-shadow: 0 16px 40px rgba(123,92,246,0.45);
     color: #fff; font-weight: 900; font-size: 40px;
+    font-family: 'Inter', sans-serif;
   }
   .avatar {
     position: absolute; width: 50px; height: 50px; border-radius: 50%;
     border: 3px solid var(--bg);
     display: flex; align-items: center; justify-content: center;
     font-weight: 800; color: #fff; font-size: 18px;
+    font-family: 'Inter', sans-serif;
   }
   .av1 { background: var(--purple); top: 14px; left: 18%; }
   .av2 { background: var(--mint); top: 6px; right: 18%; color: #0B0914; }
@@ -140,20 +148,20 @@
     color: var(--lime); font-size: 11px; font-weight: 700;
     padding: 4px 10px; border-radius: 999px;
   }
-  .mp1 { top: 0; left: 38%; }
-  .mp2 { top: -10px; right: 6%; }
+  .mp1 { top: 0; right: 38%; }
+  .mp2 { top: -10px; left: 6%; }
 
   /* Section base */
   section { padding: 56px 0; position: relative; z-index: 1; }
   .eyebrow {
-    color: var(--purple-soft); font-size: 12px; font-weight: 700;
-    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px;
+    color: var(--purple-soft); font-size: 13px; font-weight: 700;
+    margin-bottom: 12px;
   }
   h2 {
-    font-size: 28px; line-height: 1.15; font-weight: 800;
-    letter-spacing: -0.01em; margin-bottom: 14px;
+    font-size: 28px; line-height: 1.3; font-weight: 800;
+    margin-bottom: 14px;
   }
-  .section-lead { color: var(--muted); font-size: 15px; max-width: 50ch; margin-bottom: 32px; }
+  .section-lead { color: var(--muted); font-size: 15px; max-width: 50ch; margin-bottom: 32px; line-height: 1.8; }
 
   /* How it works */
   .steps { display: grid; gap: 14px; }
@@ -169,12 +177,13 @@
     flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
     font-weight: 900; font-size: 18px;
+    font-family: 'Inter', sans-serif;
   }
   .step-1 .step-num { background: rgba(123,92,246,0.18); color: var(--purple-soft); }
   .step-2 .step-num { background: rgba(245,59,143,0.18); color: var(--pink); }
   .step-3 .step-num { background: rgba(200,245,59,0.18); color: var(--lime); }
   .step h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
-  .step p { color: var(--muted); font-size: 14px; }
+  .step p { color: var(--muted); font-size: 14px; line-height: 1.8; }
 
   /* Venue section */
   .venue {
@@ -182,17 +191,16 @@
     border: 1px solid var(--border);
     border-radius: 24px;
     padding: 32px 24px;
-    text-align: left;
   }
   .venue h2 { font-size: 24px; }
   .venue-bullets { list-style: none; margin: 18px 0 24px; }
   .venue-bullets li {
     display: flex; gap: 12px; align-items: flex-start;
-    padding: 10px 0; font-size: 14px;
+    padding: 10px 0; font-size: 14px; line-height: 1.8;
   }
   .venue-bullets .dot {
     width: 6px; height: 6px; border-radius: 50%; background: var(--mint);
-    margin-top: 9px; flex-shrink: 0;
+    margin-top: 12px; flex-shrink: 0;
   }
   .venue-cta {
     background: var(--text); color: var(--bg);
@@ -217,6 +225,7 @@
     background: var(--bg); border: 1.5px solid var(--border);
     color: var(--text); padding: 14px 16px; border-radius: 14px;
     font-size: 15px; font-family: inherit; width: 100%;
+    text-align: right;
   }
   .waitlist input:focus { outline: none; border-color: var(--purple); }
   .stores { display: flex; gap: 10px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
@@ -265,11 +274,11 @@
   <div class="wrap nav-row">
     <a href="#" class="logo">
       <span class="logo-mark">Z</span>
-      <span>Zizo Circle</span>
+      <span>زيزو سيركل</span>
     </a>
-    <div style="display:flex; align-items:center; gap:12px;">
-      <a href="ar/index.html" style="color: var(--muted); font-size: 12px; font-weight: 600;">عربي</a>
-      <a href="#waitlist" class="nav-cta">Join waitlist</a>
+    <div style="display:flex; align-items:center;">
+      <a href="../index.html" class="lang-switch">EN</a>
+      <a href="#waitlist" class="nav-cta">سجّل الآن</a>
     </div>
   </div>
 </nav>
@@ -277,12 +286,12 @@
 <header class="hero">
   <div class="wrap">
     <div>
-      <span class="badge">✦ LAUNCHING IN LUSAIL</span>
-      <h1>Meet people who <span class="accent">love what you love</span>.</h1>
-      <p class="lead">AI matches you with people in Lusail by your real interests — and pays you cashback every time you go out.</p>
+      <span class="badge">✦ الإطلاق في لوسيل</span>
+      <h1>تعرّف على ناس <span class="accent">يحبون اللي تحبه</span>.</h1>
+      <p class="lead">ذكاء اصطناعي يطابقك مع أشخاص قريبين في لوسيل بحسب اهتماماتك الحقيقية — ويعطيك كاش باك في كل مرة تطلع فيها.</p>
       <div class="ctas">
-        <a href="#waitlist" class="btn btn-primary">Join the waitlist — it's free</a>
-        <a href="#how" class="btn btn-outline">How it works</a>
+        <a href="#waitlist" class="btn btn-primary">سجّل في قائمة الانتظار — مجاناً</a>
+        <a href="#how" class="btn btn-outline">كيف يعمل التطبيق</a>
       </div>
     </div>
     <div class="hero-visual">
@@ -293,38 +302,38 @@
       <div class="avatar av2">O</div>
       <div class="avatar av3">S</div>
       <div class="avatar av4">K</div>
-      <div class="match-pill mp1">94% match ✨</div>
-      <div class="match-pill mp2">87% match ✨</div>
+      <div class="match-pill mp1">94% تطابق ✨</div>
+      <div class="match-pill mp2">87% تطابق ✨</div>
     </div>
   </div>
 </header>
 
 <section id="how">
   <div class="wrap">
-    <div class="eyebrow">How it works</div>
-    <h2>Three steps. No swiping.</h2>
-    <p class="section-lead">Built for newcomers and locals alike — find your circle in Lusail in minutes.</p>
+    <div class="eyebrow">كيف يعمل</div>
+    <h2>ثلاث خطوات. بدون تردد.</h2>
+    <p class="section-lead">صُمّم للمغتربين الجدد وللمقيمين — جد دائرتك في لوسيل خلال دقائق.</p>
 
     <div class="steps">
       <div class="step step-1">
-        <div class="step-num">1</div>
+        <div class="step-num">١</div>
         <div>
-          <h3>Match by interests</h3>
-          <p>Padel, brunch, books, hot yoga, gaming — pick what you love and our AI finds people nearby who actually love it too.</p>
+          <h3>تطابُق حسب الاهتمامات</h3>
+          <p>بادل، فطور، كتب، يوغا، قيمنق — اختر اللي تحبه، والذكاء الاصطناعي يلاقيك ناس قريبين منك يحبونه فعلاً.</p>
         </div>
       </div>
       <div class="step step-2">
-        <div class="step-num">2</div>
+        <div class="step-num">٢</div>
         <div>
-          <h3>Meet at real venues</h3>
-          <p>Pick from hand-picked Lusail spots — Marina, Fox Hills, The Pearl. Plan it in the app, show up, no awkward small talk.</p>
+          <h3>التقِ في أماكن حقيقية</h3>
+          <p>اختر من أحلى أماكن لوسيل — المارينا، فوكس هيلز، اللؤلؤة. خطّط من التطبيق، تعال، بدون أي إحراج.</p>
         </div>
       </div>
       <div class="step step-3">
-        <div class="step-num">3</div>
+        <div class="step-num">٣</div>
         <div>
-          <h3>Earn cashback</h3>
-          <p>Get up to 25% back at every venue. Bring a match? Cashback doubles. Spend it on your next outing.</p>
+          <h3>اربح كاش باك</h3>
+          <p>كاش باك يصل إلى ٢٥٪ في كل زيارة. تجي مع شخص تطابقت معه؟ الكاش باك يتضاعف. أنفقه في خرجتك التالية.</p>
         </div>
       </div>
     </div>
@@ -334,16 +343,16 @@
 <section>
   <div class="wrap">
     <div class="venue">
-      <div class="eyebrow">For venues</div>
-      <h2>Be on every Lusail expat's first night out.</h2>
-      <p class="section-lead">List your venue free, get qualified foot traffic, and only pay when customers actually walk in.</p>
+      <div class="eyebrow">للأماكن والمطاعم</div>
+      <h2>كن وجهة كل مغترب في لوسيل.</h2>
+      <p class="section-lead">أدرج مكانك مجاناً، استقبل زبائن مؤهلين، وادفع فقط حين يدخلون فعلياً.</p>
       <ul class="venue-bullets">
-        <li><span class="dot"></span>Free venue dashboard with check-ins, ratings & customer insights</li>
-        <li><span class="dot"></span>Featured in matched users' suggested places — built-in distribution</li>
-        <li><span class="dot"></span>Customers spend more when they bring a match (double cashback unlocks)</li>
-        <li><span class="dot"></span>You only fund cashback for actual visits — pure performance</li>
+        <li><span class="dot"></span>لوحة تحكم مجانية مع الزيارات والتقييمات وبيانات الزبائن</li>
+        <li><span class="dot"></span>ظهور مميز للمستخدمين القريبين منك — توزيع جاهز</li>
+        <li><span class="dot"></span>الزبائن ينفقون أكثر حين يجيبون شخصاً متطابقاً (الكاش باك يتضاعف)</li>
+        <li><span class="dot"></span>تدفع فقط على الزيارات الفعلية — أداء صافٍ بلا التزامات</li>
       </ul>
-      <a href="mailto:partners@zizocircle.com?subject=Venue%20Partnership%20—%20Lusail" class="venue-cta">Become a partner →</a>
+      <a href="mailto:partners@zizocircle.com?subject=شراكة%20زيزو%20سيركل%20—%20لوسيل" class="venue-cta">كن شريكاً ←</a>
     </div>
   </div>
 </section>
@@ -351,12 +360,12 @@
 <section id="waitlist">
   <div class="wrap">
     <div class="final">
-      <div class="eyebrow">Lusail launch — limited spots</div>
-      <h2>Be first on the circle.</h2>
-      <p>Join the waitlist and unlock <strong style="color: var(--lime)">QAR 50 founding-member cashback</strong> when we go live.</p>
-      <form class="waitlist" onsubmit="event.preventDefault(); this.querySelector('button').textContent='You\'re on the list ✓'; this.querySelector('button').disabled=true;">
-        <input type="email" placeholder="your@email.com" required />
-        <button type="submit" class="btn btn-primary">Join waitlist</button>
+      <div class="eyebrow">إطلاق لوسيل — مقاعد محدودة</div>
+      <h2>كن أول من يدخل الدائرة.</h2>
+      <p>سجّل في قائمة الانتظار وافتح <strong style="color: var(--lime)">كاش باك بقيمة ٥٠ ريال</strong> حصرياً للأعضاء المؤسسين عند الإطلاق.</p>
+      <form class="waitlist" onsubmit="event.preventDefault(); this.querySelector('button').textContent='تم التسجيل ✓'; this.querySelector('button').disabled=true;">
+        <input type="email" placeholder="بريدك الإلكتروني" required />
+        <button type="submit" class="btn btn-primary">سجّل الآن</button>
       </form>
       <div class="stores">
         <a href="#" class="store-btn"> App Store</a>
@@ -368,11 +377,11 @@
 
 <footer>
   <div class="wrap">
-    <div>© 2026 Zizo Circle · Made in Qatar 🇶🇦</div>
+    <div>© ٢٠٢٦ زيزو سيركل · صُنع في قطر 🇶🇦</div>
     <div class="small">
       <a href="mailto:hello@zizocircle.com">hello@zizocircle.com</a> ·
-      <a href="/privacy">Privacy</a> ·
-      <a href="/terms">Terms</a>
+      <a href="/privacy">سياسة الخصوصية</a> ·
+      <a href="/terms">الشروط</a>
     </div>
   </div>
 </footer>

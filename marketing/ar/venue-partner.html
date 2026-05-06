@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>زيزو سيركل — ملف الشراكة (لوسيل)</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0B0914;
+    --card: #1A1530;
+    --border: #231E3A;
+    --text: #F0EEF8;
+    --muted: #7A7595;
+    --purple: #7B5CF6;
+    --purple-soft: #A78BFA;
+    --pink: #F53B8F;
+    --mint: #3BF5C8;
+    --orange: #F5A53B;
+    --lime: #C8F53B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    font-family: 'Cairo', system-ui, sans-serif;
+    background: #2a2438;
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    width: 210mm; min-height: 297mm;
+    margin: 20px auto;
+    background: var(--bg);
+    padding: 18mm 16mm;
+    position: relative;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    overflow: hidden;
+  }
+  .orb { position: absolute; border-radius: 50%; pointer-events: none; }
+  .orb-1 { width: 280px; height: 280px; background: rgba(123,92,246,0.15); top: -120px; left: -100px; }
+  .orb-2 { width: 220px; height: 220px; background: rgba(245,59,143,0.10); bottom: -80px; right: -80px; }
+
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    position: relative; z-index: 1;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 50%; background: var(--purple);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; color: #fff; font-size: 18px;
+    font-family: 'Inter', sans-serif;
+  }
+  .logo-name { font-weight: 800; font-size: 18px; }
+  .logo-tag { font-size: 11px; color: var(--muted); }
+  .header-tag {
+    background: rgba(200,245,59,0.12);
+    color: var(--lime);
+    border: 1px solid rgba(200,245,59,0.25);
+    padding: 6px 12px; border-radius: 999px;
+    font-size: 11px; font-weight: 700;
+  }
+
+  .hero { margin-top: 20px; position: relative; z-index: 1; }
+  .eyebrow {
+    color: var(--purple-soft); font-size: 12px; font-weight: 700;
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-size: 28px; line-height: 1.3; font-weight: 800;
+    margin-bottom: 10px;
+  }
+  h1 .accent { color: var(--purple-soft); }
+  .lead { color: var(--muted); font-size: 13px; max-width: 70ch; line-height: 1.8; }
+
+  .grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px; margin-top: 22px;
+    position: relative; z-index: 1;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+  }
+  .card h3 {
+    font-size: 13px; font-weight: 800; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card .ico {
+    width: 26px; height: 26px; border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 900;
+  }
+  .ico-1 { background: rgba(123,92,246,0.18); color: var(--purple-soft); }
+  .ico-2 { background: rgba(59,245,200,0.18); color: var(--mint); }
+  .ico-3 { background: rgba(245,59,143,0.18); color: var(--pink); }
+  .ico-4 { background: rgba(245,165,59,0.18); color: var(--orange); }
+  .card p { color: var(--muted); font-size: 12px; line-height: 1.7; }
+  .card ul { margin-top: 6px; padding-right: 0; list-style: none; }
+  .card li {
+    color: var(--muted); font-size: 12px; padding: 3px 0;
+    display: flex; gap: 8px; align-items: flex-start;
+    line-height: 1.7;
+  }
+  .card li::before {
+    content: "✓"; color: var(--lime); font-weight: 800; font-size: 11px;
+    flex-shrink: 0;
+  }
+
+  .cashback {
+    margin-top: 16px;
+    background: linear-gradient(140deg, rgba(123,92,246,0.18), rgba(245,59,143,0.12));
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 20px;
+    position: relative; z-index: 1;
+  }
+  .cashback h2 {
+    font-size: 18px; font-weight: 800; margin-bottom: 4px;
+  }
+  .cashback .sub { color: var(--muted); font-size: 12px; margin-bottom: 14px; line-height: 1.7; }
+  .flow {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
+  }
+  .flow-step {
+    background: rgba(11,9,20,0.5);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+  }
+  .flow-step .num {
+    font-size: 11px; font-weight: 800;
+    color: var(--purple-soft); margin-bottom: 4px;
+  }
+  .flow-step .ttl { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .flow-step .desc { font-size: 11px; color: var(--muted); line-height: 1.7; }
+  .double-pill {
+    display: inline-block; background: rgba(200,245,59,0.15);
+    color: var(--lime); border: 1px solid rgba(200,245,59,0.3);
+    padding: 2px 8px; border-radius: 999px;
+    font-size: 10px; font-weight: 800; margin-top: 4px;
+  }
+
+  .example {
+    margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    position: relative; z-index: 1;
+  }
+  .ex {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px 16px;
+  }
+  .ex .row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; padding: 4px 0;
+    color: var(--muted);
+  }
+  .ex .row strong { color: var(--text); font-weight: 700; }
+  .ex .total {
+    margin-top: 8px; padding-top: 10px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between;
+    font-size: 13px; font-weight: 800;
+  }
+  .ex .total .pos { color: var(--lime); }
+  .ex h4 {
+    font-size: 11px; font-weight: 800; margin-bottom: 8px;
+    color: var(--purple-soft);
+  }
+
+  .cta {
+    margin-top: 18px;
+    background: var(--text); color: var(--bg);
+    border-radius: 16px; padding: 18px 22px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; position: relative; z-index: 1;
+  }
+  .cta-left h3 { font-size: 16px; font-weight: 800; margin-bottom: 2px; }
+  .cta-left p { font-size: 12px; color: #4a4358; }
+  .cta-btn {
+    background: var(--purple); color: #fff;
+    padding: 12px 22px; border-radius: 12px;
+    font-weight: 700; font-size: 13px;
+    text-decoration: none; white-space: nowrap;
+  }
+
+  .footer {
+    margin-top: 16px;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: var(--muted); font-size: 10px;
+    position: relative; z-index: 1;
+  }
+  .footer .right { color: var(--purple-soft); font-weight: 700; }
+
+  @media print {
+    body { background: var(--bg); }
+    .page {
+      margin: 0; box-shadow: none;
+      width: 210mm; height: 297mm;
+      padding: 16mm 14mm;
+    }
+    @page { size: A4; margin: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="header">
+    <div class="logo">
+      <div class="logo-mark">Z</div>
+      <div>
+        <div class="logo-name">زيزو سيركل</div>
+        <div class="logo-tag">تطبيق الدائرة الاجتماعية في قطر</div>
+      </div>
+    </div>
+    <div class="header-tag">ملف الشراكة · لوسيل ٢٠٢٦</div>
+  </div>
+
+  <section class="hero">
+    <div class="eyebrow">كن وجهة كل مغترب في لوسيل</div>
+    <h1>املأ طاولاتك. <span class="accent">بدون أي رسوم مقدّمة.</span></h1>
+    <p class="lead">زيزو سيركل تطبيق اجتماعي قطري للمغتربين والمقيمين. نطابق الناس بحسب اهتماماتهم الحقيقية — بادل، فطور، يوغا، كتب — ونوصلهم لمكانك ومعهم رصيد كاش باك في محفظتهم. أنت تدفع فقط حين يدخل زبون فعلياً.</p>
+  </section>
+
+  <div class="grid">
+    <div class="card">
+      <h3><span class="ico ico-1">★</span> لوحة تحكم مجانية</h3>
+      <ul>
+        <li>زيارات وتقييمات وآراء فورية</li>
+        <li>بيانات ديموغرافية واهتمامات الزبائن</li>
+        <li>ساعات العمل والصور والقائمة — تعديل في أي وقت</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="ico ico-2">↗</span> ظهور مدمج</h3>
+      <ul>
+        <li>عرض مميز للمستخدمين المتطابقين القريبين</li>
+        <li>ترشيح ضمن خطط المجموعات والخرجات</li>
+        <li>وصول لآلاف المغتربين في لوسيل</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="ico ico-3">⚑</span> بيانات زبائن تخصّك</h3>
+      <ul>
+        <li>تحليل تكرار الزيارات ومعدّل العودة</li>
+        <li>أي اهتمامات تجلب لك الزبائن</li>
+        <li>تحليل ساعات الذروة والزيارات المتطابقة</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="ico ico-4">⚡</span> تسعير مبني على الأداء</h3>
+      <ul>
+        <li>بدون رسوم تأسيس أو اشتراك شهري</li>
+        <li>تدفع كاش باك فقط على زيارات مؤكدة</li>
+        <li>إلغاء في أي وقت — بدون التزامات</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="cashback">
+    <h2>كيف يعمل الكاش باك للزبائن؟</h2>
+    <p class="sub">الزبائن يكسبون كاش باك في التطبيق مع كل زيارة. لا يمكن إنفاقه إلا في الأماكن الشريكة — يعني يرجع لك أو لشريك آخر في الشبكة.</p>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="num">الخطوة ٠١</div>
+        <div class="ttl">يحجز عبر زيزو</div>
+        <div class="desc">المستخدم المتطابق يختار مكانك من ضمن الأماكن المقترحة في لوسيل.</div>
+      </div>
+      <div class="flow-step">
+        <div class="num">الخطوة ٠٢</div>
+        <div class="ttl">يمسح الكود ويدفع</div>
+        <div class="desc">دخول عبر QR على الطاولة. أنت تؤكد. وهو يحصل على ١٠–٢٥٪ كاش باك فوراً.</div>
+      </div>
+      <div class="flow-step">
+        <div class="num">الخطوة ٠٣</div>
+        <div class="ttl">يجيب صديقه المتطابق ← الكاش باك يتضاعف</div>
+        <div class="desc">حين يجي مع شخص تطابق معه، يتضاعف الكاش باك ويرتفع الإنفاق.<div class="double-pill">١٥ ← ٣٠ ريال</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="example">
+    <div class="ex">
+      <h4>مثال · زيارة فردية</h4>
+      <div class="row"><span>إنفاق الزبون</span><strong>١٠٠ ر.ق</strong></div>
+      <div class="row"><span>نسبة الكاش باك</span><strong>١٥٪</strong></div>
+      <div class="row"><span>تموّل أنت</span><strong>١٥ ر.ق</strong></div>
+      <div class="total"><span>الصافي للمكان</span><span class="pos">+ ٨٥ ر.ق</span></div>
+    </div>
+    <div class="ex">
+      <h4>مثال · زيارة متطابقة (شخصان)</h4>
+      <div class="row"><span>إنفاق الزبون</span><strong>٢٢٠ ر.ق</strong></div>
+      <div class="row"><span>نسبة الكاش باك (×٢)</span><strong>٣٠٪</strong></div>
+      <div class="row"><span>تموّل أنت</span><strong>٦٦ ر.ق</strong></div>
+      <div class="total"><span>الصافي للمكان</span><span class="pos">+ ١٥٤ ر.ق</span></div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <div class="cta-left">
+      <h3>جاهز تملأ طاولاتك؟</h3>
+      <p>التسجيل يستغرق ٥ دقائق. شغّل مكانك في لوسيل هذا الأسبوع.</p>
+    </div>
+    <a class="cta-btn" href="https://zizocircle.com/partners">كن شريكاً ←</a>
+  </div>
+
+  <div class="footer">
+    <div>partners@zizocircle.com  ·  +974 XXXX XXXX  ·  zizocircle.com/partners</div>
+    <div class="right">لوسيل · الدوحة · اللؤلؤة</div>
+  </div>
+</div>
+</body>
+</html>
