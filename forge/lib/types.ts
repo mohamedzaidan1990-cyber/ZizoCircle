@@ -100,6 +100,7 @@ export interface Order {
   scope_client_ip: string | null;
   scope_device_fp: string | null;
   scope_pdf_url: string | null;
+  reference_image_url: string | null;
   estimated_delivery: string | null;
   completed_at: string | null;
   created_at: string;

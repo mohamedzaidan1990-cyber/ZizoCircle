@@ -89,6 +89,21 @@ export function OrderForm({
         />
       </div>
 
+      <div className="space-y-2">
+        <Label htmlFor="reference_image">
+          Reference image{" "}
+          <span className="text-xs font-normal text-muted-foreground">
+            (optional — sketch, CAD render, or inspiration photo)
+          </span>
+        </Label>
+        <Input
+          id="reference_image"
+          name="reference_image"
+          type="file"
+          accept="image/*"
+        />
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="estimated_delivery">Estimated delivery</Label>

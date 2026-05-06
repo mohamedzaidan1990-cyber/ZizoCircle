@@ -11,7 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { PhotoGrid } from "@/components/photos/photo-grid";
-import { STORAGE } from "@/lib/storage";
+import { STORAGE, signUrl } from "@/lib/storage";
 import {
   GoldLossBadge,
   StageStatusBadge,
@@ -47,7 +47,7 @@ export default async function WorkerStagePage({
   const [{ data: order }, { data: gems }, { data: logs }] = await Promise.all([
     supabase
       .from("orders")
-      .select("id, order_number, piece_type, karat, target_weight_grams")
+      .select("id, order_number, piece_type, karat, target_weight_grams, reference_image_url")
       .eq("id", stage.order_id)
       .maybeSingle(),
     supabase
@@ -63,8 +63,12 @@ export default async function WorkerStagePage({
 
   const o = order as Pick<
     Order,
-    "id" | "order_number" | "piece_type" | "karat" | "target_weight_grams"
+    "id" | "order_number" | "piece_type" | "karat" | "target_weight_grams" | "reference_image_url"
   > | null;
+
+  const refImageUrl = o?.reference_image_url
+    ? await signUrl(STORAGE.stagePhotos, o.reference_image_url, 3600)
+    : null;
   const gemRows = (gems ?? []) as (Pick<
     OrderGemstone,
     "id" | "stone_type" | "qty_pieces" | "stone_shape"
@@ -101,6 +105,29 @@ export default async function WorkerStagePage({
           </p>
         )}
       </div>
+
+      {refImageUrl && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Design reference</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <a
+              href={refImageUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block overflow-hidden rounded-md border"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={refImageUrl}
+                alt="Design reference"
+                className="max-h-80 w-full object-contain"
+              />
+            </a>
+          </CardContent>
+        </Card>
+      )}
 
       {stage.rework_reason && stage.status === "rework_requested" && (
         <Card>

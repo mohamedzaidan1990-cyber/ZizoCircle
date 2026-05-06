@@ -67,3 +67,8 @@ export function buildIssuePhotoPath(orderId: string, filename: string) {
   const safe = filename.replace(/[^a-zA-Z0-9._-]/g, "_");
   return `${orderId}/${Date.now()}-${safe}`;
 }
+
+export function buildOrderRefPath(orderId: string, filename: string) {
+  const safe = filename.replace(/[^a-zA-Z0-9._-]/g, "_");
+  return `${orderId}/_ref/${Date.now()}-${safe}`;
+}

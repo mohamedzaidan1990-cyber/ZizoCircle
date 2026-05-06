@@ -24,6 +24,7 @@ import {
 } from "@/lib/format";
 import { assignWorkerAction } from "./actions";
 import { Select } from "@/components/ui/select";
+import { STORAGE, signUrl } from "@/lib/storage";
 import type {
   Client,
   Order,
@@ -86,6 +87,10 @@ export default async function OrderDetailPage({
 
   const ackedCount = scopeRows.filter((s) => s.client_ack).length;
 
+  const refImageUrl = o.reference_image_url
+    ? await signUrl(STORAGE.stagePhotos, o.reference_image_url, 3600)
+    : null;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -127,10 +132,27 @@ export default async function OrderDetailPage({
           <CardHeader>
             <CardTitle className="text-sm">Piece</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-1 text-sm">
-            <Field label="Description" value={o.piece_description ?? "—"} />
-            <Field label="Target weight" value={formatGrams(o.target_weight_grams ?? null)} />
-            <Field label="Estimated delivery" value={formatDate(o.estimated_delivery)} />
+          <CardContent className="space-y-3 text-sm">
+            {refImageUrl && (
+              <a
+                href={refImageUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block overflow-hidden rounded-md border"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={refImageUrl}
+                  alt="Reference"
+                  className="h-40 w-full object-cover"
+                />
+              </a>
+            )}
+            <div className="space-y-1">
+              <Field label="Description" value={o.piece_description ?? "—"} />
+              <Field label="Target weight" value={formatGrams(o.target_weight_grams ?? null)} />
+              <Field label="Estimated delivery" value={formatDate(o.estimated_delivery)} />
+            </div>
           </CardContent>
         </Card>
 

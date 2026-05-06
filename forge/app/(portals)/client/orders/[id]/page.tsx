@@ -14,7 +14,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { OrderStatusBadge, StageStatusBadge } from "@/components/orders/status-badge";
 import { StageProgress } from "@/components/orders/stage-progress";
 import { PhotoGrid } from "@/components/photos/photo-grid";
-import { STORAGE } from "@/lib/storage";
+import { STORAGE, signUrl } from "@/lib/storage";
 import { formatDate, formatDateTime } from "@/lib/format";
 import type { Order, OrderStage, ScopeItem } from "@/lib/types";
 
@@ -53,6 +53,10 @@ export default async function ClientOrderPage({
   const approvedStages = (stages ?? []) as OrderStage[];
   const scopeRows = (scope ?? []) as ScopeItem[];
 
+  const refImageUrl = o.reference_image_url
+    ? await signUrl(STORAGE.stagePhotos, o.reference_image_url, 3600)
+    : null;
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
@@ -75,6 +79,29 @@ export default async function ClientOrderPage({
           </p>
         )}
       </div>
+
+      {refImageUrl && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Design reference</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <a
+              href={refImageUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block overflow-hidden rounded-md border"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={refImageUrl}
+                alt="Design reference"
+                className="max-h-96 w-full object-contain"
+              />
+            </a>
+          </CardContent>
+        </Card>
+      )}
 
       {o.status === "scope_pending" && !o.scope_locked && (
         <Card>

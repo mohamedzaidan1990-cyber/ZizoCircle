@@ -5,6 +5,11 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
 import { failure, type ActionState } from "@/lib/actions";
+import {
+  STORAGE,
+  buildOrderRefPath,
+  uploadFile,
+} from "@/lib/storage";
 import type { StageTemplateStep } from "@/lib/types";
 
 export async function createOrderAction(
@@ -32,6 +37,13 @@ export async function createOrderAction(
     return failure("Target weight must be a positive number.");
   }
 
+  const refImage = formData.get("reference_image") as File | null;
+  const hasRefImage =
+    refImage instanceof File && refImage.size > 0;
+  if (hasRefImage && !refImage.type.startsWith("image/")) {
+    return failure("Reference must be an image.");
+  }
+
   const { data: order, error: insertErr } = await supabase
     .from("orders")
     .insert({
@@ -50,6 +62,23 @@ export async function createOrderAction(
 
   if (insertErr || !order) {
     return failure(insertErr?.message ?? "Failed to create order.");
+  }
+
+  if (hasRefImage) {
+    const refPath = buildOrderRefPath(
+      order.id,
+      refImage.name || "reference.jpg"
+    );
+    try {
+      await uploadFile(STORAGE.stagePhotos, refPath, refImage);
+      await supabase
+        .from("orders")
+        .update({ reference_image_url: refPath })
+        .eq("id", order.id);
+    } catch (e) {
+      // Don't block order creation on a failed image upload — log and move on.
+      console.error("[orders.new] reference image upload failed", e);
+    }
   }
 
   // Materialise stages from the template so workers + clients can see them immediately.
