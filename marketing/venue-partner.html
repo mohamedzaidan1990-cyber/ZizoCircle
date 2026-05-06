@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Zizo Circle — Venue Partnership (Lusail)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0B0914;
+    --card: #1A1530;
+    --border: #231E3A;
+    --text: #F0EEF8;
+    --muted: #7A7595;
+    --purple: #7B5CF6;
+    --purple-soft: #A78BFA;
+    --pink: #F53B8F;
+    --mint: #3BF5C8;
+    --orange: #F5A53B;
+    --lime: #C8F53B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #2a2438;
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    width: 210mm; min-height: 297mm;
+    margin: 20px auto;
+    background: var(--bg);
+    padding: 18mm 16mm;
+    position: relative;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    overflow: hidden;
+  }
+  .orb { position: absolute; border-radius: 50%; pointer-events: none; }
+  .orb-1 { width: 280px; height: 280px; background: rgba(123,92,246,0.15); top: -120px; right: -100px; }
+  .orb-2 { width: 220px; height: 220px; background: rgba(245,59,143,0.10); bottom: -80px; left: -80px; }
+
+  /* Header */
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    position: relative; z-index: 1;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 50%; background: var(--purple);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; color: #fff; font-size: 18px;
+  }
+  .logo-name { font-weight: 800; font-size: 18px; letter-spacing: -0.01em; }
+  .logo-tag { font-size: 10px; color: var(--muted); letter-spacing: 1.2px; text-transform: uppercase; }
+  .header-tag {
+    background: rgba(200,245,59,0.12);
+    color: var(--lime);
+    border: 1px solid rgba(200,245,59,0.25);
+    padding: 6px 12px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  }
+
+  /* Hero */
+  .hero { margin-top: 20px; position: relative; z-index: 1; }
+  .eyebrow {
+    color: var(--purple-soft); font-size: 11px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px;
+  }
+  h1 {
+    font-size: 30px; line-height: 1.15; font-weight: 800;
+    letter-spacing: -0.01em; margin-bottom: 10px;
+  }
+  h1 .accent { color: var(--purple-soft); }
+  .lead { color: var(--muted); font-size: 13px; max-width: 70ch; }
+
+  /* Two-col grid */
+  .grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px; margin-top: 22px;
+    position: relative; z-index: 1;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+  }
+  .card h3 {
+    font-size: 13px; font-weight: 800; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card .ico {
+    width: 26px; height: 26px; border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 900;
+  }
+  .ico-1 { background: rgba(123,92,246,0.18); color: var(--purple-soft); }
+  .ico-2 { background: rgba(59,245,200,0.18); color: var(--mint); }
+  .ico-3 { background: rgba(245,59,143,0.18); color: var(--pink); }
+  .ico-4 { background: rgba(245,165,59,0.18); color: var(--orange); }
+  .card p { color: var(--muted); font-size: 12px; line-height: 1.55; }
+  .card ul { margin-top: 6px; padding-left: 0; list-style: none; }
+  .card li {
+    color: var(--muted); font-size: 12px; padding: 3px 0;
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  .card li::before {
+    content: "✓"; color: var(--lime); font-weight: 800; font-size: 11px;
+    flex-shrink: 0;
+  }
+
+  /* Cashback box */
+  .cashback {
+    margin-top: 16px;
+    background: linear-gradient(140deg, rgba(123,92,246,0.18), rgba(245,59,143,0.12));
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 20px;
+    position: relative; z-index: 1;
+  }
+  .cashback h2 {
+    font-size: 18px; font-weight: 800; margin-bottom: 4px;
+  }
+  .cashback .sub { color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+  .flow {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
+  }
+  .flow-step {
+    background: rgba(11,9,20,0.5);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+  }
+  .flow-step .num {
+    font-size: 11px; font-weight: 800; letter-spacing: 1px;
+    color: var(--purple-soft); margin-bottom: 4px;
+  }
+  .flow-step .ttl { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .flow-step .desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+  .double-pill {
+    display: inline-block; background: rgba(200,245,59,0.15);
+    color: var(--lime); border: 1px solid rgba(200,245,59,0.3);
+    padding: 2px 8px; border-radius: 999px;
+    font-size: 10px; font-weight: 800; margin-top: 4px;
+  }
+
+  /* Example box */
+  .example {
+    margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    position: relative; z-index: 1;
+  }
+  .ex {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px 16px;
+  }
+  .ex .row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; padding: 4px 0;
+    color: var(--muted);
+  }
+  .ex .row strong { color: var(--text); font-weight: 700; }
+  .ex .total {
+    margin-top: 8px; padding-top: 10px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between;
+    font-size: 13px; font-weight: 800;
+  }
+  .ex .total .pos { color: var(--lime); }
+  .ex h4 {
+    font-size: 12px; font-weight: 800; margin-bottom: 8px;
+    color: var(--purple-soft); letter-spacing: 0.5px;
+  }
+
+  /* CTA */
+  .cta {
+    margin-top: 18px;
+    background: var(--text); color: var(--bg);
+    border-radius: 16px; padding: 18px 22px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; position: relative; z-index: 1;
+  }
+  .cta-left h3 { font-size: 16px; font-weight: 800; margin-bottom: 2px; }
+  .cta-left p { font-size: 11.5px; color: #4a4358; }
+  .cta-btn {
+    background: var(--purple); color: #fff;
+    padding: 12px 22px; border-radius: 12px;
+    font-weight: 700; font-size: 13px;
+    text-decoration: none; white-space: nowrap;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 16px;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: var(--muted); font-size: 10px;
+    position: relative; z-index: 1;
+  }
+  .footer .right { color: var(--purple-soft); font-weight: 700; }
+
+  @media print {
+    body { background: var(--bg); }
+    .page {
+      margin: 0; box-shadow: none;
+      width: 210mm; height: 297mm;
+      padding: 16mm 14mm;
+    }
+    @page { size: A4; margin: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="header">
+    <div class="logo">
+      <div class="logo-mark">Z</div>
+      <div>
+        <div class="logo-name">Zizo Circle</div>
+        <div class="logo-tag">Qatar's Social Circle App</div>
+      </div>
+    </div>
+    <div class="header-tag">PARTNER PACKET · LUSAIL 2026</div>
+  </div>
+
+  <section class="hero">
+    <div class="eyebrow">Be on every Lusail expat's first night out</div>
+    <h1>Fill your tables. <span class="accent">Pay nothing upfront.</span></h1>
+    <p class="lead">Zizo Circle is Qatar's social discovery app for expats and locals. We match people by their real interests — padel, brunch, hot yoga, books — and send them to your venue with cashback in their wallet. You only fund cashback when a customer actually walks in.</p>
+  </section>
+
+  <div class="grid">
+    <div class="card">
+      <h3><span class="ico ico-1">★</span> Free venue dashboard</h3>
+      <ul>
+        <li>Live check-ins, ratings & reviews</li>
+        <li>Customer demographics & interests</li>
+        <li>Hours, photos & menu — edit anytime</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="ico ico-2">↗</span> Built-in visibility</h3>
+      <ul>
+        <li>Featured to matched users near you</li>
+        <li>Suggested for group plans & dates out</li>
+        <li>Push to thousands of Lusail expats</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="ico ico-3">⚑</span> Customer data you own</h3>
+      <ul>
+        <li>Visit frequency & repeat-rate insights</li>
+        <li>What interests bring them in</li>
+        <li>Peak-hour & match-pair analytics</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="ico ico-4">⚡</span> Pure performance pricing</h3>
+      <ul>
+        <li>Zero setup, zero monthly fee</li>
+        <li>Pay cashback only on verified visits</li>
+        <li>Cancel any time — no contract lock-in</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="cashback">
+    <h2>How cashback works for your customers</h2>
+    <p class="sub">Customers earn cashback in-app every time they visit. They can only spend it at partner venues — that means it comes right back to you (or another partner).</p>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="num">STEP 01</div>
+        <div class="ttl">They book through Zizo</div>
+        <div class="desc">A matched user picks your venue from suggested spots in Lusail.</div>
+      </div>
+      <div class="flow-step">
+        <div class="num">STEP 02</div>
+        <div class="ttl">They scan & pay</div>
+        <div class="desc">QR check-in at the table. You confirm. They get 10–25% back instantly.</div>
+      </div>
+      <div class="flow-step">
+        <div class="num">STEP 03</div>
+        <div class="ttl">Bring a match → 2× cashback</div>
+        <div class="desc">If they come with their match, cashback doubles — driving group spend.<div class="double-pill">15 → 30 QAR</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="example">
+    <div class="ex">
+      <h4>EXAMPLE · SOLO VISIT</h4>
+      <div class="row"><span>Customer spend</span><strong>QAR 100</strong></div>
+      <div class="row"><span>Cashback rate</span><strong>15%</strong></div>
+      <div class="row"><span>You fund</span><strong>QAR 15</strong></div>
+      <div class="total"><span>Net to venue</span><span class="pos">+ QAR 85</span></div>
+    </div>
+    <div class="ex">
+      <h4>EXAMPLE · MATCHED VISIT (2 PEOPLE)</h4>
+      <div class="row"><span>Customer spend</span><strong>QAR 220</strong></div>
+      <div class="row"><span>Cashback rate (2×)</span><strong>30%</strong></div>
+      <div class="row"><span>You fund</span><strong>QAR 66</strong></div>
+      <div class="total"><span>Net to venue</span><span class="pos">+ QAR 154</span></div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <div class="cta-left">
+      <h3>Ready to fill your tables?</h3>
+      <p>Sign up takes 5 minutes. Go live in Lusail this week.</p>
+    </div>
+    <a class="cta-btn" href="https://zizocircle.com/partners">Become a partner →</a>
+  </div>
+
+  <div class="footer">
+    <div>partners@zizocircle.com  ·  +974 XXXX XXXX  ·  zizocircle.com/partners</div>
+    <div class="right">Lusail · Doha · The Pearl</div>
+  </div>
+</div>
+</body>
+</html>

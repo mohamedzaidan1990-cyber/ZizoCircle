@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>زيزو سيركل — تطبيق الدائرة الاجتماعية في قطر</title>
+<meta name="description" content="تعرّف على ناس في لوسيل يحبون اللي تحبه. تطابُق حسب الاهتمامات، التقِ في أماكن حقيقية، واربح كاش باك في كل مرة تخرج." />
+<meta name="theme-color" content="#0B0914" />
+
+<meta property="og:title" content="زيزو سيركل — تطبيق الدائرة الاجتماعية في قطر" />
+<meta property="og:description" content="تطابق. التقِ. اربح كاش باك. الإطلاق في لوسيل." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://zizocircle.com/ar" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #0B0914;
+    --card: #1A1530;
+    --border: #231E3A;
+    --text: #F0EEF8;
+    --muted: #7A7595;
+    --purple: #7B5CF6;
+    --purple-soft: #A78BFA;
+    --pink: #F53B8F;
+    --mint: #3BF5C8;
+    --orange: #F5A53B;
+    --lime: #C8F53B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: 'Cairo', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+
+  .wrap { width: 100%; max-width: 480px; margin: 0 auto; padding: 0 24px; position: relative; }
+  @media (min-width: 768px) { .wrap { max-width: 1100px; padding: 0 40px; } }
+
+  .orb { position: absolute; border-radius: 999px; filter: blur(40px); pointer-events: none; z-index: 0; }
+  .orb-1 { width: 340px; height: 340px; background: rgba(123,92,246,0.18); top: -120px; left: -100px; }
+  .orb-2 { width: 280px; height: 280px; background: rgba(245,59,143,0.12); top: 380px; right: -100px; }
+  .orb-3 { width: 320px; height: 320px; background: rgba(59,245,200,0.08); bottom: 200px; left: -80px; }
+
+  /* Nav */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px);
+    background: rgba(11,9,20,0.75);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; }
+  .logo-mark {
+    width: 32px; height: 32px; border-radius: 50%; background: var(--purple);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; color: #fff; font-size: 16px;
+    box-shadow: 0 8px 24px rgba(123,92,246,0.4);
+    font-family: 'Inter', sans-serif;
+  }
+  .nav-cta {
+    background: var(--purple); color: #fff;
+    padding: 9px 16px; border-radius: 999px;
+    font-size: 13px; font-weight: 700;
+  }
+  .lang-switch {
+    color: var(--muted); font-size: 12px; font-weight: 600;
+    margin-inline-end: 12px;
+  }
+
+  /* Hero */
+  .hero { padding: 32px 0 56px; position: relative; z-index: 1; }
+  .badge {
+    display: inline-block;
+    background: rgba(123,92,246,0.15);
+    border: 1px solid rgba(123,92,246,0.3);
+    color: var(--purple-soft);
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 12px; font-weight: 700;
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-size: 38px; line-height: 1.2; font-weight: 800;
+    margin-bottom: 16px;
+  }
+  h1 .accent { color: var(--purple-soft); }
+  .lead { color: var(--muted); font-size: 16px; line-height: 1.8; margin-bottom: 28px; max-width: 38ch; }
+
+  .ctas { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 16px 22px; border-radius: 16px;
+    font-size: 15px; font-weight: 700;
+    border: 0; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--purple); color: #fff;
+    box-shadow: 0 12px 30px rgba(123,92,246,0.35);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(123,92,246,0.45); }
+  .btn-outline {
+    background: transparent; color: var(--text);
+    border: 1.5px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--purple-soft); }
+
+  .hero-visual {
+    position: relative; height: 280px;
+    margin-top: 20px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ring-outer, .ring-mid, .center-disc {
+    position: absolute; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ring-outer { width: 240px; height: 240px; border: 1px solid rgba(123,92,246,0.25); }
+  .ring-mid { width: 180px; height: 180px; border: 1px solid rgba(245,59,143,0.2); }
+  .center-disc {
+    width: 100px; height: 100px; background: var(--purple);
+    box-shadow: 0 16px 40px rgba(123,92,246,0.45);
+    color: #fff; font-weight: 900; font-size: 40px;
+    font-family: 'Inter', sans-serif;
+  }
+  .avatar {
+    position: absolute; width: 50px; height: 50px; border-radius: 50%;
+    border: 3px solid var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; color: #fff; font-size: 18px;
+    font-family: 'Inter', sans-serif;
+  }
+  .av1 { background: var(--purple); top: 14px; left: 18%; }
+  .av2 { background: var(--mint); top: 6px; right: 18%; color: #0B0914; }
+  .av3 { background: var(--pink); bottom: 30px; left: 12%; }
+  .av4 { background: var(--orange); bottom: 18px; right: 12%; color: #0B0914; }
+  .match-pill {
+    position: absolute;
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--lime); font-size: 11px; font-weight: 700;
+    padding: 4px 10px; border-radius: 999px;
+  }
+  .mp1 { top: 0; right: 38%; }
+  .mp2 { top: -10px; left: 6%; }
+
+  /* Section base */
+  section { padding: 56px 0; position: relative; z-index: 1; }
+  .eyebrow {
+    color: var(--purple-soft); font-size: 13px; font-weight: 700;
+    margin-bottom: 12px;
+  }
+  h2 {
+    font-size: 28px; line-height: 1.3; font-weight: 800;
+    margin-bottom: 14px;
+  }
+  .section-lead { color: var(--muted); font-size: 15px; max-width: 50ch; margin-bottom: 32px; line-height: 1.8; }
+
+  /* How it works */
+  .steps { display: grid; gap: 14px; }
+  .step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 22px;
+    display: flex; gap: 16px; align-items: flex-start;
+  }
+  .step-num {
+    width: 44px; height: 44px; border-radius: 14px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 18px;
+    font-family: 'Inter', sans-serif;
+  }
+  .step-1 .step-num { background: rgba(123,92,246,0.18); color: var(--purple-soft); }
+  .step-2 .step-num { background: rgba(245,59,143,0.18); color: var(--pink); }
+  .step-3 .step-num { background: rgba(200,245,59,0.18); color: var(--lime); }
+  .step h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .step p { color: var(--muted); font-size: 14px; line-height: 1.8; }
+
+  /* Venue section */
+  .venue {
+    background: linear-gradient(160deg, rgba(123,92,246,0.12), rgba(245,59,143,0.08));
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 32px 24px;
+  }
+  .venue h2 { font-size: 24px; }
+  .venue-bullets { list-style: none; margin: 18px 0 24px; }
+  .venue-bullets li {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 10px 0; font-size: 14px; line-height: 1.8;
+  }
+  .venue-bullets .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--mint);
+    margin-top: 12px; flex-shrink: 0;
+  }
+  .venue-cta {
+    background: var(--text); color: var(--bg);
+    padding: 14px 20px; border-radius: 14px;
+    font-weight: 700; font-size: 14px; display: inline-block;
+  }
+
+  /* Final CTA */
+  .final {
+    text-align: center;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px 24px;
+  }
+  .final h2 { font-size: 26px; }
+  .final p { color: var(--muted); margin-bottom: 22px; }
+  .waitlist {
+    display: flex; flex-direction: column; gap: 10px; max-width: 360px; margin: 0 auto;
+  }
+  .waitlist input {
+    background: var(--bg); border: 1.5px solid var(--border);
+    color: var(--text); padding: 14px 16px; border-radius: 14px;
+    font-size: 15px; font-family: inherit; width: 100%;
+    text-align: right;
+  }
+  .waitlist input:focus { outline: none; border-color: var(--purple); }
+  .stores { display: flex; gap: 10px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
+  .store-btn {
+    background: var(--bg); border: 1.5px solid var(--border);
+    padding: 12px 18px; border-radius: 14px;
+    font-size: 13px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 28px 0 40px;
+    text-align: center;
+    color: var(--muted); font-size: 13px;
+  }
+  footer .small { font-size: 11px; margin-top: 8px; }
+
+  /* Tablet+ */
+  @media (min-width: 768px) {
+    h1 { font-size: 56px; }
+    h2 { font-size: 36px; }
+    .hero { padding: 56px 0 80px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: center; }
+    .hero-visual { height: 420px; margin-top: 0; }
+    .ring-outer { width: 360px; height: 360px; }
+    .ring-mid { width: 260px; height: 260px; }
+    .center-disc { width: 140px; height: 140px; font-size: 56px; }
+    .avatar { width: 60px; height: 60px; font-size: 22px; }
+    .steps { grid-template-columns: repeat(3, 1fr); }
+    section { padding: 80px 0; }
+    .ctas { flex-direction: row; }
+    .venue { padding: 48px; }
+    .waitlist { flex-direction: row; }
+    .waitlist .btn-primary { white-space: nowrap; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<nav>
+  <div class="wrap nav-row">
+    <a href="#" class="logo">
+      <span class="logo-mark">Z</span>
+      <span>زيزو سيركل</span>
+    </a>
+    <div style="display:flex; align-items:center;">
+      <a href="../index.html" class="lang-switch">EN</a>
+      <a href="#waitlist" class="nav-cta">سجّل الآن</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <span class="badge">✦ الإطلاق في لوسيل</span>
+      <h1>تعرّف على ناس <span class="accent">يحبون اللي تحبه</span>.</h1>
+      <p class="lead">ذكاء اصطناعي يطابقك مع أشخاص قريبين في لوسيل بحسب اهتماماتك الحقيقية — ويعطيك كاش باك في كل مرة تطلع فيها.</p>
+      <div class="ctas">
+        <a href="#waitlist" class="btn btn-primary">سجّل في قائمة الانتظار — مجاناً</a>
+        <a href="#how" class="btn btn-outline">كيف يعمل التطبيق</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="ring-outer"></div>
+      <div class="ring-mid"></div>
+      <div class="center-disc">Z</div>
+      <div class="avatar av1">L</div>
+      <div class="avatar av2">O</div>
+      <div class="avatar av3">S</div>
+      <div class="avatar av4">K</div>
+      <div class="match-pill mp1">94% تطابق ✨</div>
+      <div class="match-pill mp2">87% تطابق ✨</div>
+    </div>
+  </div>
+</header>
+
+<section id="how">
+  <div class="wrap">
+    <div class="eyebrow">كيف يعمل</div>
+    <h2>ثلاث خطوات. بدون تردد.</h2>
+    <p class="section-lead">صُمّم للمغتربين الجدد وللمقيمين — جد دائرتك في لوسيل خلال دقائق.</p>
+
+    <div class="steps">
+      <div class="step step-1">
+        <div class="step-num">١</div>
+        <div>
+          <h3>تطابُق حسب الاهتمامات</h3>
+          <p>بادل، فطور، كتب، يوغا، قيمنق — اختر اللي تحبه، والذكاء الاصطناعي يلاقيك ناس قريبين منك يحبونه فعلاً.</p>
+        </div>
+      </div>
+      <div class="step step-2">
+        <div class="step-num">٢</div>
+        <div>
+          <h3>التقِ في أماكن حقيقية</h3>
+          <p>اختر من أحلى أماكن لوسيل — المارينا، فوكس هيلز، اللؤلؤة. خطّط من التطبيق، تعال، بدون أي إحراج.</p>
+        </div>
+      </div>
+      <div class="step step-3">
+        <div class="step-num">٣</div>
+        <div>
+          <h3>اربح كاش باك</h3>
+          <p>كاش باك يصل إلى ٢٥٪ في كل زيارة. تجي مع شخص تطابقت معه؟ الكاش باك يتضاعف. أنفقه في خرجتك التالية.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="venue">
+      <div class="eyebrow">للأماكن والمطاعم</div>
+      <h2>كن وجهة كل مغترب في لوسيل.</h2>
+      <p class="section-lead">أدرج مكانك مجاناً، استقبل زبائن مؤهلين، وادفع فقط حين يدخلون فعلياً.</p>
+      <ul class="venue-bullets">
+        <li><span class="dot"></span>لوحة تحكم مجانية مع الزيارات والتقييمات وبيانات الزبائن</li>
+        <li><span class="dot"></span>ظهور مميز للمستخدمين القريبين منك — توزيع جاهز</li>
+        <li><span class="dot"></span>الزبائن ينفقون أكثر حين يجيبون شخصاً متطابقاً (الكاش باك يتضاعف)</li>
+        <li><span class="dot"></span>تدفع فقط على الزيارات الفعلية — أداء صافٍ بلا التزامات</li>
+      </ul>
+      <a href="mailto:partners@zizocircle.com?subject=شراكة%20زيزو%20سيركل%20—%20لوسيل" class="venue-cta">كن شريكاً ←</a>
+    </div>
+  </div>
+</section>
+
+<section id="waitlist">
+  <div class="wrap">
+    <div class="final">
+      <div class="eyebrow">إطلاق لوسيل — مقاعد محدودة</div>
+      <h2>كن أول من يدخل الدائرة.</h2>
+      <p>سجّل في قائمة الانتظار وافتح <strong style="color: var(--lime)">كاش باك بقيمة ٥٠ ريال</strong> حصرياً للأعضاء المؤسسين عند الإطلاق.</p>
+      <form class="waitlist" id="waitlist-form" novalidate>
+        <input type="email" placeholder="بريدك الإلكتروني" required />
+        <button type="submit" class="btn btn-primary">سجّل الآن</button>
+      </form>
+      <div class="stores">
+        <a href="#" class="store-btn"> App Store</a>
+        <a href="#" class="store-btn">▶ Google Play</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© ٢٠٢٦ زيزو سيركل · صُنع في قطر 🇶🇦</div>
+    <div class="small">
+      <a href="mailto:hello@zizocircle.com">hello@zizocircle.com</a> ·
+      <a href="/privacy">سياسة الخصوصية</a> ·
+      <a href="/terms">الشروط</a>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+  import { wireWaitlistForm } from '../firebase-waitlist.js';
+  wireWaitlistForm(document.getElementById('waitlist-form'), { lang: 'ar', source: 'landing-ar' });
+</script>
+
+</body>
+</html>

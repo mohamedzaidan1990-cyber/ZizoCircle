@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>زيزو سيركل — قصص إنستقرام (1080×1920)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0B0914;
+    --card: #1A1530;
+    --border: #231E3A;
+    --text: #F0EEF8;
+    --muted: #7A7595;
+    --purple: #7B5CF6;
+    --purple-soft: #A78BFA;
+    --pink: #F53B8F;
+    --mint: #3BF5C8;
+    --orange: #F5A53B;
+    --lime: #C8F53B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: #1a1424;
+    color: var(--text);
+    font-family: 'Cairo', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    padding: 30px 0;
+  }
+  .toolbar {
+    max-width: 540px; margin: 0 auto 20px;
+    padding: 14px 18px; background: #2a2438;
+    border: 1px solid #3a3450; border-radius: 12px;
+    color: var(--muted); font-size: 13px;
+    direction: ltr;
+  }
+  .toolbar strong { color: var(--text); }
+  .toolbar code { color: var(--purple-soft); }
+  .gallery { display: flex; flex-direction: column; align-items: center; gap: 30px; }
+  .frame-label {
+    color: var(--muted); font-size: 12px; font-weight: 700;
+    letter-spacing: 1.5px; margin-bottom: -16px;
+    align-self: flex-end; margin-right: calc(50% - 270px);
+  }
+
+  .frame {
+    width: 1080px; height: 1920px;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+    transform: scale(0.5);
+    transform-origin: top center;
+    margin-bottom: -960px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  }
+  body.solo .toolbar, body.solo .frame-label { display: none; }
+  body.solo .gallery { gap: 0; }
+  body.solo .frame { display: none; transform: none; margin: 0; }
+  body.solo .frame.active { display: block; }
+
+  .orb { position: absolute; border-radius: 50%; filter: blur(90px); pointer-events: none; }
+  .orb-purple { background: rgba(123,92,246,0.4); }
+  .orb-pink { background: rgba(245,59,143,0.3); }
+  .orb-mint { background: rgba(59,245,200,0.22); }
+  .orb-lime { background: rgba(200,245,59,0.22); }
+
+  .logo {
+    position: absolute; top: 90px; right: 60px;
+    display: flex; align-items: center; gap: 16px;
+    z-index: 5;
+  }
+  .logo-mark {
+    width: 60px; height: 60px; border-radius: 50%;
+    background: var(--purple);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; color: #fff; font-size: 30px;
+    box-shadow: 0 12px 30px rgba(123,92,246,0.5);
+    font-family: 'Inter', sans-serif;
+  }
+  .logo-name { font-weight: 800; font-size: 28px; }
+
+  .pin {
+    position: absolute; top: 90px; left: 60px;
+    background: rgba(123,92,246,0.18);
+    border: 1.5px solid rgba(123,92,246,0.4);
+    color: var(--purple-soft);
+    padding: 14px 22px; border-radius: 999px;
+    font-size: 18px; font-weight: 800; letter-spacing: 1.5px;
+    z-index: 5;
+  }
+
+  .swipe-up {
+    position: absolute; bottom: 140px; left: 0; right: 0;
+    text-align: center; z-index: 5;
+  }
+  .swipe-up-arrow {
+    font-size: 48px; color: var(--text);
+    animation: bounce 1.6s ease-in-out infinite;
+    display: inline-block;
+  }
+  .swipe-up-text {
+    font-size: 30px; font-weight: 800;
+    color: var(--text); letter-spacing: 1px;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  /* Animated reveal mode */
+  body.animate .frame.active .logo,
+  body.animate .frame.active .pin,
+  body.animate .frame.active .s1-eyebrow, body.animate .frame.active .s2-eyebrow,
+  body.animate .frame.active .s3-eyebrow, body.animate .frame.active .s4-eyebrow,
+  body.animate .frame.active .s1-headline, body.animate .frame.active .s2-amount-wrap,
+  body.animate .frame.active .s3-title, body.animate .frame.active .s4-check,
+  body.animate .frame.active .s4-headline,
+  body.animate .frame.active .s1-sub, body.animate .frame.active .s2-headline,
+  body.animate .frame.active .s4-sub,
+  body.animate .frame.active .s1-date, body.animate .frame.active .s2-sub,
+  body.animate .frame.active .s4-pill,
+  body.animate .frame.active .s3-step,
+  body.animate .frame.active .swipe-up {
+    opacity: 0;
+    animation: revealUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+  body.animate .frame.active .logo { animation-delay: 0.1s; }
+  body.animate .frame.active .pin { animation-delay: 0.2s; }
+  body.animate .frame.active .s1-eyebrow,
+  body.animate .frame.active .s2-eyebrow,
+  body.animate .frame.active .s3-eyebrow,
+  body.animate .frame.active .s4-eyebrow { animation-delay: 0.5s; }
+  body.animate .frame.active .s1-headline,
+  body.animate .frame.active .s2-amount-wrap,
+  body.animate .frame.active .s3-title,
+  body.animate .frame.active .s4-check { animation-delay: 0.9s; animation-duration: 0.9s; }
+  body.animate .frame.active .s4-headline { animation-delay: 1.3s; }
+  body.animate .frame.active .s1-sub,
+  body.animate .frame.active .s2-headline,
+  body.animate .frame.active .s4-sub { animation-delay: 1.5s; }
+  body.animate .frame.active .s1-date,
+  body.animate .frame.active .s2-sub,
+  body.animate .frame.active .s4-pill { animation-delay: 1.9s; }
+  body.animate .frame.active .s3-step:nth-child(1) { animation-delay: 1.5s; }
+  body.animate .frame.active .s3-step:nth-child(2) { animation-delay: 1.8s; }
+  body.animate .frame.active .s3-step:nth-child(3) { animation-delay: 2.1s; }
+  body.animate .frame.active .swipe-up { animation-delay: 2.6s; }
+  @keyframes revealUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* STORY 1: COMING SOON */
+  .s1 .orb-1 { width: 800px; height: 800px; top: -200px; right: -200px; }
+  .s1 .orb-2 { width: 700px; height: 700px; bottom: -200px; left: -200px; }
+  .s1-content {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 0 80px;
+    z-index: 4;
+  }
+  .s1-eyebrow {
+    color: var(--lime); font-size: 30px; font-weight: 800;
+    letter-spacing: 4px; margin-bottom: 50px;
+  }
+  .s1-headline {
+    font-size: 160px; line-height: 1.05; font-weight: 900;
+    letter-spacing: -0.04em; margin-bottom: 30px;
+  }
+  .s1-headline .accent { color: var(--purple-soft); display: block; }
+  .s1-sub {
+    font-size: 34px; color: var(--muted); line-height: 1.6;
+    max-width: 800px; margin-bottom: 80px;
+  }
+  .s1-date {
+    background: var(--card); border: 1.5px solid var(--border);
+    padding: 20px 36px; border-radius: 999px;
+    font-size: 28px; font-weight: 800; color: var(--text);
+    letter-spacing: 1.5px;
+  }
+  .s1-date .dot { color: var(--lime); }
+
+  /* STORY 2: FOUNDING OFFER */
+  .s2 .orb-1 { width: 800px; height: 800px; top: 200px; left: -250px; }
+  .s2 .orb-2 { width: 700px; height: 700px; bottom: -150px; right: -250px; }
+  .s2-content {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 0 80px;
+    z-index: 4;
+  }
+  .s2-eyebrow {
+    color: var(--pink); font-size: 30px; font-weight: 800;
+    letter-spacing: 4px; margin-bottom: 40px;
+  }
+  .s2-amount-wrap {
+    background: linear-gradient(135deg, rgba(200,245,59,0.2), rgba(123,92,246,0.2));
+    border: 2.5px solid rgba(200,245,59,0.4);
+    border-radius: 44px;
+    padding: 70px 60px;
+    margin-bottom: 60px;
+  }
+  .s2-amount-label {
+    font-size: 28px; color: var(--muted); font-weight: 700;
+    letter-spacing: 2px; margin-bottom: 16px;
+  }
+  .s2-amount {
+    font-size: 280px; line-height: 1; font-weight: 900;
+    color: var(--lime); letter-spacing: -0.04em;
+    margin-bottom: 18px;
+    font-family: 'Inter', sans-serif;
+  }
+  .s2-amount .currency { font-size: 80px; vertical-align: middle; margin-left: 12px; }
+  .s2-amount-sub {
+    font-size: 32px; font-weight: 700; color: var(--text);
+  }
+  .s2-headline {
+    font-size: 76px; line-height: 1.25; font-weight: 900;
+    letter-spacing: -0.02em; margin-bottom: 30px;
+    max-width: 880px;
+  }
+  .s2-headline .accent { color: var(--purple-soft); }
+  .s2-sub { font-size: 30px; color: var(--muted); max-width: 800px; line-height: 1.5; }
+
+  /* STORY 3: HOW IT WORKS */
+  .s3 .orb-1 { width: 700px; height: 700px; top: -100px; left: -200px; }
+  .s3 .orb-2 { width: 600px; height: 600px; bottom: 100px; right: -200px; }
+  .s3-content {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 240px 80px 280px;
+    z-index: 4;
+  }
+  .s3-eyebrow {
+    color: var(--purple-soft); font-size: 28px; font-weight: 800;
+    letter-spacing: 3px; margin-bottom: 30px;
+    text-align: center;
+  }
+  .s3-title {
+    font-size: 90px; line-height: 1.15; font-weight: 900;
+    letter-spacing: -0.02em; margin-bottom: 80px;
+    text-align: center;
+  }
+  .s3-title .accent { color: var(--purple-soft); }
+  .s3-steps { display: flex; flex-direction: column; gap: 30px; }
+  .s3-step {
+    background: var(--card); border: 1.5px solid var(--border);
+    border-radius: 32px; padding: 36px;
+    display: flex; gap: 30px; align-items: center;
+  }
+  .s3-step-num {
+    width: 100px; height: 100px; border-radius: 28px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 56px;
+  }
+  .s3-step.n1 .s3-step-num { background: rgba(123,92,246,0.22); color: var(--purple-soft); }
+  .s3-step.n2 .s3-step-num { background: rgba(245,59,143,0.22); color: var(--pink); }
+  .s3-step.n3 .s3-step-num { background: rgba(200,245,59,0.22); color: var(--lime); }
+  .s3-step-title { font-size: 48px; font-weight: 800; margin-bottom: 4px; }
+  .s3-step-desc { font-size: 28px; color: var(--muted); }
+
+  /* STORY 4: SUCCESS */
+  .s4 .orb-1 { width: 800px; height: 800px; top: -200px; right: -200px; }
+  .s4 .orb-2 { width: 700px; height: 700px; bottom: -200px; left: -200px; }
+  .s4-content {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 0 80px;
+    z-index: 4;
+  }
+  .s4-check {
+    width: 180px; height: 180px; border-radius: 50%;
+    background: var(--lime);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 100px; font-weight: 900; color: var(--bg);
+    margin-bottom: 50px;
+    box-shadow: 0 20px 60px rgba(200,245,59,0.5);
+  }
+  .s4-eyebrow {
+    color: var(--lime); font-size: 30px; font-weight: 800;
+    letter-spacing: 4px; margin-bottom: 30px;
+  }
+  .s4-headline {
+    font-size: 130px; line-height: 1.1; font-weight: 900;
+    letter-spacing: -0.04em; margin-bottom: 30px;
+  }
+  .s4-headline .accent { color: var(--purple-soft); display: block; }
+  .s4-sub {
+    font-size: 32px; color: var(--muted); line-height: 1.5; margin-bottom: 60px;
+    max-width: 800px;
+  }
+  .s4-pill {
+    display: inline-flex; align-items: center; gap: 18px;
+    background: linear-gradient(135deg, rgba(200,245,59,0.2), rgba(123,92,246,0.2));
+    border: 2.5px solid rgba(200,245,59,0.4);
+    padding: 28px 44px; border-radius: 999px;
+  }
+  .s4-pill .amt {
+    font-size: 56px; font-weight: 900; color: var(--lime);
+    letter-spacing: -0.02em;
+    font-family: 'Inter', sans-serif;
+  }
+  .s4-pill .lbl {
+    font-size: 26px; font-weight: 700; color: var(--text);
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <strong>4 Instagram stories (Arabic)</strong> · 1080×1920 each. Previews at 50%.<br>
+  Export full-size: <code>?solo=1</code> through <code>?solo=4</code> in Chrome → Capture full size screenshot.
+</div>
+
+<div class="gallery">
+
+  <!-- STORY 1: COMING SOON -->
+  <div class="frame-label">Story 1 · إطلاق لوسيل قريب</div>
+  <div class="frame s1" id="f1">
+    <div class="orb orb-purple orb-1"></div>
+    <div class="orb orb-pink orb-2"></div>
+    <div class="logo">
+      <div class="logo-mark">Z</div>
+      <div class="logo-name">زيزو سيركل</div>
+    </div>
+    <div class="pin">📍 لوسيل</div>
+    <div class="s1-content">
+      <div class="s1-eyebrow">دائرتك على الطريق</div>
+      <div class="s1-headline">لوسيل.<span class="accent">قريباً.</span></div>
+      <div class="s1-sub">تعرّف على ناس يحبون اللي تحبه. واربح كاش باك في كل خرجة.</div>
+      <div class="s1-date"><span class="dot">●</span> الإطلاق هذا الصيف</div>
+    </div>
+    <div class="swipe-up">
+      <div class="swipe-up-arrow">⬆</div>
+      <div class="swipe-up-text">اسحب للأعلى للتسجيل</div>
+    </div>
+  </div>
+
+  <!-- STORY 2: FOUNDING OFFER -->
+  <div class="frame-label">Story 2 · عرض المؤسسين</div>
+  <div class="frame s2" id="f2">
+    <div class="orb orb-lime orb-1"></div>
+    <div class="orb orb-purple orb-2"></div>
+    <div class="logo">
+      <div class="logo-mark">Z</div>
+      <div class="logo-name">زيزو سيركل</div>
+    </div>
+    <div class="pin">🚨 لوسيل</div>
+    <div class="s2-content">
+      <div class="s2-eyebrow">للأعضاء المؤسسين فقط</div>
+      <div class="s2-amount-wrap">
+        <div class="s2-amount-label">كاش باك على حسابنا</div>
+        <div class="s2-amount">50<span class="currency">QAR</span></div>
+        <div class="s2-amount-sub">في محفظتك يوم الإطلاق</div>
+      </div>
+      <div class="s2-headline">سجّل الآن.<br><span class="accent">واستلم رصيدك.</span></div>
+      <div class="s2-sub">أول ٥٠٠ مقعد. سكان لوسيل لهم الأولوية.</div>
+    </div>
+    <div class="swipe-up">
+      <div class="swipe-up-arrow">⬆</div>
+      <div class="swipe-up-text">اسحب — احجز مقعدك</div>
+    </div>
+  </div>
+
+  <!-- STORY 3: HOW IT WORKS -->
+  <div class="frame-label">Story 3 · كيف يعمل</div>
+  <div class="frame s3" id="f3">
+    <div class="orb orb-purple orb-1"></div>
+    <div class="orb orb-mint orb-2"></div>
+    <div class="logo">
+      <div class="logo-mark">Z</div>
+      <div class="logo-name">زيزو سيركل</div>
+    </div>
+    <div class="pin">📍 لوسيل</div>
+    <div class="s3-content">
+      <div class="s3-eyebrow">كيف يعمل التطبيق</div>
+      <div class="s3-title">ثلاث خطوات. <span class="accent">صفر إحراج.</span></div>
+      <div class="s3-steps">
+        <div class="s3-step n1">
+          <div class="s3-step-num">١</div>
+          <div>
+            <div class="s3-step-title">تطابق</div>
+            <div class="s3-step-desc">حسب اهتماماتك الحقيقية</div>
+          </div>
+        </div>
+        <div class="s3-step n2">
+          <div class="s3-step-num">٢</div>
+          <div>
+            <div class="s3-step-title">التقِ</div>
+            <div class="s3-step-desc">في أحلى أماكن لوسيل</div>
+          </div>
+        </div>
+        <div class="s3-step n3">
+          <div class="s3-step-num">٣</div>
+          <div>
+            <div class="s3-step-title">اربح</div>
+            <div class="s3-step-desc">كاش باك حتى ٢٥٪. يتضاعف مع متطابق.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="swipe-up">
+      <div class="swipe-up-arrow">⬆</div>
+      <div class="swipe-up-text">اسحب — انضم مجاناً</div>
+    </div>
+  </div>
+
+  <!-- STORY 4: SUCCESS -->
+  <div class="frame-label">Story 4 · تأكيد التسجيل</div>
+  <div class="frame s4" id="f4">
+    <div class="orb orb-lime orb-1"></div>
+    <div class="orb orb-purple orb-2"></div>
+    <div class="logo">
+      <div class="logo-mark">Z</div>
+      <div class="logo-name">زيزو سيركل</div>
+    </div>
+    <div class="pin">📍 لوسيل</div>
+    <div class="s4-content">
+      <div class="s4-check">✓</div>
+      <div class="s4-eyebrow">أنت معنا</div>
+      <div class="s4-headline">أهلاً<span class="accent">في الدائرة.</span></div>
+      <div class="s4-sub">رصيد ٥٠ ر.ق جاهز. نوصلك بمجرد ما يفتح التطبيق في لوسيل.</div>
+      <div class="s4-pill">
+        <span class="amt">QAR 50</span>
+        <span class="lbl">جاهز للصرف</span>
+      </div>
+    </div>
+    <div class="swipe-up">
+      <div class="swipe-up-arrow">⬆</div>
+      <div class="swipe-up-text">شارك ومنشن صديق</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const solo = params.get('solo');
+  if (solo) {
+    document.body.classList.add('solo');
+    const target = document.getElementById('f' + solo);
+    if (target) target.classList.add('active');
+  }
+  if (params.get('animate') === '1') {
+    document.body.classList.add('animate');
+  }
+</script>
+
+</body>
+</html>

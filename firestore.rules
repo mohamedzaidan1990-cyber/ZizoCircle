@@ -1,0 +1,26 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Marketing waitlist — public create, no read/update/delete.
+    // Validates shape so spammers can't dump arbitrary data.
+    match /waitlist/{doc} {
+      allow create: if
+        request.resource.data.keys().hasOnly(['email', 'lang', 'source', 'userAgent', 'referrer', 'createdAt'])
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 200
+        && request.resource.data.email.matches('^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$')
+        && request.resource.data.lang in ['en', 'ar']
+        && request.resource.data.source is string
+        && request.resource.data.source.size() <= 80
+        && (!('userAgent' in request.resource.data) || request.resource.data.userAgent.size() <= 200)
+        && (!('referrer' in request.resource.data) || request.resource.data.referrer == null || request.resource.data.referrer.size() <= 500);
+      allow read, update, delete: if false;
+    }
+
+    // App's existing collections (users, venues, matches, wallet, etc.)
+    // — keep your existing rules below this block unchanged.
+    // The waitlist block above only covers the marketing collection.
+  }
+}

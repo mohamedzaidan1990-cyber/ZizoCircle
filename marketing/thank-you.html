@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>You're in — Zizo Circle</title>
+<meta name="description" content="Welcome to the circle. Your QAR 50 cashback is ready for the Lusail launch." />
+<meta name="theme-color" content="#0B0914" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Cairo:wght@400;700;800;900&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #0B0914;
+    --card: #1A1530;
+    --border: #231E3A;
+    --text: #F0EEF8;
+    --muted: #7A7595;
+    --purple: #7B5CF6;
+    --purple-soft: #A78BFA;
+    --pink: #F53B8F;
+    --mint: #3BF5C8;
+    --lime: #C8F53B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  body[lang="ar"] { font-family: 'Cairo', system-ui, sans-serif; }
+
+  .orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
+  .orb-1 { width: 500px; height: 500px; background: rgba(200,245,59,0.18); top: -150px; left: -150px; }
+  .orb-2 { width: 450px; height: 450px; background: rgba(123,92,246,0.22); bottom: -120px; right: -120px; }
+  .orb-3 { width: 320px; height: 320px; background: rgba(245,59,143,0.12); top: 40%; left: 50%; transform: translateX(-50%); }
+
+  .lang-switch {
+    position: absolute; top: 20px; right: 24px;
+    display: flex; gap: 12px; z-index: 10;
+  }
+  .lang-switch a {
+    color: var(--muted); font-size: 13px; font-weight: 700;
+    text-decoration: none;
+    padding: 6px 12px; border-radius: 999px;
+    border: 1px solid var(--border);
+  }
+  .lang-switch a.active { color: var(--text); background: var(--card); }
+
+  .wrap {
+    width: 100%; max-width: 540px;
+    text-align: center;
+    position: relative; z-index: 1;
+    animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .check {
+    width: 96px; height: 96px; border-radius: 50%;
+    background: var(--lime);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 56px; font-weight: 900; color: var(--bg);
+    margin: 0 auto 28px;
+    box-shadow: 0 12px 40px rgba(200,245,59,0.4);
+    animation: pop 0.6s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  @keyframes pop {
+    from { opacity: 0; transform: scale(0.4); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .eyebrow {
+    color: var(--lime); font-size: 12px; font-weight: 800;
+    letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 16px;
+  }
+  body[lang="ar"] .eyebrow { letter-spacing: 1.5px; text-transform: none; font-size: 13px; }
+
+  h1 {
+    font-size: 38px; line-height: 1.1; font-weight: 800;
+    letter-spacing: -0.02em; margin-bottom: 16px;
+  }
+  h1 .accent { color: var(--purple-soft); }
+  body[lang="ar"] h1 { line-height: 1.25; }
+
+  p { color: var(--muted); font-size: 16px; line-height: 1.7; margin-bottom: 28px; }
+
+  .reward {
+    background: linear-gradient(135deg, rgba(200,245,59,0.15), rgba(123,92,246,0.15));
+    border: 1.5px solid rgba(200,245,59,0.3);
+    border-radius: 20px;
+    padding: 22px 24px;
+    margin-bottom: 28px;
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+  }
+  .reward .amt {
+    font-size: 32px; font-weight: 900; color: var(--lime);
+    font-family: 'Inter', sans-serif;
+  }
+  .reward .lbl { font-size: 14px; font-weight: 700; color: var(--text); }
+
+  .actions { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .btn {
+    padding: 15px 22px; border-radius: 14px;
+    font-size: 15px; font-weight: 700;
+    text-decoration: none;
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--purple); color: #fff;
+    box-shadow: 0 10px 28px rgba(123,92,246,0.35);
+  }
+  .btn-outline {
+    border: 1.5px solid var(--border); color: var(--text);
+    background: transparent;
+  }
+
+  .footer-note { font-size: 13px; color: var(--muted); }
+  .footer-note a { color: var(--purple-soft); text-decoration: none; }
+
+  /* Default content (English) */
+  body[lang="ar"] .lang-en { display: none; }
+  body[lang="en"] .lang-ar { display: none; }
+</style>
+</head>
+<body lang="en">
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="lang-switch">
+  <a href="?lang=en" id="link-en">EN</a>
+  <a href="?lang=ar" id="link-ar">عربي</a>
+</div>
+
+<div class="wrap">
+  <div class="check">✓</div>
+
+  <div class="lang-en">
+    <div class="eyebrow">YOU'RE IN</div>
+    <h1>Welcome to <span class="accent">the circle.</span></h1>
+    <p>You're on the founding-member list<span id="email-en"></span>. We'll DM you the moment Zizo Circle goes live in Lusail — and your cashback drops in your wallet on day one.</p>
+    <div class="reward">
+      <span class="amt">QAR 50</span>
+      <span class="lbl">unlocked · ready to spend</span>
+    </div>
+    <div class="actions">
+      <a class="btn btn-primary" href="https://instagram.com/zizocircle" target="_blank" rel="noopener">Follow @zizocircle on Instagram →</a>
+      <a class="btn btn-outline" href="https://wa.me/?text=I%20just%20joined%20%40zizocircle%20%E2%80%94%20Qatar's%20social%20circle%20app%20launching%20in%20Lusail.%20Get%20QAR%2050%20cashback%20when%20you%20join%3A%20https%3A%2F%2Fzizocircle.com">Tag a friend who needs this</a>
+    </div>
+    <p class="footer-note">Want a head start? <a href="mailto:partners@zizocircle.com">Become a venue partner</a></p>
+  </div>
+
+  <div class="lang-ar" dir="rtl">
+    <div class="eyebrow">أنت معنا</div>
+    <h1>أهلاً بك في <span class="accent">الدائرة.</span></h1>
+    <p>سجّلناك ضمن الأعضاء المؤسسين<span id="email-ar"></span>. نوصلك بمجرد ما يفتح التطبيق في لوسيل، ورصيد الكاش باك ينزل في محفظتك يوم الإطلاق.</p>
+    <div class="reward">
+      <span class="amt">QAR 50</span>
+      <span class="lbl">جاهز للصرف</span>
+    </div>
+    <div class="actions">
+      <a class="btn btn-primary" href="https://instagram.com/zizocircle" target="_blank" rel="noopener">تابعنا على إنستقرام @zizocircle ←</a>
+      <a class="btn btn-outline" href="https://wa.me/?text=%D8%A7%D9%86%D8%B6%D9%85%D9%8A%D8%AA%20%D9%84%D8%B2%D9%8A%D8%B2%D9%88%20%D8%B3%D9%8A%D8%B1%D9%83%D9%84%20%E2%80%94%20%D8%AA%D8%B7%D8%A8%D9%8A%D9%82%20%D8%A7%D8%AC%D8%AA%D9%85%D8%A7%D8%B9%D9%8A%20%D9%82%D8%B7%D8%B1%D9%8A%20%D9%82%D8%B1%D9%8A%D8%A8%20%D9%81%D9%8A%20%D9%84%D9%88%D8%B3%D9%8A%D9%84.%20%D8%A7%D8%AD%D8%B5%D9%84%20%D8%B9%D9%84%D9%89%2050%20%D8%B1%20%D9%83%D8%A7%D8%B4%20%D8%A8%D8%A7%D9%83%3A%20https%3A%2F%2Fzizocircle.com">منشن صديق محتاج هذا</a>
+    </div>
+    <p class="footer-note">صاحب مكان أو مطعم؟ <a href="mailto:partners@zizocircle.com">كن شريكاً</a></p>
+  </div>
+</div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const lang = params.get('lang') === 'ar' ? 'ar' : 'en';
+  document.body.lang = lang;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.title = lang === 'ar' ? 'أهلاً بك — زيزو سيركل' : "You're in — Zizo Circle";
+  document.getElementById('link-' + lang).classList.add('active');
+
+  const email = params.get('email');
+  if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    const safe = email.replace(/[<>&"]/g, '');
+    document.getElementById('email-en').textContent = ` (${safe})`;
+    document.getElementById('email-ar').textContent = ` (${safe})`;
+  }
+</script>
+
+</body>
+</html>
