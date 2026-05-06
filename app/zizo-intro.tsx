@@ -80,7 +80,7 @@ export default function ZizoIntroScreen() {
 
         <TouchableOpacity
           style={styles.btnMain}
-          onPress={() => router.push('/tos' as any)}
+          onPress={() => router.push({ pathname: '/tos', params: { from: 'onboarding' } } as any)}
           activeOpacity={0.85}
         >
           <Text style={styles.btnMainText}>Read & Accept Terms →</Text>

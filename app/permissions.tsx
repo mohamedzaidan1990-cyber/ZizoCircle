@@ -14,9 +14,9 @@ export default function PermissionsScreen() {
           <Text style={styles.backText}>←</Text>
         </TouchableOpacity>
         <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: '71%' }]} />
+          <View style={[styles.progressFill, { width: '100%' }]} />
         </View>
-        <Text style={styles.stepText}>5 of 7</Text>
+        <Text style={styles.stepText}>5 of 5</Text>
       </View>
 
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
@@ -81,7 +81,7 @@ export default function PermissionsScreen() {
 
         <TouchableOpacity
           style={styles.btnMain}
-          onPress={() => router.push('/zizo-intro' as any)}
+          onPress={() => router.replace('/(tabs)' as any)}
           activeOpacity={0.85}
         >
           <Text style={styles.btnMainText}>Continue</Text>

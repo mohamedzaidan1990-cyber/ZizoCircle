@@ -21,9 +21,9 @@ export default function PhoneScreen() {
           <Text style={styles.backText}>←</Text>
         </TouchableOpacity>
         <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: '14%' }]} />
+          <View style={[styles.progressFill, { width: '20%' }]} />
         </View>
-        <Text style={styles.stepText}>1 of 7</Text>
+        <Text style={styles.stepText}>1 of 5</Text>
       </View>
 
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>

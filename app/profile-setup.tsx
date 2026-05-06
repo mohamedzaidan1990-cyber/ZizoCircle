@@ -13,9 +13,9 @@ export default function ProfileSetupScreen() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [alias, setAlias] = useState('');
+  const [aliasEdited, setAliasEdited] = useState(false);
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
-  const [pw2, setPw2] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [ageGroup, setAgeGroup] = useState('');
@@ -30,7 +30,18 @@ export default function ProfileSetupScreen() {
     return s;
   };
 
+  const suggestAlias = (n: string) => {
+    const base = n.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 14);
+    return base ? '@' + base : '';
+  };
+
+  const handleName = (text: string) => {
+    setName(text);
+    if (!aliasEdited) setAlias(suggestAlias(text));
+  };
+
   const handleAlias = (text: string) => {
+    setAliasEdited(true);
     let v = text.replace(/\s/g, '');
     if (v && !v.startsWith('@')) v = '@' + v;
     setAlias(v);
@@ -39,11 +50,10 @@ export default function ProfileSetupScreen() {
   const save = async () => {
     if (!name) { Alert.alert('Error', 'Enter your name'); return; }
     if (!alias || alias === '@') { Alert.alert('Error', 'Choose an alias'); return; }
-    if (!email || !email.includes('@')) { Alert.alert('Error', 'Enter a valid email'); return; }
     if (!ageGroup) { Alert.alert('Error', 'Select your age group'); return; }
     if (!gender) { Alert.alert('Error', 'Select your gender'); return; }
+    if (!email || !email.includes('@')) { Alert.alert('Error', 'Enter a valid email'); return; }
     if (pw.length < 8) { Alert.alert('Error', 'Password too short (min 8 chars)'); return; }
-    if (pw !== pw2) { Alert.alert('Error', "Passwords don't match"); return; }
 
     setLoading(true);
     try {
@@ -91,9 +101,9 @@ export default function ProfileSetupScreen() {
           <Text style={styles.backText}>←</Text>
         </TouchableOpacity>
         <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: '42%' }]} />
+          <View style={[styles.progressFill, { width: '60%' }]} />
         </View>
-        <Text style={styles.stepText}>3 of 7</Text>
+        <Text style={styles.stepText}>3 of 5</Text>
       </View>
 
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
@@ -115,7 +125,7 @@ export default function ProfileSetupScreen() {
           placeholder="e.g. Mohamed Al-Rashidi"
           placeholderTextColor="#7A7595"
           value={name}
-          onChangeText={setName}
+          onChangeText={handleName}
         />
         <Text style={styles.hint}>Only shown to matches you approve</Text>
 
@@ -128,18 +138,7 @@ export default function ProfileSetupScreen() {
           onChangeText={handleAlias}
           autoCapitalize="none"
         />
-        <Text style={styles.hint}>Cannot be changed later</Text>
-
-        <Text style={[styles.label, { marginTop: 16 }]}>EMAIL ADDRESS</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="your@email.com"
-          placeholderTextColor="#7A7595"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
+        <Text style={styles.hint}>We suggested one from your name — edit it if you like. Cannot be changed later.</Text>
 
         <Text style={[styles.label, { marginTop: 16 }]}>AGE GROUP</Text>
         <View style={styles.chipRow}>
@@ -166,6 +165,18 @@ export default function ProfileSetupScreen() {
             </TouchableOpacity>
           ))}
         </View>
+
+        <Text style={[styles.label, { marginTop: 16 }]}>EMAIL ADDRESS</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="your@email.com"
+          placeholderTextColor="#7A7595"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        <Text style={styles.hint}>For account recovery and receipts. Never shared.</Text>
 
         <Text style={[styles.label, { marginTop: 16 }]}>PASSWORD</Text>
         <View>
@@ -196,16 +207,6 @@ export default function ProfileSetupScreen() {
             />
           ))}
         </View>
-
-        <Text style={[styles.label, { marginTop: 16 }]}>CONFIRM PASSWORD</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Re-enter password"
-          placeholderTextColor="#7A7595"
-          secureTextEntry
-          value={pw2}
-          onChangeText={setPw2}
-        />
 
         <View style={styles.warningBox}>
           <Text style={styles.warningIcon}>⚠️</Text>

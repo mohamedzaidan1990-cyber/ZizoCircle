@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Zizo Circle — Venue Partner One-Pager</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<style>
+  /* A4 print-first; clean light theme so it photocopies and emails well */
+  @page { size: A4; margin: 14mm 14mm 14mm 14mm; }
+  :root{
+    --ink:#1A1530; --muted:#6A6480; --soft:#E8E3F5; --bg:#FAF8FF; --card:#FFFFFF;
+    --purple:#7B5CF6; --pink:#F53B8F; --orange:#F5A53B; --mint:#0FBF96;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased;font-size:11pt;line-height:1.45}
+  .page{max-width:190mm;margin:0 auto;padding:14mm 12mm 14mm}
+  /* Header */
+  .head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--ink);padding-bottom:10mm;margin-bottom:8mm}
+  .logo{font-weight:800;letter-spacing:-.01em;font-size:18pt;display:flex;align-items:center;gap:6px}
+  .logo .dot{display:inline-block;width:10px;height:10px;border:2.4px solid var(--purple);border-radius:50%}
+  .head .meta{text-align:right;font-size:9pt;color:var(--muted);line-height:1.5}
+  .head .meta b{color:var(--ink);font-weight:700}
+  /* Hero */
+  h1{font-size:26pt;font-weight:800;letter-spacing:-.02em;line-height:1.05;margin-bottom:4mm}
+  h1 .grad{background:linear-gradient(90deg,var(--purple),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{font-size:12pt;color:#3a3454;max-width:160mm;margin-bottom:8mm}
+  /* Sections */
+  h2{font-size:14pt;font-weight:800;letter-spacing:-.01em;margin-bottom:3mm;display:flex;align-items:center;gap:8px}
+  h2::before{content:"";width:8px;height:8px;background:var(--purple);border-radius:2px;display:inline-block}
+  section{margin-bottom:7mm;page-break-inside:avoid}
+  p{margin-bottom:3mm;color:#2a2540}
+  ul{list-style:none;display:grid;gap:2.5mm}
+  li{display:flex;gap:8px;align-items:flex-start;font-size:10.5pt}
+  li::before{content:"✓";color:var(--mint);font-weight:800;flex:0 0 14px}
+  /* Two-col grid for "what you get" */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:5mm;margin-top:2mm}
+  .card{background:var(--card);border:1px solid var(--soft);border-radius:6px;padding:5mm 5mm}
+  .card h3{font-size:11pt;font-weight:700;margin-bottom:1.5mm;color:var(--ink)}
+  .card p{font-size:10pt;color:#3a3454;margin:0}
+  .card .icon{width:24px;height:24px;border-radius:6px;display:inline-grid;place-items:center;margin-bottom:3mm;font-size:13pt;color:#fff;font-weight:800}
+  .icon.purple{background:var(--purple)}
+  .icon.pink{background:var(--pink)}
+  .icon.orange{background:var(--orange)}
+  .icon.mint{background:var(--mint)}
+  /* Cashback flow */
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;margin-top:2mm}
+  .flow .step{background:var(--card);border:1px solid var(--soft);border-radius:6px;padding:4mm;font-size:9.5pt}
+  .flow .step b{display:block;font-size:8pt;color:var(--purple);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1.5mm}
+  .pill{display:inline-block;background:#fff5e6;color:#B26A00;border:1px solid #F5D9A8;font-weight:700;font-size:9pt;padding:1.5mm 3mm;border-radius:999px;margin-top:2mm}
+  /* CTA */
+  .cta{background:var(--ink);color:#F0EEF8;border-radius:8px;padding:6mm 6mm;display:flex;justify-content:space-between;align-items:center;gap:5mm;margin-top:4mm}
+  .cta h3{font-size:14pt;font-weight:800;margin-bottom:1mm;color:#fff}
+  .cta p{margin:0;color:#cdc9e0;font-size:10pt}
+  .btn{background:var(--purple);color:#fff;font-weight:800;padding:3.5mm 6mm;border-radius:6px;font-size:10.5pt;text-decoration:none;white-space:nowrap}
+  /* Footer */
+  footer{margin-top:6mm;border-top:1px solid var(--soft);padding-top:4mm;font-size:9pt;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:4mm}
+  footer b{color:var(--ink)}
+  /* Print tweaks */
+  @media print{
+    body{background:#fff}
+    .page{padding:0}
+    .cta{background:#1A1530 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .icon, h1 .grad, .pill {-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .no-print{display:none}
+  }
+  /* Screen helper */
+  @media (max-width:680px){
+    .grid,.flow{grid-template-columns:1fr 1fr}
+    .head{flex-direction:column;gap:6mm}
+    .head .meta{text-align:left}
+    .cta{flex-direction:column;align-items:flex-start}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="head">
+    <div class="logo">zizo c<span class="dot"></span>ircle</div>
+    <div class="meta">
+      <b>Venue Partner Brief</b><br>
+      Doha · Lusail · Al Wakrah<br>
+      hello@zizocircle.com · +974 5xxx xxxx
+    </div>
+  </header>
+
+  <section>
+    <h1>Pay-per-visit, not pay-to-list. <span class="grad">Real customers, on us.</span></h1>
+    <p class="lede">Zizo Circle is Qatar's interest-matched social app. We connect people who share hobbies — padel, brunch, board games, fitness — and we send them to your venue with cashback. You only pay when a real customer walks through your door.</p>
+  </section>
+
+  <section>
+    <h2>What is Zizo Circle?</h2>
+    <p>An app that matches people in Qatar on shared interests, suggests where to meet, and rewards them with cashback when they go. Phone-verified (+974 only). Group-first. Built in Qatar.</p>
+    <p style="color:var(--muted);font-size:10pt">Audience focus: expats and Qatari nationals 20–38 across Doha, Lusail, the Pearl, Msheireb, and Education City.</p>
+  </section>
+
+  <section>
+    <h2>What you get as a partner</h2>
+    <div class="grid">
+      <div class="card">
+        <span class="icon purple">D</span>
+        <h3>Free venue dashboard</h3>
+        <p>Live footfall from Zizo, repeat-visit rate, group sizes, and best-performing weeknights — no setup fee, no monthly cost.</p>
+      </div>
+      <div class="card">
+        <span class="icon pink">V</span>
+        <h3>Visibility in match suggestions</h3>
+        <p>Featured in the "Where to meet" prompt for matched users in your district. Geo-targeted to your zone — Lusail, Pearl, Msheireb.</p>
+      </div>
+      <div class="card">
+        <span class="icon mint">C</span>
+        <h3>First-party customer data</h3>
+        <p>You see anonymized interest profiles of who's coming in (e.g. "padel · 24 · expat · second visit") — better than any walk-in stat.</p>
+      </div>
+      <div class="card">
+        <span class="icon orange">$</span>
+        <h3>Pay only on real visits</h3>
+        <p>You set the cashback rate (5–15% typical). Pause anytime. We never charge for impressions, listings, or "leads."</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How cashback works</h2>
+    <div class="flow">
+      <div class="step"><b>Step 1</b>User matches with someone who shares their interests on Zizo.</div>
+      <div class="step"><b>Step 2</b>App suggests your venue based on both users' tastes &amp; location.</div>
+      <div class="step"><b>Step 3</b>They visit, tap to check in, pay you in full as normal.</div>
+      <div class="step"><b>Step 4</b>You forward the agreed % cashback; user sees it in-app within the hour.</div>
+    </div>
+    <p class="pill">2× cashback when users visit with a match → bigger groups, longer dwell, higher avg ticket</p>
+  </section>
+
+  <section>
+    <h2>What we ask of you</h2>
+    <ul>
+      <li>15-minute kickoff to set up your venue profile and cashback rate</li>
+      <li>One QR sticker at the till — that's the entire customer-facing setup</li>
+      <li>A short brief to your floor staff: "If a customer says Zizo, tap the QR"</li>
+      <li>Monthly settlement of cashback owed (we send a single invoice; pay by bank transfer)</li>
+    </ul>
+  </section>
+
+  <div class="cta">
+    <div>
+      <h3>Want in for the Qatar launch cohort?</h3>
+      <p>We're signing 12 launch partners across Doha, Lusail, and the Pearl. Reply by [DATE] to lock your district before a competitor does.</p>
+    </div>
+    <a class="btn" href="mailto:partners@zizocircle.com?subject=Zizo%20Circle%20—%20Launch%20cohort%20interest">Become a partner →</a>
+  </div>
+
+  <footer>
+    <span><b>zizocircle.com</b> · Built in Qatar</span>
+    <span>partners@zizocircle.com · +974 5xxx xxxx</span>
+    <span class="no-print">Print this page for venue meetings (Cmd/Ctrl + P)</span>
+  </footer>
+
+</div>
+</body>
+</html>

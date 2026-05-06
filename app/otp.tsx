@@ -1,6 +1,10 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
+// TODO(auth): Wire to Firebase Phone Auth (signInWithPhoneNumber + confirmationResult.confirm).
+// Until then this screen acts as a UX gate only — it does NOT verify the SMS code.
+// Do not point external traffic at the app until real Phone Auth is integrated.
 
 export default function OTPScreen() {
   const router = useRouter();
@@ -13,9 +17,15 @@ export default function OTPScreen() {
     newOtp[index] = text;
     setOtp(newOtp);
     if (text && index < 5) inputs.current[index + 1]?.focus();
-    if (newOtp.every(v => v !== '')) {
-      setTimeout(() => router.push('/profile-setup' as any), 300);
+  };
+
+  const verify = () => {
+    if (otp.some(v => !v)) {
+      Alert.alert('Enter the code', 'Please enter all 6 digits sent to your phone');
+      return;
     }
+    // TODO(auth): replace with confirmationResult.confirm(otp.join(''))
+    router.push('/zizo-intro' as any);
   };
 
   return (
@@ -25,9 +35,9 @@ export default function OTPScreen() {
           <Text style={styles.backText}>←</Text>
         </TouchableOpacity>
         <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: '28%' }]} />
+          <View style={[styles.progressFill, { width: '40%' }]} />
         </View>
-        <Text style={styles.stepText}>2 of 7</Text>
+        <Text style={styles.stepText}>2 of 5</Text>
       </View>
 
       <View style={styles.content}>
@@ -47,6 +57,8 @@ export default function OTPScreen() {
               keyboardType="number-pad"
               value={digit}
               onChangeText={text => handleChange(text, i)}
+              textContentType={Platform.OS === 'ios' ? 'oneTimeCode' : undefined}
+              autoComplete={Platform.OS === 'android' ? 'sms-otp' : undefined}
               onKeyPress={({ nativeEvent }) => {
                 if (nativeEvent.key === 'Backspace' && !otp[i] && i > 0) {
                   inputs.current[i - 1]?.focus();
@@ -68,12 +80,11 @@ export default function OTPScreen() {
 
         <TouchableOpacity
           style={styles.btnMain}
-          onPress={() => router.push('/profile-setup' as any)}
+          onPress={verify}
           activeOpacity={0.85}
         >
           <Text style={styles.btnMainText}>Verify & Continue</Text>
         </TouchableOpacity>
-        <Text style={styles.demo}>Demo: any 6 digits work ✓</Text>
       </View>
     </View>
   );
@@ -122,5 +133,4 @@ const styles = StyleSheet.create({
     borderRadius: 16, padding: 17, alignItems: 'center',
   },
   btnMainText: { fontSize: 16, fontWeight: '700', color: '#fff' },
-  demo: { fontSize: 12, color: '#7A7595', textAlign: 'center', marginTop: 12 },
 });
