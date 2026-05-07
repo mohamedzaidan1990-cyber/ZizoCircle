@@ -24,6 +24,8 @@ const schema = z.object({
   WHATSAPP_TOKEN: z.string().optional(),
   FRONTEND_URL: z.string().url().default("http://localhost:3000"),
   BACKEND_URL: z.string().url().default("http://localhost:3001"),
+  PROPIFY_WEBHOOK_SECRET: z.string().min(16).optional(),
+  ADDITIONAL_CORS_ORIGINS: z.string().optional(),
 });
 
 export const env = schema.parse(process.env);

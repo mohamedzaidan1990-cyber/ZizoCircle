@@ -77,6 +77,75 @@ propiq/
 └── package.json     # Workspace root
 ```
 
+## Propify integration
+
+PropIQ is integrated with **Propify** (WhatsApp lead qualification bot). Propify
+qualifies inbound WhatsApp leads from PropertyFinder, scores them 0–100, and
+POSTs hot/warm leads into PropIQ's per-tenant `contacts` and `deals` tables.
+
+```
+apps/
+├── web/                    # Next.js (Vercel)
+│   ├── public/propify-demo.html        ← static demo, calls /api/propify/claude
+│   └── app/[locale]/(dashboard)/leads/ ← Propify Leads board
+├── api/                    # Express (Railway)
+│   └── src/routes/propify.ts
+│       POST /api/propify/claude   – Anthropic proxy (rate-limited, public)
+│       POST /api/propify/lead     – Webhook from propify-backend (Bearer secret)
+│       GET  /api/propify/leads    – Tenant-scoped list (JWT auth)
+└── propify-backend/        # Node.js / 360dialog WhatsApp webhook (Railway)
+    └── server.js
+```
+
+The Next.js app rewrites `/api/propify/*` → `${NEXT_PUBLIC_API_URL}/api/propify/*`,
+so the static demo and the leads page both reach Express through the same
+public origin.
+
+### New env vars
+
+apps/api/.env
+
+```env
+PROPIFY_WEBHOOK_SECRET="strong-shared-secret"
+ADDITIONAL_CORS_ORIGINS=""        # optional comma-separated origins
+```
+
+apps/propify-backend/.env
+
+```env
+ANTHROPIC_API_KEY=sk-ant-...
+DIALOG360_API_KEY=...
+AGENT_PHONE_NUMBER=97450000000
+PROPIQ_API_URL=https://propiq-api.up.railway.app
+PROPIFY_WEBHOOK_SECRET=same-as-apps/api
+PROPIQ_TENANT_SLUG=acme_qatar
+PORT=3000
+```
+
+### Tenant schema migration
+
+The Propify integration adds columns to per-tenant `contacts` and `deals`. New
+tenants are provisioned with the columns automatically. To upgrade a tenant
+created before this integration shipped:
+
+```ts
+import { migratePropifySchema } from "./db/tenant";
+await migratePropifySchema("acme_qatar");
+```
+
+### Deployment topology
+
+| Service               | Host    | Notes                                            |
+| --------------------- | ------- | ------------------------------------------------ |
+| `apps/web`            | Vercel  | Static + serverless. Rewrite to API.             |
+| `apps/api`            | Railway | Long-running Express. Same Postgres as Prisma.   |
+| `apps/propify-backend`| Railway | Long-running webhook. Separate service.          |
+| PostgreSQL + Redis    | Railway | Shared across `apps/api` (and `apps/propify-backend` if it ever needs them). |
+
+> Note: `propify-demo.html` in this repo is a stub. The full 839-line Propify
+> demo HTML provided to the project owner needs to be pasted in. The script
+> already calls `/api/propify/claude`, so no JS changes are required.
+
 ## Production swap (Azure)
 
 Only environment variables and one storage service file change — application code stays the same. See the build prompt for details.

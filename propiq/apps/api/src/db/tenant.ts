@@ -39,25 +39,37 @@ export async function tenantQuery(
   return withTenant(slug, (client) => client.query(sql, params));
 }
 
-let cachedTemplate: string | null = null;
-function loadTenantSchemaTemplate(): string {
-  if (cachedTemplate) return cachedTemplate;
-  cachedTemplate = readFileSync(
-    join(__dirname, "migrations", "createTenantSchema.sql"),
+const cache = new Map<string, string>();
+function loadSqlTemplate(filename: string): string {
+  const cached = cache.get(filename);
+  if (cached) return cached;
+  const sql = readFileSync(
+    join(__dirname, "migrations", filename),
     "utf-8",
   );
-  return cachedTemplate;
+  cache.set(filename, sql);
+  return sql;
 }
 
-export async function createTenantSchema(slug: string): Promise<void> {
+async function runTemplateForTenant(filename: string, slug: string): Promise<void> {
   assertSafeSlug(slug);
-  const sql = loadTenantSchemaTemplate().replaceAll(":slug", slug);
+  const sql = loadSqlTemplate(filename).replaceAll(":slug", slug);
   const client = await pool.connect();
   try {
     await client.query(sql);
   } finally {
     client.release();
   }
+}
+
+export async function createTenantSchema(slug: string): Promise<void> {
+  await runTemplateForTenant("createTenantSchema.sql", slug);
+  // Idempotent — also runs the Propify column additions so older schemas are caught up.
+  await runTemplateForTenant("propifyTenantMigration.sql", slug);
+}
+
+export async function migratePropifySchema(slug: string): Promise<void> {
+  await runTemplateForTenant("propifyTenantMigration.sql", slug);
 }
 
 export async function dropTenantSchema(slug: string): Promise<void> {

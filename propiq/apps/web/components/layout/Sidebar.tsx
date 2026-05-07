@@ -17,14 +17,14 @@ import { cn } from "@/lib/utils";
 import type { PublicAgency } from "@propiq/shared";
 
 const NAV = [
-  { href: "dashboard", icon: LayoutDashboard, key: "title" },
-  { href: "leads", icon: UserPlus, key: "leads" },
-  { href: "contacts", icon: Users, key: "contacts" },
-  { href: "properties", icon: Building2, key: "properties" },
-  { href: "pipeline", icon: Kanban, key: "pipeline" },
-  { href: "ai-tools", icon: Sparkles, key: "aiTools" },
-  { href: "reports", icon: BarChart3, key: "reports" },
-  { href: "settings", icon: Settings, key: "settingsNav" },
+  { href: "dashboard", icon: LayoutDashboard, key: "title", badge: null },
+  { href: "leads", icon: UserPlus, key: "leads", badge: "AI" as const },
+  { href: "contacts", icon: Users, key: "contacts", badge: null },
+  { href: "properties", icon: Building2, key: "properties", badge: null },
+  { href: "pipeline", icon: Kanban, key: "pipeline", badge: null },
+  { href: "ai-tools", icon: Sparkles, key: "aiTools", badge: null },
+  { href: "reports", icon: BarChart3, key: "reports", badge: null },
+  { href: "settings", icon: Settings, key: "settingsNav", badge: null },
 ] as const;
 
 export function Sidebar({
@@ -47,7 +47,7 @@ export function Sidebar({
         </div>
       </div>
       <nav className="flex-1 px-3 py-4 space-y-1">
-        {NAV.map(({ href, icon: Icon, key }) => {
+        {NAV.map(({ href, icon: Icon, key, badge }) => {
           const url = `/${locale}/${href}`;
           const active = pathname === url || pathname.startsWith(`${url}/`);
           return (
@@ -62,7 +62,12 @@ export function Sidebar({
               )}
             >
               <Icon className="h-4 w-4" />
-              {t(key)}
+              <span className="flex-1">{t(key)}</span>
+              {badge ? (
+                <span className="rounded-full bg-brand-50 border border-brand-700/20 px-1.5 py-0.5 text-[10px] font-semibold text-brand-700">
+                  {badge}
+                </span>
+              ) : null}
             </Link>
           );
         })}

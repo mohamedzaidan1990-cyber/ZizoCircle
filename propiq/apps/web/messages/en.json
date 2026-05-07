@@ -38,7 +38,7 @@
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Welcome, {name}",
-    "leads": "Leads",
+    "leads": "Propify Leads",
     "contacts": "Contacts",
     "properties": "Properties",
     "pipeline": "Pipeline",
@@ -46,5 +46,19 @@
     "reports": "Reports",
     "settingsNav": "Settings",
     "summary": "Your workspace is ready. Start by adding your first contacts and properties."
+  },
+  "leads": {
+    "title": "Propify Leads",
+    "subtitle": "AI-qualified inbound leads from WhatsApp and PropertyFinder.",
+    "statTotal": "Total leads",
+    "statHot": "Hot",
+    "statAvg": "Avg score",
+    "statPending": "Pending action",
+    "filterAll": "All leads",
+    "tier_hot": "Hot",
+    "tier_warm": "Warm",
+    "tier_cold": "Cold",
+    "tier_dead": "Dead",
+    "empty": "No leads yet. As Propify qualifies inbound WhatsApp conversations, hot and warm leads will land here automatically."
   }
 }

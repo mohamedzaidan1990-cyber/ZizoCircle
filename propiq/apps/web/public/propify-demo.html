@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propify — Qatar Real Estate AI Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'DM Sans',sans-serif;background:#080706;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 20% 20%,rgba(212,180,120,.04) 0%,transparent 60%),radial-gradient(ellipse 40% 60% at 80% 80%,rgba(212,180,120,.03) 0%,transparent 60%);pointer-events:none}
+.container{width:100%;max-width:1080px;display:flex;flex-direction:column;border-radius:16px;overflow:hidden;border:.5px solid rgba(212,180,120,.18);box-shadow:0 40px 80px rgba(0,0,0,.6);position:relative;z-index:1}
+/* TOP BAR */
+.topbar{background:#0e0d0a;padding:0 20px;height:52px;display:flex;align-items:center;gap:0;border-bottom:.5px solid rgba(212,180,120,.12)}
+.logo{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#d4b478;letter-spacing:.06em;margin-right:20px}
+.logo span{color:rgba(212,180,120,.4);font-weight:400;font-size:13px;letter-spacing:.02em;margin-left:8px}
+.nav-tabs{display:flex;flex:1}
+.tab{font-family:'DM Sans',sans-serif;font-size:12.5px;padding:0 15px;height:52px;display:flex;align-items:center;gap:6px;color:rgba(212,180,120,.38);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.tab:hover{color:rgba(212,180,120,.75)}
+.tab.active{color:#d4b478;border-bottom-color:#d4b478}
+.tab i{font-size:14px}
+.tab .tab-badge{font-size:10px;padding:2px 6px;border-radius:10px;background:rgba(92,186,138,.15);color:#5cba8a;border:.5px solid rgba(92,186,138,.25);margin-left:4px}
+.lang-toggle{display:flex;border:.5px solid rgba(212,180,120,.18);border-radius:6px;overflow:hidden;margin-left:auto}
+.lang-btn{font-family:'DM Sans',sans-serif;font-size:11px;padding:4px 11px;background:none;border:none;color:rgba(212,180,120,.35);cursor:pointer;transition:all .2s}
+.lang-btn.active{background:rgba(212,180,120,.1);color:#d4b478}
+/* VIEWS */
+.view{display:none}
+.view.active{display:flex}
+/* ══ CHAT VIEW ══ */
+.chat-view{flex-direction:row;min-height:600px;background:#0b0a08}
+.chat-main{flex:1;display:flex;flex-direction:column;border-right:.5px solid rgba(212,180,120,.08);min-width:0}
+.prop-banner{background:#141210;border-bottom:.5px solid rgba(212,180,120,.1);padding:11px 18px;display:flex;align-items:center;gap:12px}
+.prop-thumb{width:48px;height:38px;border-radius:7px;background:rgba(212,180,120,.07);border:.5px solid rgba(212,180,120,.18);display:flex;align-items:center;justify-content:center;color:#d4b478;font-size:18px;flex-shrink:0}
+.prop-details{flex:1;min-width:0}
+.prop-name{font-size:13px;font-weight:500;color:#e8d9b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prop-meta{font-size:11.5px;color:rgba(212,180,120,.45);margin-top:2px}
+.prop-ref-badge{font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(212,180,120,.07);color:rgba(212,180,120,.45);border:.5px solid rgba(212,180,120,.14);white-space:nowrap;flex-shrink:0}
+.pf-source{font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(213,50,50,.12);color:#d87070;border:.5px solid rgba(213,50,50,.2);white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:4px}
+.prop-switcher{display:flex;gap:5px;flex-shrink:0}
+.psw{font-size:11px;padding:4px 9px;border-radius:5px;background:transparent;border:.5px solid rgba(212,180,120,.14);color:rgba(212,180,120,.4);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.psw:hover{background:rgba(212,180,120,.07);color:#d4b478}
+.psw.active{background:rgba(212,180,120,.1);color:#d4b478;border-color:rgba(212,180,120,.3)}
+.messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;min-height:340px;max-height:340px}
+.messages::-webkit-scrollbar{width:3px}
+.messages::-webkit-scrollbar-thumb{background:rgba(212,180,120,.12);border-radius:2px}
+.msg{display:flex;gap:9px;animation:up .25s ease}
+.msg.user{flex-direction:row-reverse}
+@keyframes up{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.av{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.av.bot{background:rgba(212,180,120,.09);border:.5px solid rgba(212,180,120,.2);color:#d4b478}
+.av.usr{background:rgba(255,255,255,.05);color:rgba(255,255,255,.35)}
+.av.agt{background:rgba(92,186,138,.1);border:.5px solid rgba(92,186,138,.25);color:#5cba8a}
+.bubble{max-width:76%;padding:10px 14px;font-size:13.5px;line-height:1.65;border-radius:11px}
+.msg.bot .bubble{background:#181512;border:.5px solid rgba(212,180,120,.1);color:#cec5af;border-radius:3px 11px 11px 11px}
+.msg.user .bubble{background:rgba(212,180,120,.08);border:.5px solid rgba(212,180,120,.17);color:#e8d9b8;border-radius:11px 3px 11px 11px;text-align:right}
+.msg.agent-msg .bubble{background:rgba(92,186,138,.08);border:.5px solid rgba(92,186,138,.2);color:#b8e8cc;border-radius:3px 11px 11px 11px}
+.bubble strong{color:#d4b478;font-weight:500}
+.typing-row{display:flex;gap:4px;align-items:center}
+.td{width:5px;height:5px;border-radius:50%;background:rgba(212,180,120,.3);animation:tb 1.2s infinite}
+.td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
+@keyframes tb{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-4px);opacity:1}}
+/* Handoff banner */
+.handoff-banner{background:rgba(92,186,138,.07);border-top:.5px solid rgba(92,186,138,.2);border-bottom:.5px solid rgba(92,186,138,.2);padding:10px 18px;display:flex;align-items:center;gap:10px;font-size:12.5px;color:#5cba8a}
+.handoff-banner i{font-size:16px;flex-shrink:0}
+.handoff-banner strong{font-weight:500}
+.handoff-inp{flex:1;background:rgba(92,186,138,.05);border:.5px solid rgba(92,186,138,.2);border-radius:9px;padding:9px 13px;color:#b8e8cc;font-family:'DM Sans',sans-serif;font-size:13px;resize:none;outline:none;min-height:38px;max-height:100px;line-height:1.5}
+.handoff-inp::placeholder{color:rgba(92,186,138,.25)}
+.handoff-inp:focus{border-color:rgba(92,186,138,.35)}
+.handoff-send{width:38px;height:38px;border-radius:9px;background:rgba(92,186,138,.12);border:.5px solid rgba(92,186,138,.3);color:#5cba8a;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s;flex-shrink:0}
+.handoff-send:hover{background:rgba(92,186,138,.22)}
+.sugg-row{padding:8px 18px 10px;display:flex;flex-wrap:wrap;gap:6px;border-top:.5px solid rgba(212,180,120,.06);background:#0b0a08}
+.sug{font-family:'DM Sans',sans-serif;font-size:12px;padding:5px 12px;border-radius:20px;background:transparent;border:.5px solid rgba(212,180,120,.16);color:rgba(212,180,120,.55);cursor:pointer;transition:all .15s;white-space:nowrap}
+.sug:hover{background:rgba(212,180,120,.07);color:#d4b478}
+.input-row{padding:12px 16px;background:#0e0d0a;border-top:.5px solid rgba(212,180,120,.09);display:flex;gap:9px;align-items:flex-end}
+.inp{flex:1;background:rgba(212,180,120,.04);border:.5px solid rgba(212,180,120,.13);border-radius:10px;padding:10px 14px;color:#e8d9b8;font-family:'DM Sans',sans-serif;font-size:13.5px;resize:none;outline:none;min-height:40px;max-height:110px;line-height:1.5;transition:border-color .2s}
+.inp::placeholder{color:rgba(212,180,120,.2)}
+.inp:focus{border-color:rgba(212,180,120,.28)}
+.send{width:40px;height:40px;border-radius:10px;background:rgba(212,180,120,.11);border:.5px solid rgba(212,180,120,.25);color:#d4b478;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s;flex-shrink:0}
+.send:hover{background:rgba(212,180,120,.2)}
+.send:disabled{opacity:.3;cursor:not-allowed}
+/* AGENT PANEL */
+.agent-panel{width:240px;flex-shrink:0;background:#0d0c09;padding:14px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}
+.agent-panel::-webkit-scrollbar{width:2px}
+.agent-panel::-webkit-scrollbar-thumb{background:rgba(212,180,120,.1)}
+.pst{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:rgba(212,180,120,.28);font-weight:500}
+.score-box{background:#161310;border:.5px solid rgba(212,180,120,.13);border-radius:11px;padding:14px;text-align:center}
+.score-big{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:600;line-height:1;margin-bottom:5px;transition:color .4s;color:rgba(212,180,120,.2)}
+.score-tier{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;transition:color .4s;color:rgba(212,180,120,.2)}
+.score-big.hot{color:#e8826e}.score-big.warm{color:#d4b478}.score-big.cold{color:#8aa0c8}
+.score-tier.hot{color:#e8826e}.score-tier.warm{color:#d4b478}.score-tier.cold{color:#8aa0c8}
+.qual-list{display:flex;flex-direction:column;gap:6px}
+.qi{display:flex;align-items:center;gap:9px;font-size:12.5px;color:rgba(212,180,120,.3);transition:color .3s}
+.qi.done{color:rgba(212,180,120,.75)}
+.qi-dot{width:7px;height:7px;border-radius:50%;background:rgba(212,180,120,.1);flex-shrink:0;transition:background .3s}
+.qi.done .qi-dot{background:#5cba8a}
+/* COACHING NUDGES in panel */
+.coach-panel{display:flex;flex-direction:column;gap:6px}
+.nudge{background:#0a1a12;border:.5px solid rgba(92,186,138,.2);border-radius:9px;padding:9px 11px;animation:up .3s ease}
+.nudge-head{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.nudge-icon{font-size:13px;color:#5cba8a}
+.nudge-type{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:rgba(92,186,138,.6);font-weight:500}
+.nudge-text{font-size:12px;color:#9dd4b3;line-height:1.55}
+.nudge-action{margin-top:7px;display:flex;gap:5px}
+.nudge-btn{font-family:'DM Sans',sans-serif;font-size:11px;padding:4px 9px;border-radius:5px;border:.5px solid rgba(92,186,138,.25);background:rgba(92,186,138,.08);color:#5cba8a;cursor:pointer;transition:all .15s}
+.nudge-btn:hover{background:rgba(92,186,138,.18)}
+.nudge-btn.dismiss{border-color:rgba(212,180,120,.12);background:transparent;color:rgba(212,180,120,.3)}
+.nudge-btn.dismiss:hover{color:rgba(212,180,120,.5)}
+.notify{font-family:'DM Sans',sans-serif;font-size:12.5px;padding:10px;border-radius:9px;border:.5px solid rgba(212,180,120,.16);background:rgba(212,180,120,.04);color:rgba(212,180,120,.35);cursor:not-allowed;text-align:center;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:6px}
+.notify.ready{background:rgba(92,186,138,.08);border-color:rgba(92,186,138,.28);color:#5cba8a;cursor:pointer}
+.notify.ready:hover{background:rgba(92,186,138,.16)}
+.notify.sent{background:rgba(92,186,138,.12);border-color:rgba(92,186,138,.35);color:#5cba8a;cursor:default}
+.handoff-toggle{font-family:'DM Sans',sans-serif;font-size:12px;padding:9px;border-radius:9px;border:.5px solid rgba(92,186,138,.2);background:rgba(92,186,138,.05);color:rgba(92,186,138,.6);cursor:pointer;text-align:center;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.handoff-toggle.active{background:rgba(92,186,138,.12);border-color:rgba(92,186,138,.35);color:#5cba8a}
+.handoff-toggle:hover{background:rgba(92,186,138,.1);color:#5cba8a}
+/* DASHBOARD VIEW */
+.dash-view{flex-direction:column;padding:22px;gap:18px;background:#0b0a08;min-height:600px}
+.dash-header{display:flex;align-items:center;justify-content:space-between}
+.dash-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:#e8d9b8}
+.dash-date{font-size:12px;color:rgba(212,180,120,.35)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.stat{background:#141210;border:.5px solid rgba(212,180,120,.11);border-radius:11px;padding:14px 16px}
+.stat-lbl{font-size:11px;color:rgba(212,180,120,.38);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.stat-val{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;color:#d4b478;line-height:1}
+.stat-sub{font-size:11.5px;color:rgba(212,180,120,.3);margin-top:5px}
+.table-wrap{background:#0e0d0a;border:.5px solid rgba(212,180,120,.11);border-radius:11px;overflow:hidden}
+.table-head{display:grid;grid-template-columns:2.2fr 1.8fr 1fr .7fr 1fr;padding:10px 18px;border-bottom:.5px solid rgba(212,180,120,.08);font-size:11px;color:rgba(212,180,120,.3);text-transform:uppercase;letter-spacing:.07em}
+.trow{display:grid;grid-template-columns:2.2fr 1.8fr 1fr .7fr 1fr;padding:12px 18px;border-bottom:.5px solid rgba(212,180,120,.05);align-items:center;transition:background .15s}
+.trow:last-child{border-bottom:none}
+.trow:hover{background:rgba(212,180,120,.025)}
+.lead-name{font-size:13px;font-weight:500;color:#e8d9b8}
+.lead-source{font-size:11.5px;color:rgba(212,180,120,.38);margin-top:2px}
+.lead-prop-txt{font-size:12.5px;color:#cec5af}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500}
+.badge.hot{background:rgba(220,80,60,.1);color:#e8826e;border:.5px solid rgba(220,80,60,.2)}
+.badge.warm{background:rgba(212,180,120,.09);color:#d4b478;border:.5px solid rgba(212,180,120,.2)}
+.badge.cold{background:rgba(100,120,160,.09);color:#8aa0c8;border:.5px solid rgba(100,120,160,.18)}
+.badge.dead{background:rgba(80,80,80,.09);color:rgba(180,180,180,.3);border:.5px solid rgba(80,80,80,.15)}
+.score-n{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600}
+.act-btn{font-family:'DM Sans',sans-serif;font-size:11.5px;padding:5px 12px;border-radius:6px;border:.5px solid rgba(212,180,120,.18);background:transparent;color:rgba(212,180,120,.55);cursor:pointer;transition:all .15s}
+.act-btn:hover{background:rgba(212,180,120,.07);color:#d4b478}
+.act-btn.urgent{border-color:rgba(92,186,138,.3);color:#5cba8a}
+.act-btn.urgent:hover{background:rgba(92,186,138,.1)}
+/* COACH VIEW */
+.coach-view{flex-direction:column;padding:22px;gap:18px;background:#0b0a08;min-height:600px}
+.coach-header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+.coach-title-block{}
+.coach-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:#e8d9b8;margin-bottom:4px}
+.coach-sub{font-size:12.5px;color:rgba(212,180,120,.4)}
+.coach-stats{display:flex;gap:10px}
+.coach-stat{background:#141210;border:.5px solid rgba(92,186,138,.15);border-radius:10px;padding:12px 16px;text-align:center;min-width:100px}
+.coach-stat-val{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:#5cba8a;line-height:1}
+.coach-stat-lbl{font-size:11px;color:rgba(212,180,120,.35);margin-top:4px}
+.coach-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.coach-card{background:#0e0d0a;border:.5px solid rgba(212,180,120,.11);border-radius:11px;overflow:hidden}
+.coach-card-head{padding:14px 16px;border-bottom:.5px solid rgba(212,180,120,.08);display:flex;align-items:center;justify-content:space-between}
+.coach-card-title{font-size:13.5px;font-weight:500;color:#e8d9b8}
+.coach-card-body{padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+/* Agent performance bars */
+.agent-row{display:flex;align-items:center;gap:10px}
+.agent-av{width:32px;height:32px;border-radius:8px;background:rgba(212,180,120,.08);border:.5px solid rgba(212,180,120,.18);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#d4b478;flex-shrink:0}
+.agent-info{flex:1;min-width:0}
+.agent-name-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.agent-nm{font-size:12.5px;font-weight:500;color:#e8d9b8}
+.agent-score-badge{font-size:11px;padding:2px 8px;border-radius:10px}
+.agent-score-badge.ex{background:rgba(92,186,138,.1);color:#5cba8a;border:.5px solid rgba(92,186,138,.2)}
+.agent-score-badge.gd{background:rgba(212,180,120,.1);color:#d4b478;border:.5px solid rgba(212,180,120,.2)}
+.agent-score-badge.ok{background:rgba(100,120,160,.1);color:#8aa0c8;border:.5px solid rgba(100,120,160,.18)}
+.perf-bar{height:5px;background:rgba(212,180,120,.08);border-radius:3px;overflow:hidden}
+.perf-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.perf-fill.ex{background:#5cba8a}
+.perf-fill.gd{background:#d4b478}
+.perf-fill.ok{background:#8aa0c8}
+/* Nudge history */
+.nudge-hist{display:flex;flex-direction:column;gap:7px;max-height:320px;overflow-y:auto}
+.nudge-hist::-webkit-scrollbar{width:2px}
+.nudge-hist::-webkit-scrollbar-thumb{background:rgba(212,180,120,.1)}
+.nh-item{background:#141210;border:.5px solid rgba(212,180,120,.09);border-radius:9px;padding:10px 12px}
+.nh-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.nh-agent{font-size:11.5px;font-weight:500;color:#e8d9b8}
+.nh-time{font-size:10.5px;color:rgba(212,180,120,.3)}
+.nh-type{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px;border-radius:10px;margin-bottom:5px}
+.nh-type.tip{background:rgba(212,180,120,.08);color:#d4b478;border:.5px solid rgba(212,180,120,.18)}
+.nh-type.warn{background:rgba(232,130,110,.08);color:#e8826e;border:.5px solid rgba(232,130,110,.18)}
+.nh-type.praise{background:rgba(92,186,138,.08);color:#5cba8a;border:.5px solid rgba(92,186,138,.2)}
+.nh-text{font-size:12px;color:rgba(212,180,120,.55);line-height:1.55}
+.nh-outcome{font-size:11px;color:rgba(92,186,138,.5);margin-top:5px;font-style:italic}
+/* Live coach simulator */
+.sim-card{background:#0e0d0a;border:.5px solid rgba(92,186,138,.15);border-radius:11px;overflow:hidden}
+.sim-head{padding:14px 16px;border-bottom:.5px solid rgba(92,186,138,.1);display:flex;align-items:center;gap:10px}
+.sim-dot{width:8px;height:8px;border-radius:50%;background:#5cba8a;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.sim-title{font-size:13.5px;font-weight:500;color:#e8d9b8}
+.sim-sub{font-size:11.5px;color:rgba(212,180,120,.35);margin-left:auto}
+.sim-body{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.sim-thread{background:#0a0908;border:.5px solid rgba(212,180,120,.08);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto}
+.sim-thread::-webkit-scrollbar{width:2px}
+.sim-thread::-webkit-scrollbar-thumb{background:rgba(212,180,120,.1)}
+.sim-msg{font-size:12px;line-height:1.55}
+.sim-msg.client{color:rgba(212,180,120,.55)}
+.sim-msg.client::before{content:'Client: ';color:rgba(212,180,120,.3)}
+.sim-msg.agent{color:#cec5af}
+.sim-msg.agent::before{content:'Agent: ';color:rgba(92,186,138,.4)}
+.sim-analyze-btn{font-family:'DM Sans',sans-serif;font-size:12.5px;padding:10px;border-radius:8px;border:.5px solid rgba(92,186,138,.25);background:rgba(92,186,138,.07);color:#5cba8a;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px}
+.sim-analyze-btn:hover{background:rgba(92,186,138,.14)}
+.sim-analyze-btn:disabled{opacity:.4;cursor:not-allowed}
+.sim-result{background:#0a1a12;border:.5px solid rgba(92,186,138,.2);border-radius:9px;padding:12px;display:none;flex-direction:column;gap:8px}
+.sim-result.show{display:flex}
+.sim-result-title{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:rgba(92,186,138,.5);font-weight:500;margin-bottom:2px}
+.sim-nudge-out{font-size:12.5px;color:#9dd4b3;line-height:1.6}
+/* INT VIEW */
+.int-view{flex-direction:column;padding:22px;gap:18px;background:#0b0a08;min-height:600px}
+.int-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.int-card{background:#0e0d0a;border:.5px solid rgba(212,180,120,.11);border-radius:11px;padding:18px}
+.int-card-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:#e8d9b8;margin-bottom:14px}
+.flow{display:flex;flex-direction:column}
+.fstep{display:flex;gap:12px;align-items:flex-start}
+.fnum-col{display:flex;flex-direction:column;align-items:center;width:26px;flex-shrink:0}
+.fnum{width:24px;height:24px;border-radius:50%;background:rgba(212,180,120,.07);border:.5px solid rgba(212,180,120,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#d4b478;flex-shrink:0}
+.fline{width:1px;flex:1;min-height:26px;background:rgba(212,180,120,.08);margin:3px 0}
+.fcontent{padding-bottom:18px;flex:1}
+.fcontent h4{font-size:13px;font-weight:500;color:#e8d9b8;margin-bottom:4px}
+.fcontent p{font-size:12px;color:rgba(212,180,120,.42);line-height:1.65}
+.code{background:#080706;border:.5px solid rgba(212,180,120,.09);border-radius:8px;padding:12px 14px;font-family:'Courier New',monospace;font-size:11.5px;color:rgba(212,180,120,.55);line-height:1.75;margin-top:10px;overflow-x:auto;white-space:pre}
+.code .k{color:#8aa0c8}.code .s{color:#9bba8a}.code .c{color:rgba(212,180,120,.27)}
+.channels{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.ch{background:#141210;border:.5px solid rgba(212,180,120,.1);border-radius:9px;padding:13px;display:flex;gap:10px;align-items:flex-start}
+.ch-icon{width:34px;height:34px;border-radius:8px;background:rgba(212,180,120,.06);border:.5px solid rgba(212,180,120,.14);display:flex;align-items:center;justify-content:center;color:#d4b478;font-size:16px;flex-shrink:0}
+.ch h4{font-size:12.5px;font-weight:500;color:#e8d9b8;margin-bottom:3px}
+.ch p{font-size:11.5px;color:rgba(212,180,120,.38);line-height:1.55}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:2px}
+.plan{background:#141210;border:.5px solid rgba(212,180,120,.12);border-radius:10px;padding:16px}
+.plan.featured{border-color:rgba(212,180,120,.35);background:rgba(212,180,120,.04)}
+.plan-name{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:rgba(212,180,120,.45);margin-bottom:8px}
+.plan-price{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:#d4b478}
+.plan-price span{font-size:13px;color:rgba(212,180,120,.4);font-family:'DM Sans',sans-serif;font-weight:300}
+.plan-features{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.pf-item{font-size:12px;color:rgba(212,180,120,.5);display:flex;gap:7px;align-items:flex-start}
+.pf-item::before{content:'–';color:rgba(212,180,120,.25);flex-shrink:0}
+.footer-bar{background:#0b0a08;border-top:.5px solid rgba(212,180,120,.07);padding:9px 20px;display:flex;align-items:center;justify-content:space-between}
+.footer-bar span{font-size:11px;color:rgba(212,180,120,.18);letter-spacing:.04em}
+</style>
+</head>
+<body>
+<div class="container">
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">PROPIFY <span>Qatar Real Estate AI</span></div>
+  <div class="nav-tabs">
+    <button class="tab active" onclick="showTab('chat')"><i class="ti ti-message-circle"></i>Live Demo</button>
+    <button class="tab" onclick="showTab('dash')"><i class="ti ti-layout-dashboard"></i>Leads</button>
+    <button class="tab" onclick="showTab('coach')"><i class="ti ti-brain"></i>AI Coach <span class="tab-badge">NEW</span></button>
+    <button class="tab" onclick="showTab('int')"><i class="ti ti-plug-connected"></i>Integration</button>
+  </div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('ar')">ع</button>
+  </div>
+</div>
+
+<!-- ══ CHAT TAB ══ -->
+<div class="view chat-view active" id="tab-chat">
+  <div class="chat-main">
+    <div class="prop-banner">
+      <div class="prop-thumb"><i class="ti ti-building"></i></div>
+      <div class="prop-details">
+        <div class="prop-name" id="propName">3BR Apartment — Lusail Marina District</div>
+        <div class="prop-meta" id="propMeta">QAR 1,850,000 · 187 sqm · Floor 12 · Ready</div>
+      </div>
+      <div class="prop-ref-badge" id="propRef">REF: LUS-4821</div>
+      <div class="pf-source"><i class="ti ti-external-link" style="font-size:11px"></i>PropertyFinder</div>
+      <div class="prop-switcher">
+        <button class="psw active" onclick="switchProp(0)">Lusail</button>
+        <button class="psw" onclick="switchProp(1)">Pearl</button>
+        <button class="psw" onclick="switchProp(2)">West Bay</button>
+        <button class="psw" onclick="switchProp(3)">Fox Hills</button>
+      </div>
+    </div>
+    <div class="messages" id="msgs"></div>
+    <div class="sugg-row" id="suggs"></div>
+    <!-- Agent handoff area (hidden until agent takes over) -->
+    <div id="handoffArea" style="display:none">
+      <div class="handoff-banner">
+        <i class="ti ti-user-check"></i>
+        <div><strong>Agent Mode</strong> — You're now handling this lead. AI Coach is watching and will send you tips.</div>
+      </div>
+      <div class="input-row">
+        <textarea class="handoff-inp" id="agentInp" rows="1" placeholder="Reply as agent... AI Coach will give you live tips"></textarea>
+        <button class="handoff-send" onclick="sendAgent()" aria-label="Send as agent"><i class="ti ti-arrow-up"></i></button>
+      </div>
+    </div>
+    <div class="input-row" id="clientInputRow">
+      <textarea class="inp" id="inp" rows="1" placeholder="Ask about this property or any property in Qatar..."></textarea>
+      <button class="send" id="sendBtn" onclick="sendMsg()" aria-label="Send"><i class="ti ti-arrow-up"></i></button>
+    </div>
+  </div>
+
+  <!-- AGENT PANEL -->
+  <div class="agent-panel">
+    <div class="pst">Lead Intelligence</div>
+    <div class="score-box">
+      <div class="score-big" id="scoreBig">—</div>
+      <div class="score-tier" id="scoreTier">Qualifying...</div>
+    </div>
+    <div class="pst">Qualification</div>
+    <div class="qual-list">
+      <div class="qi" id="q1"><div class="qi-dot"></div>Budget confirmed</div>
+      <div class="qi" id="q2"><div class="qi-dot"></div>Timeline established</div>
+      <div class="qi" id="q3"><div class="qi-dot"></div>Decision maker</div>
+      <div class="qi" id="q4"><div class="qi-dot"></div>Financing ready</div>
+      <div class="qi" id="q5"><div class="qi-dot"></div>Serious intent</div>
+    </div>
+    <div class="notify" id="notifyBtn" onclick="doNotify()"><i class="ti ti-bell"></i>Notify Agent</div>
+    <div class="handoff-toggle" id="handoffToggle" onclick="toggleHandoff()" style="display:none">
+      <i class="ti ti-user-check"></i>Take Over Chat
+    </div>
+    <!-- Live coaching nudges appear here -->
+    <div class="pst" id="coachPanelTitle" style="display:none">AI Coach Tips</div>
+    <div class="coach-panel" id="coachPanel"></div>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD TAB ══ -->
+<div class="view dash-view" id="tab-dash">
+  <div class="dash-header">
+    <div class="dash-title">Lead Dashboard</div>
+    <div class="dash-date">Thursday, 7 May 2026 · Qatar</div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat"><div class="stat-lbl">Today's Leads</div><div class="stat-val">24</div><div class="stat-sub">+8 from yesterday</div></div>
+    <div class="stat"><div class="stat-lbl">Hot Leads</div><div class="stat-val" style="color:#e8826e">6</div><div class="stat-sub">Ready to call now</div></div>
+    <div class="stat"><div class="stat-lbl">Avg Score</div><div class="stat-val">71</div><div class="stat-sub">Quality improving</div></div>
+    <div class="stat"><div class="stat-lbl">Qualified → Viewing</div><div class="stat-val" style="color:#5cba8a">34%</div><div class="stat-sub">vs 12% industry avg</div></div>
+  </div>
+  <div class="table-wrap">
+    <div class="table-head"><span>Client</span><span>Property</span><span>Intent</span><span>Score</span><span>Action</span></div>
+    <div class="trow">
+      <div><div class="lead-name">Ahmed Al-Rashidi</div><div class="lead-source">PropertyFinder · 3 min ago</div></div>
+      <div class="lead-prop-txt">3BR Marina, Lusail</div>
+      <div><span class="badge hot">🔴 Hot</span></div>
+      <div><span class="score-n" style="color:#e8826e">91</span></div>
+      <div><button class="act-btn urgent">📞 Call now</button></div>
+    </div>
+    <div class="trow">
+      <div><div class="lead-name">Sarah Mitchell</div><div class="lead-source">Agency Website · 18 min ago</div></div>
+      <div class="lead-prop-txt">2BR Porto Arabia, Pearl</div>
+      <div><span class="badge warm">🟡 Warm</span></div>
+      <div><span class="score-n" style="color:#d4b478">67</span></div>
+      <div><button class="act-btn">Follow up</button></div>
+    </div>
+    <div class="trow">
+      <div><div class="lead-name">Fatima Al-Hassan</div><div class="lead-source">WhatsApp QR · 42 min ago</div></div>
+      <div class="lead-prop-txt">Villa, West Bay Lagoon</div>
+      <div><span class="badge hot">🔴 Hot</span></div>
+      <div><span class="score-n" style="color:#e8826e">88</span></div>
+      <div><button class="act-btn urgent">📞 Call now</button></div>
+    </div>
+    <div class="trow">
+      <div><div class="lead-name">James Okafor</div><div class="lead-source">PropertyFinder · 1hr ago</div></div>
+      <div class="lead-prop-txt">Studio, Fox Hills</div>
+      <div><span class="badge cold">🔵 Cold</span></div>
+      <div><span class="score-n" style="color:#8aa0c8">28</span></div>
+      <div><button class="act-btn">Nurture</button></div>
+    </div>
+    <div class="trow">
+      <div><div class="lead-name">Unknown visitor</div><div class="lead-source">PropertyFinder · 2hr ago</div></div>
+      <div class="lead-prop-txt">1BR Msheireb</div>
+      <div><span class="badge dead">Dead</span></div>
+      <div><span class="score-n" style="color:rgba(200,200,200,.22)">9</span></div>
+      <div><span style="font-size:11.5px;color:rgba(212,180,120,.18)">Auto-archived</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ AI COACH TAB ══ -->
+<div class="view coach-view" id="tab-coach">
+  <div class="coach-header">
+    <div class="coach-title-block">
+      <div class="coach-title">AI Agent Coach</div>
+      <div class="coach-sub">Claude monitors every agent conversation and sends private real-time coaching nudges</div>
+    </div>
+    <div class="coach-stats">
+      <div class="coach-stat"><div class="coach-stat-val">47</div><div class="coach-stat-lbl">Nudges sent today</div></div>
+      <div class="coach-stat"><div class="coach-stat-val" style="color:#d4b478">+28%</div><div class="coach-stat-lbl">Conversion lift</div></div>
+      <div class="coach-stat"><div class="coach-stat-val">4</div><div class="coach-stat-lbl">Agents active</div></div>
+    </div>
+  </div>
+
+  <div class="coach-grid">
+    <!-- Agent performance -->
+    <div class="coach-card">
+      <div class="coach-card-head">
+        <div class="coach-card-title">Agent Performance</div>
+        <span style="font-size:11px;color:rgba(212,180,120,.3)">This week</span>
+      </div>
+      <div class="coach-card-body">
+        <div class="agent-row">
+          <div class="agent-av">KA</div>
+          <div class="agent-info">
+            <div class="agent-name-row"><span class="agent-nm">Khalid Al-Amin</span><span class="agent-score-badge ex">Excellent · 94</span></div>
+            <div class="perf-bar"><div class="perf-fill ex" style="width:94%"></div></div>
+          </div>
+        </div>
+        <div class="agent-row">
+          <div class="agent-av">SR</div>
+          <div class="agent-info">
+            <div class="agent-name-row"><span class="agent-nm">Sara Rahman</span><span class="agent-score-badge gd">Good · 78</span></div>
+            <div class="perf-bar"><div class="perf-fill gd" style="width:78%"></div></div>
+          </div>
+        </div>
+        <div class="agent-row">
+          <div class="agent-av">MH</div>
+          <div class="agent-info">
+            <div class="agent-name-row"><span class="agent-nm">Mohammed Hassan</span><span class="agent-score-badge gd">Good · 71</span></div>
+            <div class="perf-bar"><div class="perf-fill gd" style="width:71%"></div></div>
+          </div>
+        </div>
+        <div class="agent-row">
+          <div class="agent-av">LP</div>
+          <div class="agent-info">
+            <div class="agent-name-row"><span class="agent-nm">Laura Pereira</span><span class="agent-score-badge ok">Needs work · 52</span></div>
+            <div class="perf-bar"><div class="perf-fill ok" style="width:52%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live coach simulator -->
+    <div class="sim-card">
+      <div class="sim-head">
+        <div class="sim-dot"></div>
+        <div class="sim-title">Live Coach Simulator</div>
+        <div class="sim-sub">Paste a real conversation → get coaching</div>
+      </div>
+      <div class="sim-body">
+        <div class="sim-thread" id="simThread">
+          <div class="sim-msg client">I saw this apartment on PropertyFinder, looks nice</div>
+          <div class="sim-msg agent">Yes it's a great apartment, very popular</div>
+          <div class="sim-msg client">What's the price? Is it negotiable?</div>
+          <div class="sim-msg agent">The price is QAR 1,850,000. Let me know if you're interested</div>
+          <div class="sim-msg client">I'm interested but need to think about it</div>
+          <div class="sim-msg agent">Sure, take your time. Call me when ready</div>
+        </div>
+        <button class="sim-analyze-btn" id="simBtn" onclick="analyzeConversation()">
+          <i class="ti ti-brain"></i>Analyze with AI Coach
+        </button>
+        <div class="sim-result" id="simResult">
+          <div class="sim-result-title">AI Coach Assessment</div>
+          <div class="sim-nudge-out" id="simOutput"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nudge history (full width) -->
+    <div class="coach-card" style="grid-column:1/-1">
+      <div class="coach-card-head">
+        <div class="coach-card-title">Recent Coaching Nudges</div>
+        <span style="font-size:11px;color:rgba(212,180,120,.3)">Last 2 hours · all agents</span>
+      </div>
+      <div class="coach-card-body">
+        <div class="nudge-hist">
+          <div class="nh-item">
+            <div class="nh-head"><span class="nh-agent">Khalid Al-Amin</span><span class="nh-time">2 min ago</span></div>
+            <span class="nh-type praise"><i class="ti ti-star" style="font-size:10px"></i>Great move</span>
+            <div class="nh-text">You offered a viewing before quoting price — exactly right for this type of client. Conversion probability just increased.</div>
+            <div class="nh-outcome">→ Client accepted viewing slot</div>
+          </div>
+          <div class="nh-item">
+            <div class="nh-head"><span class="nh-agent">Laura Pereira</span><span class="nh-time">14 min ago</span></div>
+            <span class="nh-type warn"><i class="ti ti-alert-triangle" style="font-size:10px"></i>Missed signal</span>
+            <div class="nh-text">Client mentioned "my husband and I" — this is a joint decision. Ask: "Would your husband like to join a viewing?" before proceeding.</div>
+            <div class="nh-outcome">→ Agent followed up. Joint viewing booked.</div>
+          </div>
+          <div class="nh-item">
+            <div class="nh-head"><span class="nh-agent">Sara Rahman</span><span class="nh-time">31 min ago</span></div>
+            <span class="nh-type tip"><i class="ti ti-bulb" style="font-size:10px"></i>Opportunity</span>
+            <div class="nh-text">Client asked about service charges twice — they're budget-conscious. Lead with the QAR 14/sqm figure and compare it favorably to The Pearl (QAR 20+).</div>
+            <div class="nh-outcome">→ Client satisfied. Moved to serious inquiry.</div>
+          </div>
+          <div class="nh-item">
+            <div class="nh-head"><span class="nh-agent">Mohammed Hassan</span><span class="nh-time">48 min ago</span></div>
+            <span class="nh-type warn"><i class="ti ti-alert-triangle" style="font-size:10px"></i>Response too slow</span>
+            <div class="nh-text">17 minutes to reply. This lead was warm (score 64). Aim for under 3 minutes during business hours — hot leads cool fast.</div>
+          </div>
+          <div class="nh-item">
+            <div class="nh-head"><span class="nh-agent">Khalid Al-Amin</span><span class="nh-time">1hr ago</span></div>
+            <span class="nh-type tip"><i class="ti ti-bulb" style="font-size:10px"></i>Upsell moment</span>
+            <div class="nh-text">Client confirmed budget of QAR 2M+. The 3BR on floor 18 (REF: LUS-5102) is only QAR 80K more with a better view. Mention it now.</div>
+            <div class="nh-outcome">→ Client upgraded to larger unit. Deal size +4.3%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ INTEGRATION TAB ══ -->
+<div class="view int-view" id="tab-int">
+  <div class="int-grid">
+    <div class="int-card">
+      <div class="int-card-title">PropertyFinder → Propify Flow</div>
+      <div class="flow">
+        <div class="fstep"><div class="fnum-col"><div class="fnum">1</div><div class="fline"></div></div><div class="fcontent"><h4>Client clicks WhatsApp on any listing</h4><p>Your +974 WhatsApp Business number (via 360dialog) is on PropertyFinder. Client hits the button and lands in Propify instantly.</p></div></div>
+        <div class="fstep"><div class="fnum-col"><div class="fnum">2</div><div class="fline"></div></div><div class="fcontent"><h4>Property context auto-detected</h4><p>PropertyFinder pre-fills "I'm interested in REF: LUS-4821". Propify reads it and personalises the conversation instantly.</p></div></div>
+        <div class="fstep"><div class="fnum-col"><div class="fnum">3</div><div class="fline"></div></div><div class="fcontent"><h4>Claude qualifies the lead naturally</h4><p>Budget, timeline, financing, decision authority — gathered in 4–6 messages. Feels human, not a form.</p></div></div>
+        <div class="fstep"><div class="fnum-col"><div class="fnum">4</div><div class="fline"></div></div><div class="fcontent"><h4>Agent notified with score & brief</h4><p>Hot (70+): instant alert. Warm: batched hourly. Cold/dead: auto-archived.</p><div class="code"><span class="c">// Agent gets on WhatsApp:</span>
+<span class="k">🔴 HOT LEAD · Score 91/100</span>
+Name: <span class="s">Ahmed Al-Rashidi</span>
+3BR Marina Lusail · Budget QAR 2M+
+Timeline: 60 days · Mortgage: QNB
+<span class="c">→ Tap to open thread</span></div></div></div>
+        <div class="fstep"><div class="fnum-col"><div class="fnum">5</div></div><div class="fcontent" style="padding-bottom:0"><h4>AI Coach monitors the agent's replies</h4><p>Once the agent takes over, Claude watches the conversation and sends private coaching nudges — silently, only visible to the agent.</p></div></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="int-card">
+        <div class="int-card-title">Entry Channels</div>
+        <div class="channels">
+          <div class="ch"><div class="ch-icon"><i class="ti ti-brand-whatsapp"></i></div><div><h4>WhatsApp API</h4><p>+974 number via 360dialog. PropertyFinder button → Propify.</p></div></div>
+          <div class="ch"><div class="ch-icon"><i class="ti ti-world"></i></div><div><h4>Website Widget</h4><p>One embed script. Any agency site.</p></div></div>
+          <div class="ch"><div class="ch-icon"><i class="ti ti-qrcode"></i></div><div><h4>QR Code</h4><p>For-sale boards, brochures, malls.</p></div></div>
+          <div class="ch"><div class="ch-icon"><i class="ti ti-device-mobile"></i></div><div><h4>Social DMs</h4><p>Instagram & Facebook ad replies.</p></div></div>
+        </div>
+      </div>
+      <div class="int-card">
+        <div class="int-card-title">Website Embed</div>
+        <div class="code"><span class="c">&lt;!-- Add before &lt;/body&gt; --&gt;</span>
+<span class="k">&lt;script</span>
+  <span class="s">src</span>=<span class="s">"https://propify.qa/embed.js"</span>
+  <span class="s">data-agency-id</span>=<span class="s">"YOUR_ID"</span>
+  <span class="s">data-lang</span>=<span class="s">"ar,en"</span>
+<span class="k">&gt;&lt;/script&gt;</span></div>
+      </div>
+      <div class="int-card">
+        <div class="int-card-title">Pricing</div>
+        <div class="pricing-grid">
+          <div class="plan">
+            <div class="plan-name">Starter</div>
+            <div class="plan-price">3,500 <span>QAR setup</span></div>
+            <div class="plan-features">
+              <div class="pf-item">Website widget + WhatsApp</div>
+              <div class="pf-item">Lead scoring dashboard</div>
+              <div class="pf-item">Agent alerts</div>
+              <div class="pf-item">800 QAR/month</div>
+            </div>
+          </div>
+          <div class="plan featured">
+            <div class="plan-name">Pro · Popular</div>
+            <div class="plan-price">5,000 <span>QAR setup</span></div>
+            <div class="plan-features">
+              <div class="pf-item">PropertyFinder integration</div>
+              <div class="pf-item">Multi-agent + +974 number</div>
+              <div class="pf-item">AI Coach module</div>
+              <div class="pf-item">1,500 QAR/month</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer-bar">
+  <span>PROPIFY · QATAR REAL ESTATE AI · POWERED BY CLAUDE</span>
+  <span>propify.qa</span>
+</div>
+</div>
+
+<script>
+const PROPS=[
+  {name:"3BR Apartment — Lusail Marina District",meta:"QAR 1,850,000 · 187 sqm · Floor 12 · Ready",ref:"REF: LUS-4821",area:"Lusail Marina"},
+  {name:"2BR Apartment — The Pearl, Porto Arabia",meta:"QAR 1,200,000 · 124 sqm · Sea view · Freehold",ref:"REF: PRL-2244",area:"The Pearl"},
+  {name:"5BR Villa — West Bay Lagoon",meta:"QAR 6,500,000 · 520 sqm · Private pool · Compound",ref:"REF: WBL-0091",area:"West Bay Lagoon"},
+  {name:"Studio — Fox Hills, Lusail",meta:"QAR 490,000 · 52 sqm · High floor · Off-plan",ref:"REF: FXH-3312",area:"Fox Hills"}
+];
+const SUGGS={
+  en:["Is the price negotiable?","Service charge?","Can expats own?","Mortgage available?","Book a viewing","Similar properties?","Payment plan?","ROI estimate?"],
+  ar:["السعر قابل للتفاوض؟","رسوم الخدمة؟","يمكن للمغتربين التملك؟","هل يتوفر تمويل؟","حجز معاينة","عقارات مشابهة؟"]
+};
+
+const BOT_SYSTEM=`You are Propify, a premium AI real estate assistant for Qatar. You help clients and qualify them as sales leads.
+CURRENT PROPERTY: Name: {NAME} | Details: {META} | Ref: {REF}
+COVERAGE: All Qatar — Lusail (Marina, Fox Hills, Waterfront, Entertainment City), The Pearl (Porto Arabia, Medina Centrale, Viva Bahriyah), West Bay, West Bay Lagoon, Msheireb, Al Sadd, Al Waab, Al Wakrah, Barwa City, Al Khor, and all areas.
+QUALIFY NATURALLY (don't interrogate): q1=budget confirmed, q2=timeline clear, q3=decision maker, q4=financing ready, q5=serious intent
+SCORING: 80-100 hot, 50-79 warm, 20-49 cold, 0-19 dead
+KEY FACTS: Freehold for expats in The Pearl/Lusail/WBL + 7 zones. No property tax. Mortgages up to 70% LTV (QNB/QIB/Masraf). Service charges QAR 10-22/sqm/yr. Rental yield 5-9%. Off-plan: 30/70 or 40/60.
+AFTER EVERY REPLY append (hidden): [SCORE:{"score":0-100,"tier":"hot|warm|cold|dead","q1":bool,"q2":bool,"q3":bool,"q4":bool,"q5":bool}]
+STYLE: Warm, concise, max 90 words. End with one natural question. Match client language (Arabic→reply Arabic).`;
+
+const COACH_SYSTEM=`You are an elite real estate sales coach called Propify Coach. You monitor WhatsApp conversations between real estate agents and qualified leads in Qatar.
+
+Your job: analyse the agent's recent message(s) and give ONE sharp, actionable coaching nudge.
+
+Be specific to what just happened. Focus on:
+- Missed buying signals the agent didn't act on
+- Opportunities to confirm budget/timeline/financing
+- When to suggest a viewing (usually earlier than agents think)
+- Response tone (too pushy, too passive, too formal)
+- Upsell moments (client's budget allows a better unit)
+- Closing techniques appropriate for Qatar/GCC culture
+- Arabic/English language switching (match client's language)
+
+FORMAT your response as JSON only:
+{"type":"tip|warn|praise","headline":"max 6 words","text":"1-2 sentences, specific and actionable","action":"optional suggested reply the agent can use"}
+
+No preamble. No explanation. JSON only.`;
+
+const SIM_SYSTEM=`You are an elite real estate sales coach. Analyse this agent-client conversation and give detailed coaching feedback.
+
+Be specific. Identify:
+1. What the agent did wrong or missed
+2. The key buying signals the client gave
+3. Exactly what the agent should have said
+4. One specific script they can use next time
+
+Keep it under 120 words. Speak directly to the agent ("You missed...", "Next time say...").`;
+
+let history=[],agentHistory=[],lang='en',busy=false,notifyReady=false,notifySent=false,currentProp=0,agentMode=false,coachBusy=false;
+
+function showTab(t){
+  ['chat','dash','coach','int'].forEach(id=>{
+    document.getElementById('tab-'+id).classList.toggle('active',id===t);
+  });
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',['chat','dash','coach','int'][i]===t));
+}
+function setLang(l){
+  lang=l;
+  document.querySelectorAll('.lang-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&l==='en')||(i===1&&l==='ar')));
+  document.getElementById('inp').placeholder=l==='ar'?'اسأل عن هذا العقار أو أي عقار في قطر...':'Ask about this property or any property in Qatar...';
+  renderSuggs();
+}
+function switchProp(i){
+  currentProp=i;
+  document.querySelectorAll('.psw').forEach((b,j)=>b.classList.toggle('active',j===i));
+  document.getElementById('propName').textContent=PROPS[i].name;
+  document.getElementById('propMeta').textContent=PROPS[i].meta;
+  document.getElementById('propRef').textContent=PROPS[i].ref;
+  history=[];agentHistory=[];agentMode=false;
+  document.getElementById('msgs').innerHTML='';
+  document.getElementById('handoffArea').style.display='none';
+  document.getElementById('clientInputRow').style.display='flex';
+  document.getElementById('handoffToggle').style.display='none';
+  document.getElementById('coachPanel').innerHTML='';
+  document.getElementById('coachPanelTitle').style.display='none';
+  resetScore();notifySent=false;notifyReady=false;
+  document.getElementById('notifyBtn').className='notify';
+  document.getElementById('notifyBtn').innerHTML='<i class="ti ti-bell"></i>Notify Agent';
+  renderSuggs();
+  const p=PROPS[i];
+  setTimeout(()=>addMsg('bot',`Welcome! I'm <strong>Propify</strong>, your AI property advisor.\n\nI can see you're interested in <strong>${p.area}</strong>. I can help with pricing, ownership rules, mortgage options, or book a viewing.\n\nWhat would you like to know?`),200);
+}
+function renderSuggs(){
+  document.getElementById('suggs').innerHTML=SUGGS[lang].map(s=>`<button class="sug" onclick="sendSug('${s}')">${s}</button>`).join('');
+  document.getElementById('suggs').style.display='';
+}
+function addMsg(role,text){
+  const el=document.createElement('div');
+  el.className=`msg ${role==='user'?'user':role==='agent'?'agent-msg':'bot'}`;
+  const icons={bot:'ti-building',user:'ti-user',agent:'ti-user-check'};
+  const avCls={bot:'bot',user:'usr',agent:'agt'};
+  el.innerHTML=`<div class="av ${avCls[role]||'bot'}"><i class="ti ${icons[role]||'ti-building'}"></i></div><div class="bubble">${fmt(text)}</div>`;
+  document.getElementById('msgs').appendChild(el);
+  document.getElementById('msgs').scrollTop=99999;
+}
+function fmt(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}
+function showTyping(id='typing'){
+  const el=document.createElement('div');el.className='msg bot';el.id=id;
+  el.innerHTML=`<div class="av bot"><i class="ti ti-building"></i></div><div class="bubble"><div class="typing-row"><div class="td"></div><div class="td"></div><div class="td"></div></div></div>`;
+  document.getElementById('msgs').appendChild(el);
+  document.getElementById('msgs').scrollTop=99999;
+}
+function removeTyping(id='typing'){const t=document.getElementById(id);if(t)t.remove()}
+function resetScore(){
+  document.getElementById('scoreBig').textContent='—';
+  document.getElementById('scoreBig').className='score-big';
+  document.getElementById('scoreTier').textContent='Qualifying...';
+  document.getElementById('scoreTier').className='score-tier';
+  ['q1','q2','q3','q4','q5'].forEach(q=>document.getElementById(q).classList.remove('done'));
+}
+function updateScore(d){
+  const s=d.score,tier=d.tier;
+  const big=document.getElementById('scoreBig'),lbl=document.getElementById('scoreTier');
+  big.textContent=s;
+  big.className='score-big '+(tier==='hot'?'hot':tier==='warm'?'warm':tier==='cold'?'cold':'');
+  lbl.textContent=tier==='hot'?'🔴 Hot Lead':tier==='warm'?'🟡 Warm Lead':tier==='cold'?'🔵 Cold Lead':'⚫ Dead Lead';
+  lbl.className='score-tier '+(tier==='hot'?'hot':tier==='warm'?'warm':tier==='cold'?'cold':'');
+  ['q1','q2','q3','q4','q5'].forEach(q=>document.getElementById(q).classList.toggle('done',!!d[q]));
+  notifyReady=s>=50&&(tier==='hot'||tier==='warm');
+  if(!notifySent){
+    document.getElementById('notifyBtn').classList.toggle('ready',notifyReady);
+    if(notifyReady&&s>=60){
+      document.getElementById('handoffToggle').style.display='flex';
+    }
+  }
+}
+function doNotify(){
+  if(!notifyReady||notifySent)return;
+  notifySent=true;
+  const nb=document.getElementById('notifyBtn');
+  nb.className='notify sent';
+  nb.innerHTML='<i class="ti ti-check"></i>Agent Notified';
+  addMsg('bot','✅ I\'ve flagged this as a priority lead. An agent will be in touch within 15 minutes. Is there anything else I can help with?');
+}
+function toggleHandoff(){
+  if(agentMode)return;
+  agentMode=true;
+  document.getElementById('handoffToggle').classList.add('active');
+  document.getElementById('handoffToggle').innerHTML='<i class="ti ti-user-check"></i>Agent Mode Active';
+  document.getElementById('handoffArea').style.display='block';
+  document.getElementById('clientInputRow').style.display='none';
+  document.getElementById('suggs').style.display='none';
+  document.getElementById('coachPanelTitle').style.display='block';
+  addMsg('bot','🤝 Agent has joined the conversation. I\'ll step back and let your agent assist you directly.');
+  agentHistory=[...history];
+}
+
+// ── SEND BOT MESSAGE ─────────────────────────────────────────────────────────
+async function sendSug(t){document.getElementById('inp').value=t;await sendMsg()}
+async function sendMsg(){
+  const inp=document.getElementById('inp');
+  const text=inp.value.trim();
+  if(!text||busy)return;
+  inp.value='';inp.style.height='auto';
+  busy=true;document.getElementById('sendBtn').disabled=true;
+  document.getElementById('suggs').style.display='none';
+  addMsg('user',text);
+  history.push({role:'user',content:text});
+  showTyping();
+  const p=PROPS[currentProp];
+  const sys=BOT_SYSTEM.replace('{NAME}',p.name).replace('{META}',p.meta).replace('{REF}',p.ref);
+  try{
+    const res=await fetch('/api/propify/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:history})});
+    const data=await res.json();
+    removeTyping();
+    let reply=data.content?.[0]?.text||'Sorry, please try again.';
+    const m=reply.match(/\[SCORE:(.*?)\]/);
+    if(m){try{updateScore(JSON.parse(m[1]))}catch(e){}reply=reply.replace(/\[SCORE:.*?\]/g,'').trim()}
+    history.push({role:'assistant',content:reply});
+    addMsg('bot',reply);
+  }catch(e){removeTyping();addMsg('bot','Connection error. Please try again.')}
+  busy=false;document.getElementById('sendBtn').disabled=false;
+}
+
+// ── SEND AGENT MESSAGE + TRIGGER COACH ──────────────────────────────────────
+async function sendAgent(){
+  const inp=document.getElementById('agentInp');
+  const text=inp.value.trim();
+  if(!text||busy)return;
+  inp.value='';inp.style.height='auto';
+  busy=true;
+  addMsg('agent',text);
+  agentHistory.push({role:'assistant',content:`[AGENT]: ${text}`});
+  // Get coaching nudge in parallel
+  triggerCoach(text);
+  busy=false;
+}
+
+async function triggerCoach(agentMsg){
+  if(coachBusy)return;
+  coachBusy=true;
+  // Build conversation context for coach
+  const recentMsgs=agentHistory.slice(-6).map(m=>`${m.role==='user'?'Client':'Agent'}: ${m.content.replace('[AGENT]: ','')}`).join('\n');
+  const coachPrompt=`Recent conversation:\n${recentMsgs}\n\nAgent just sent: "${agentMsg}"\n\nLead score: ${document.getElementById('scoreBig').textContent}/100 (${document.getElementById('scoreTier').textContent})\nProperty: ${PROPS[currentProp].name}`;
+  try{
+    const res=await fetch('/api/propify/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:COACH_SYSTEM,messages:[{role:'user',content:coachPrompt}]})});
+    const data=await res.json();
+    let raw=data.content?.[0]?.text||'';
+    raw=raw.replace(/```json|```/g,'').trim();
+    try{
+      const nudge=JSON.parse(raw);
+      showNudge(nudge);
+    }catch(e){
+      showNudge({type:'tip',headline:'Coach tip',text:raw.slice(0,120),action:null});
+    }
+  }catch(e){}
+  coachBusy=false;
+}
+
+function showNudge(nudge){
+  const panel=document.getElementById('coachPanel');
+  const typeLabels={tip:'💡 Tip',warn:'⚠️ Warning',praise:'✅ Well done'};
+  const el=document.createElement('div');
+  el.className='nudge';
+  el.innerHTML=`
+    <div class="nudge-head">
+      <span class="nudge-type">${typeLabels[nudge.type]||'💡 Tip'}</span>
+    </div>
+    <div style="font-size:12.5px;font-weight:500;color:#e8d9b8;margin-bottom:4px">${nudge.headline||''}</div>
+    <div class="nudge-text">${nudge.text||''}</div>
+    ${nudge.action?`<div style="margin-top:8px;background:rgba(92,186,138,.05);border:.5px solid rgba(92,186,138,.15);border-radius:6px;padding:7px 10px;font-size:11.5px;color:rgba(92,186,138,.7);font-style:italic">"${nudge.action}"</div>`:''}
+    <div class="nudge-action">
+      <button class="nudge-btn dismiss" onclick="this.closest('.nudge').remove()">Dismiss</button>
+    </div>`;
+  panel.insertBefore(el,panel.firstChild);
+  // Keep max 3 nudges
+  while(panel.children.length>3)panel.removeChild(panel.lastChild);
+}
+
+// ── COACH SIMULATOR ──────────────────────────────────────────────────────────
+async function analyzeConversation(){
+  const btn=document.getElementById('simBtn');
+  const result=document.getElementById('simResult');
+  const output=document.getElementById('simOutput');
+  btn.disabled=true;
+  btn.innerHTML='<i class="ti ti-loader" style="animation:spin 1s linear infinite"></i>Analysing...';
+  const thread=document.getElementById('simThread').innerText;
+  try{
+    const res=await fetch('/api/propify/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,system:SIM_SYSTEM,messages:[{role:'user',content:`Conversation:\n${thread}`}]})});
+    const data=await res.json();
+    const text=data.content?.[0]?.text||'Could not analyse.';
+    output.innerHTML=text.replace(/\n/g,'<br>');
+    result.classList.add('show');
+  }catch(e){output.textContent='Connection error.';result.classList.add('show')}
+  btn.disabled=false;
+  btn.innerHTML='<i class="ti ti-brain"></i>Analyse Again';
+}
+
+// ── INPUT HANDLERS ───────────────────────────────────────────────────────────
+document.getElementById('inp').addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg()}
+  this.style.height='auto';this.style.height=Math.min(this.scrollHeight,110)+'px';
+});
+document.getElementById('agentInp').addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAgent()}
+  this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';
+});
+
+// ── SPIN ANIMATION ───────────────────────────────────────────────────────────
+const style=document.createElement('style');
+style.textContent='@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';
+document.head.appendChild(style);
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+renderSuggs();
+setTimeout(()=>addMsg('bot',`Welcome! I'm <strong>Propify</strong>, your AI property advisor for Qatar.<br><br>I can see you're interested in the <strong>3BR Marina District apartment</strong>. Ask me anything — pricing, ownership for expats, mortgage, payment plans, or book a viewing.<br><br>What would you like to know?`),400);
+</script>
+</body>
+</html>
