@@ -42,7 +42,7 @@ export default async function LeadsPage({
           data.leads.reduce((sum, l) => sum + (l.ai_score ?? 0), 0) / total,
         )
       : 0;
-  const pendingAction = data.leads.filter((l) => l.status === "NEW").length;
+  const pendingAction = data.leads.filter((l) => l.propify_status === "NEW").length;
 
   return (
     <div className="space-y-6">

@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 
 export type Tier = "hot" | "warm" | "cold" | "dead";
 
+export type PropifyStatus = "NEW" | "ARCHIVED";
+
 export interface Lead {
   id: string;
   phone: string;
@@ -14,7 +16,7 @@ export interface Lead {
   ai_tier: Tier | null;
   ai_qualifiers: Record<string, boolean> | null;
   conversation_summary: string | null;
-  status: string;
+  propify_status: PropifyStatus;
   property_ref: string | null;
   property_name: string | null;
   assigned_to: string | null;
@@ -117,12 +119,12 @@ function LeadCard({
         <span
           className={cn(
             "inline-flex rounded px-2 py-0.5 text-xs font-medium",
-            lead.status === "NEW"
+            lead.propify_status === "NEW"
               ? "bg-emerald-50 text-emerald-700"
               : "bg-slate-100 text-slate-600",
           )}
         >
-          {lead.status}
+          {lead.propify_status}
         </span>
       </div>
     </div>

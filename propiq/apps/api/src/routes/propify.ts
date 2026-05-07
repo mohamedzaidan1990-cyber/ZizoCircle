@@ -105,7 +105,7 @@ propifyRouter.post(
         .join(", ");
 
       const tierUpper = lead.tier.toUpperCase();
-      const status = lead.tier === "dead" ? "ARCHIVED" : "NEW";
+      const propifyStatus = lead.tier === "dead" ? "ARCHIVED" : "NEW";
       const isArchived = lead.tier === "dead";
 
       const contactId = await withTenant(lead.tenant_slug, async (client) => {
@@ -113,7 +113,7 @@ propifyRouter.post(
           `
           INSERT INTO contacts (
             first_name, phone, source, ai_score, ai_score_reason, ai_tier,
-            ai_qualifiers, ai_scored_at, conversation_summary, status,
+            ai_qualifiers, ai_scored_at, conversation_summary, propify_status,
             property_ref, property_name, assigned_to, is_archived, notes
           )
           VALUES (
@@ -133,7 +133,7 @@ propifyRouter.post(
             lead.tier,
             JSON.stringify(lead.qualifiers),
             lead.conversation_summary ?? null,
-            status,
+            propifyStatus,
             lead.property_ref ?? null,
             lead.property_name ?? null,
             lead.agent_id ?? null,
@@ -213,8 +213,8 @@ propifyRouter.get(
         const result = await client.query(
           `
           SELECT id, phone, source, ai_score, ai_score_reason, ai_tier,
-                 ai_qualifiers, conversation_summary, status, property_ref,
-                 property_name, assigned_to, created_at
+                 ai_qualifiers, conversation_summary, propify_status,
+                 property_ref, property_name, assigned_to, created_at
           FROM contacts
           WHERE ${where.join(" AND ")}
           ORDER BY ai_score DESC NULLS LAST, created_at DESC

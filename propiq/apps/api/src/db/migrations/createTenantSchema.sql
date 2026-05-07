@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS tenant_:slug.contacts (
   ai_tier         VARCHAR(10),
   ai_qualifiers   JSONB DEFAULT '{}',
   conversation_summary TEXT,
-  status          VARCHAR(20) DEFAULT 'NEW',
+  propify_status  VARCHAR(20) DEFAULT 'NEW' CHECK (propify_status IN ('NEW', 'ARCHIVED')),
   property_ref    VARCHAR(50),
   property_name   VARCHAR(255),
   assigned_to     VARCHAR(50),
