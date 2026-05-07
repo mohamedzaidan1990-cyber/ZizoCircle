@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS tenant_:slug.contacts (
   phone_alt       VARCHAR(50),
   nationality     VARCHAR(50),
   contact_type    VARCHAR(20) NOT NULL DEFAULT 'BUYER',
+  pipeline_type   VARCHAR(10) NOT NULL DEFAULT 'SALES',
   source          VARCHAR(50),
   source_detail   TEXT,
   budget_min      BIGINT,
@@ -92,6 +93,7 @@ CREATE TABLE IF NOT EXISTS tenant_:slug.deals (
   id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title            VARCHAR(255) NOT NULL,
   deal_type        VARCHAR(20) NOT NULL DEFAULT 'SALE',
+  pipeline_type    VARCHAR(10) NOT NULL DEFAULT 'SALES',
   stage            VARCHAR(50) NOT NULL DEFAULT 'NEW_LEAD',
   value            BIGINT,
   commission_rate  DECIMAL(5,4) DEFAULT 0.02,
@@ -174,8 +176,11 @@ CREATE TABLE IF NOT EXISTS tenant_:slug.sequences (
 
 CREATE INDEX IF NOT EXISTS contacts_assigned_to_idx ON tenant_:slug.contacts(assigned_to);
 CREATE INDEX IF NOT EXISTS contacts_contact_type_idx ON tenant_:slug.contacts(contact_type);
+CREATE INDEX IF NOT EXISTS contacts_pipeline_type_idx ON tenant_:slug.contacts(pipeline_type);
 CREATE INDEX IF NOT EXISTS contacts_ai_score_idx     ON tenant_:slug.contacts(ai_score DESC);
 CREATE INDEX IF NOT EXISTS contacts_is_archived_idx  ON tenant_:slug.contacts(is_archived);
+CREATE INDEX IF NOT EXISTS deals_pipeline_type_idx ON tenant_:slug.deals(pipeline_type);
+CREATE INDEX IF NOT EXISTS activities_scheduled_at_idx ON tenant_:slug.activities(scheduled_at) WHERE scheduled_at IS NOT NULL;
 CREATE INDEX IF NOT EXISTS properties_status_idx        ON tenant_:slug.properties(status);
 CREATE INDEX IF NOT EXISTS properties_listing_type_idx  ON tenant_:slug.properties(listing_type);
 CREATE INDEX IF NOT EXISTS properties_area_idx          ON tenant_:slug.properties(area);

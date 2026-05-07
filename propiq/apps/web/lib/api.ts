@@ -19,10 +19,17 @@ export const api: AxiosInstance = axios.create({
   withCredentials: true,
 });
 
+function readAccessTokenFromDocumentCookie(): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/(?:^|; )propiq_access=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 api.interceptors.request.use((config) => {
-  if (accessTokenInMemory) {
+  const token = accessTokenInMemory ?? readAccessTokenFromDocumentCookie();
+  if (token) {
     config.headers = config.headers ?? {};
-    config.headers.Authorization = `Bearer ${accessTokenInMemory}`;
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });

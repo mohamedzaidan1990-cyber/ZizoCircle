@@ -2,8 +2,9 @@ import { notFound } from "next/navigation";
 import { getRequestConfig } from "next-intl/server";
 import { defaultLocale, isLocale } from "./config";
 
-export default getRequestConfig(async ({ locale }) => {
-  const resolved = locale ?? defaultLocale;
+export default getRequestConfig(async ({ requestLocale }) => {
+  const requested = await requestLocale;
+  const resolved = requested ?? defaultLocale;
   if (!isLocale(resolved)) notFound();
 
   return {

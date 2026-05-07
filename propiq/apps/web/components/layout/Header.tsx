@@ -10,10 +10,12 @@ export function Header({
   locale,
   user,
   agency,
+  children,
 }: {
   locale: string;
   user: PublicUser;
   agency: PublicAgency;
+  children?: React.ReactNode;
 }) {
   const t = useTranslations("common");
   const router = useRouter();
@@ -39,11 +41,14 @@ export function Header({
       : `${user.firstName} ${user.lastName}`;
 
   return (
-    <header className="h-14 bg-white border-b border-slate-200 px-4 lg:px-6 flex items-center justify-between">
-      <div className="text-sm text-slate-500">
-        {locale === "ar" && agency.nameAr ? agency.nameAr : agency.name}
+    <header className="h-14 bg-white border-b border-slate-200 px-2 sm:px-4 lg:px-6 flex items-center justify-between gap-2">
+      <div className="flex items-center gap-2 min-w-0">
+        {children}
+        <div className="text-xs sm:text-sm text-slate-500 truncate">
+          {locale === "ar" && agency.nameAr ? agency.nameAr : agency.name}
+        </div>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1 sm:gap-3">
         <button onClick={switchLocale} className="btn-ghost text-xs uppercase">
           {otherLocale === "ar" ? t("arabic") : t("english")}
         </button>
