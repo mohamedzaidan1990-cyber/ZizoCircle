@@ -13,7 +13,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center px-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Forge</CardTitle>
+          <CardTitle>Sougha Concepts</CardTitle>
           <CardDescription>Sign in to your portal</CardDescription>
         </CardHeader>
         <CardContent>

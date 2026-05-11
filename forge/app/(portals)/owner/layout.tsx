@@ -15,7 +15,7 @@ export default async function OwnerLayout({
       <header className="flex items-center justify-between border-b px-6 py-3">
         <div className="flex items-center gap-6">
           <Link href="/owner" className="text-lg font-semibold tracking-tight">
-            Forge
+            Sougha Concepts
           </Link>
           <OwnerNav />
         </div>

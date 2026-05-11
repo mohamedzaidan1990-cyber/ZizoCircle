@@ -3,8 +3,8 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "Forge",
-  description: "Jewelry factory management",
+  title: "Sougha Concepts",
+  description: "Jewelry workshop management",
 };
 
 export default function RootLayout({

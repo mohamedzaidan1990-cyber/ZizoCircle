@@ -26,13 +26,13 @@ export function ScopePDF({ order, items, client, workshop }: ScopePDFProps) {
   return (
     <Document
       title={`Scope of Work — ${order.order_number}`}
-      author={workshop?.full_name ?? "Forge"}
+      author={workshop?.full_name ?? "Sougha Concepts"}
     >
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.brand}>Forge</Text>
+            <Text style={styles.brand}>Sougha Concepts</Text>
             <Text style={styles.brandSub}>Jewelry workshop</Text>
             {workshop?.full_name && (
               <Text style={[styles.brandSub, { marginTop: 6 }]}>
@@ -152,7 +152,7 @@ export function ScopePDF({ order, items, client, workshop }: ScopePDFProps) {
         </View>
 
         <Text style={styles.footer} fixed>
-          Forge · {order.order_number} · Scope of Work · Generated{" "}
+          Sougha Concepts · {order.order_number} · Scope of Work · Generated{" "}
           {formatDateTime(new Date().toISOString())}
         </Text>
       </Page>
