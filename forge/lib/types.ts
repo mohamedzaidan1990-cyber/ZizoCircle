@@ -276,3 +276,58 @@ export interface GoldConsumption {
   recorded_by: string | null;
   notes: string | null;
 }
+
+// --- 0006 stone inventory ---
+
+export interface StoneSupplier {
+  id: string;
+  name: string;
+  contact_name: string | null;
+  phone: string | null;
+  email: string | null;
+  address: string | null;
+  notes: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface StoneAttrs {
+  stone_type: StoneType;
+  stone_shape?: StoneShape;
+  size_mm?: number;
+  colour_grade?: string;
+  clarity_grade?: string;
+  cut_grade?: string;
+  cert_lab?: string;
+  cert_number?: string;
+  carats_total?: number;
+}
+
+export interface InventoryItem {
+  id: string;
+  name: string;
+  category: string;
+  sku: string | null;
+  unit: string;
+  stock_qty: number;
+  reorder_threshold: number | null;
+  cost_per_unit_qar: number | null;
+  supplier_id: string | null;
+  supplier_name: string | null;
+  stone_attrs: StoneAttrs | null;
+  notes: string | null;
+  last_restocked_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface InventoryTransaction {
+  id: string;
+  item_id: string;
+  order_id: string | null;
+  qty_change: number;
+  reason: string | null;
+  created_by: string | null;
+  created_at: string;
+}
