@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getClientForCurrentUser } from "@/lib/db/client";
+import { getCurrentUser } from "@/lib/auth";
 import {
   Card,
   CardContent,
@@ -14,8 +15,10 @@ import { buttonVariants } from "@/components/ui/button";
 import { OrderStatusBadge, StageStatusBadge } from "@/components/orders/status-badge";
 import { StageProgress } from "@/components/orders/stage-progress";
 import { PhotoGrid } from "@/components/photos/photo-grid";
-import { STORAGE, signUrl } from "@/lib/storage";
+import { STORAGE, signUrl, signMany } from "@/lib/storage";
 import { formatDate, formatDateTime } from "@/lib/format";
+import { listOrderMessages } from "@/lib/db/messages";
+import { Thread } from "@/components/messages/thread";
 import type { Order, OrderStage, ScopeItem } from "@/lib/types";
 
 export default async function ClientOrderPage({
@@ -56,6 +59,16 @@ export default async function ClientOrderPage({
   const refImageUrl = o.reference_image_url
     ? await signUrl(STORAGE.stagePhotos, o.reference_image_url, 3600)
     : null;
+
+  const [me, clientMessages] = await Promise.all([
+    getCurrentUser(),
+    listOrderMessages(params.id, "client"),
+  ]);
+
+  const clientAttachmentPaths = clientMessages.flatMap((m) =>
+    m.attachments.map((a) => a.storage_path)
+  );
+  const clientAttachmentUrls = await signMany(STORAGE.messageAttachments, clientAttachmentPaths);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -170,6 +183,24 @@ export default async function ClientOrderPage({
             {approvedStages.map((s) => (
               <StageBlock key={s.id} stage={s} />
             ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {me && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Messages</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Thread
+              orderId={o.id}
+              threadType="client"
+              currentUserId={me.id}
+              currentUserRole={me.role as "owner" | "worker" | "client"}
+              messages={clientMessages}
+              attachmentUrls={clientAttachmentUrls}
+            />
           </CardContent>
         </Card>
       )}

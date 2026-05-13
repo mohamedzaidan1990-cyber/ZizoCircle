@@ -24,7 +24,11 @@ import {
 } from "@/lib/format";
 import { assignWorkerAction } from "./actions";
 import { Select } from "@/components/ui/select";
-import { STORAGE, signUrl } from "@/lib/storage";
+import { STORAGE, signUrl, signMany } from "@/lib/storage";
+import { getCurrentUser } from "@/lib/auth";
+import { listOrderMessages } from "@/lib/db/messages";
+import { Thread } from "@/components/messages/thread";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import type {
   Client,
   Order,
@@ -90,6 +94,25 @@ export default async function OrderDetailPage({
   const refImageUrl = o.reference_image_url
     ? await signUrl(STORAGE.stagePhotos, o.reference_image_url, 3600)
     : null;
+
+  const me = await getCurrentUser();
+
+  const [clientMessages, internalMessages] = await Promise.all([
+    listOrderMessages(params.id, "client"),
+    listOrderMessages(params.id, "internal"),
+  ]);
+
+  const clientAttachmentPaths = clientMessages.flatMap((m) =>
+    m.attachments.map((a) => a.storage_path)
+  );
+  const internalAttachmentPaths = internalMessages.flatMap((m) =>
+    m.attachments.map((a) => a.storage_path)
+  );
+
+  const [clientAttachmentUrls, internalAttachmentUrls] = await Promise.all([
+    signMany(STORAGE.messageAttachments, clientAttachmentPaths),
+    signMany(STORAGE.messageAttachments, internalAttachmentPaths),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -361,6 +384,42 @@ export default async function OrderDetailPage({
           </CardContent>
         </Card>
       </div>
+
+      {me && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Messages</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="client">
+              <TabsList>
+                <TabsTrigger value="client">Client thread</TabsTrigger>
+                <TabsTrigger value="internal">Internal thread</TabsTrigger>
+              </TabsList>
+              <TabsContent value="client">
+                <Thread
+                  orderId={o.id}
+                  threadType="client"
+                  currentUserId={me.id}
+                  currentUserRole={me.role as "owner" | "worker" | "client"}
+                  messages={clientMessages}
+                  attachmentUrls={clientAttachmentUrls}
+                />
+              </TabsContent>
+              <TabsContent value="internal">
+                <Thread
+                  orderId={o.id}
+                  threadType="internal"
+                  currentUserId={me.id}
+                  currentUserRole={me.role as "owner" | "worker" | "client"}
+                  messages={internalMessages}
+                  attachmentUrls={internalAttachmentUrls}
+                />
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
