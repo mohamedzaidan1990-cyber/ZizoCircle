@@ -346,3 +346,19 @@ export interface WorkerProfile {
   created_at: string;
   updated_at: string;
 }
+
+// --- 0008 push_subscriptions ---
+
+export type PushPlatform = "web" | "ios" | "android";
+
+export interface PushSubscription {
+  id: string;
+  user_id: string;
+  fcm_token: string;
+  platform: PushPlatform;
+  device_label: string | null;
+  user_agent: string | null;
+  app_version: string | null;
+  last_seen_at: string;
+  created_at: string;
+}
