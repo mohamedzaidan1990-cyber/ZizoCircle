@@ -50,6 +50,7 @@ export async function GET(
       .maybeSingle(),
   ]);
 
+  // @ts-ignore – @react-pdf/renderer type mismatch with React component wrapper
   const buffer = await renderToBuffer(
     createElement(ScopePDF, {
       order,
@@ -62,7 +63,7 @@ export async function GET(
         address: clientRow.address,
       } as Pick<Client, "full_name" | "company_name" | "email" | "phone" | "address">,
       workshop: workshop as Pick<User, "full_name" | "email" | "phone"> | null,
-    })
+    }) as any
   );
 
   return new NextResponse(buffer, {
