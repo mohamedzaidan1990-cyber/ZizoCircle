@@ -50,6 +50,7 @@ export async function GET(
       .maybeSingle(),
   ]);
 
+  // @ts-ignore – @react-pdf/renderer type mismatch with React component wrapper
   const buffer = await renderToBuffer(
     createElement(ScopePDF, {
       order,
