@@ -331,3 +331,18 @@ export interface InventoryTransaction {
   created_by: string | null;
   created_at: string;
 }
+
+// --- 0007 worker_profiles extend ---
+
+export interface WorkerProfile {
+  id: string;
+  user_id: string | null;
+  specialisation: string[] | null;
+  gold_loss_tolerance_pct: number;
+  hourly_rate_qar: number | null;
+  working_hours: string | null;
+  hire_date: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
