@@ -1,404 +1,436 @@
 # Forge — new tables design
 
 **Date:** 2026-05-13
-**Scope:** Schema additions for four areas listed as TODO in `forge/README.md`:
-gold + stones inventory, worker profiles, push subscriptions, order messages.
-**Integration strategy:** side-car tables only. Existing tables
-(`users`, `clients`, `orders`, `order_stages`, `order_gemstones`,
-`scope_items`, `stage_gemstone_logs`, `stage_templates`,
-`stage_template_steps`, `invoices`, `notifications`) are not modified.
-The one exception is a small update to the existing gold-loss trigger so it
-reads the tolerance from `worker_profiles` instead of its current source.
+**Status:** Revised (v2). The original v1 spec assumed several tables didn't
+exist that in fact already do in the live Supabase project
+`qbmxwaxezifsnysxyyez`. v1 is preserved in git at commit `1582806`. This
+revision drops colliding `CREATE TABLE`s in favour of `ALTER TABLE`s and
+adopts the existing generic inventory / messages tables.
+
+**Source of truth for "current schema":** the live DB introspected via
+Supabase MCP `list_tables(schemas=['public'], verbose=true)`. Not
+`forge/lib/types.ts` — that file is incomplete and behind.
+
+**Scope:** schema additions / alterations for the four areas listed as TODO
+in `forge/README.md`: gold + stones inventory, worker profiles, push
+delivery, order messages.
+
+**Integration strategy:** mostly *extend* existing tables. New side-car
+tables only where the existing schema has no equivalent (suppliers,
+gold_consumption, message_attachments, push_subscriptions).
+
+## What already exists (live DB)
+
+| Existing table | Relevance |
+|---|---|
+| `worker_profiles` | Has `id uuid pk`, `user_id`, `specialisation text[]`, `gold_loss_tolerance_pct numeric default 5.00`, `hourly_rate_qar`, `notes`. Missing: `working_hours`, `hire_date`, `updated_at`. No m2m specialisation lookup. |
+| `order_messages` | Single thread per order. Columns: `order_id`, `sender_id`, `body`, `attachment_url text` (single), `read_at timestamptz` (single reader). Missing: thread split, multi-attachment, per-user read receipts, `is_system`, `edited_at`. |
+| `gold_purchases` | Event log of purchases. Columns: purchase_date, supplier_name (text), karat, weight_grams, price_per_gram, total_cost_qar (generated). Missing: `remaining_grams` and FIFO consumption. |
+| `inventory_items` + `inventory_transactions` | Generic stock + ledger system. Columns on inventory_items: name, category, sku, unit, stock_qty, reorder_threshold, cost_per_unit_qar, supplier_name. Transactions: item_id, order_id, qty_change, reason. No stone-specific attributes. |
+| `users.push_token` | Single `text` column for one FCM token per user. |
+| `accounting_ledger` | txn_type enum: gold_purchase, gemstone_purchase, labour_cost, overhead_expense, invoice_payment, deposit_received, refund, other. Not changed by this spec. |
 
 ## Goals
 
-- Make gold purchases lot-tracked with FIFO consumption, so each order
-  has a real cost-of-goods figure traceable back to a supplier.
-- Mirror that for factory-supplied stones: lots in, allocations out.
-- Give workers a real profile row that owns their gold-loss tolerance and
-  specialisations, replacing whatever ad-hoc storage exists today.
-- Persist FCM tokens so the existing `notifications.channel='push'` rows
-  can actually be dispatched.
-- Add a threaded message system per order with two visibility modes
-  (client-facing and staff-internal).
+- Turn `gold_purchases` into lot-tracked stock by adding `remaining_grams`;
+  add a `gold_consumption` table that links order_stages → gold_purchases
+  with FIFO allocation.
+- Make `inventory_items` viable for stones by adding `stone_attrs jsonb`;
+  use `inventory_transactions` for stone allocation to orders.
+- Add `gold_suppliers` and `stone_suppliers` lookup tables; ALTER the
+  purchase / inventory tables to add nullable `supplier_id` FKs; keep
+  free-text `supplier_name` for backfill compatibility.
+- Extend `worker_profiles` with the missing fields and verify the
+  gold-loss trigger reads from `worker_profiles.gold_loss_tolerance_pct`
+  (it may already; if not, fix it).
+- Add `push_subscriptions` for multi-device FCM. Keep `users.push_token`
+  during the transition; deprecate in a future migration.
+- Extend `order_messages` with `thread_type`, `read_by jsonb`,
+  `is_system`, `edited_at`. Add a separate `message_attachments` table
+  for multi-attach (existing `attachment_url` is preserved on
+  order_messages for backfill).
+- New storage bucket `forge-message-attachments` with RLS matching the
+  message thread visibility.
 
 ## Non-goals
 
-- Reconstructing the missing main schema migration. That's a separate
-  effort; this spec assumes the existing schema is the baseline.
-- Per-order cost analytics UI. We make the data available; reports come later.
-- Push *dispatch* logic (Edge Function / cron). That's an implementation
-  task on top of `push_subscriptions`, not part of the schema.
-- Inventory of finished goods (the forge is build-to-order; no SKU stock).
+- Dropping `users.push_token`. Deprecation is a future migration.
+- Reconciling `lib/types.ts` with the full live schema. That's a separate
+  task (just type-file alignment, no schema change).
+- Building a m2m specialisation lookup. The existing `specialisation text[]`
+  on `worker_profiles` is adequate; no controlled vocabulary required.
+- Reporting / cost-of-goods UI; this spec only adds data structures.
+- Migrating any `order_messages.attachment_url` data into
+  `message_attachments`. Live `order_messages` has zero rows.
 
-## 1. Inventory — gold
+## 1. Gold inventory
 
-### 1.1 `gold_suppliers`
-
-```
-id              uuid pk
-name            text not null
-contact_name    text
-phone           text
-email           text
-address         text
-notes           text
-is_active       bool default true
-created_at      timestamptz default now()
-updated_at      timestamptz default now()
-```
-
-### 1.2 `gold_lots`
+### 1.1 New `gold_suppliers`
 
 ```
-id                  uuid pk
-supplier_id         uuid not null fk → gold_suppliers(id)
-karat               text not null
-                    -- '18K' / '22K' / '24K'; same vocabulary as orders.karat
-purchased_grams     numeric(10,3) not null check (purchased_grams > 0)
-purchase_cost_qar   numeric(12,2) not null check (purchase_cost_qar >= 0)
-unit_cost_qar       numeric(12,4) generated always as
-                    (purchase_cost_qar / purchased_grams) stored
-remaining_grams     numeric(10,3) not null
-                    check (remaining_grams >= 0
-                       and remaining_grams <= purchased_grams)
-purchase_date       date not null
-invoice_ref         text
-notes               text
-created_at          timestamptz default now()
-updated_at          timestamptz default now()
+id            uuid pk default gen_random_uuid()
+name          text not null
+contact_name  text
+phone         text
+email         text
+address       text
+notes         text
+is_active     boolean not null default true
+created_at    timestamptz not null default now()
+updated_at    timestamptz not null default now()
 ```
 
-Index on `(karat, purchase_date)` to drive FIFO selection.
-
-### 1.3 `gold_consumption`
+### 1.2 ALTER `gold_purchases`
 
 ```
-id              uuid pk
-stage_id        uuid not null fk → order_stages(id) on delete restrict
-lot_id          uuid not null fk → gold_lots(id) on delete restrict
-grams           numeric(10,3) not null check (grams > 0)
-consumed_at     timestamptz not null default now()
-recorded_by     uuid fk → users(id)
-notes           text
+ALTER TABLE public.gold_purchases
+  ADD COLUMN supplier_id     uuid REFERENCES public.gold_suppliers(id),
+  ADD COLUMN remaining_grams numeric(10,3),
+  ADD COLUMN updated_at      timestamptz NOT NULL DEFAULT now();
+
+-- Backfill remaining_grams := weight_grams for every existing row.
+UPDATE public.gold_purchases SET remaining_grams = weight_grams
+ WHERE remaining_grams IS NULL;
+
+ALTER TABLE public.gold_purchases
+  ALTER COLUMN remaining_grams SET NOT NULL,
+  ADD CONSTRAINT gold_purchases_remaining_in_range
+    CHECK (remaining_grams >= 0 AND remaining_grams <= weight_grams);
 ```
 
-Indexes on `(stage_id)` and `(lot_id)`.
+`supplier_name` stays as a free-text column for unmigrated rows and ad-hoc
+purchases where the owner hasn't picked from the suppliers list.
 
-### 1.4 FIFO allocation
+### 1.3 New `gold_consumption`
 
-A SQL function `allocate_gold(p_stage_id uuid, p_karat text, p_grams numeric)`:
+```
+id            uuid pk default gen_random_uuid()
+stage_id      uuid not null fk → order_stages(id) on delete restrict
+purchase_id   uuid not null fk → gold_purchases(id) on delete restrict
+grams         numeric(10,3) not null check (grams > 0)
+consumed_at   timestamptz not null default now()
+recorded_by   uuid fk → users(id)
+notes         text
+```
 
-1. Looks up `orders.karat` via the stage's order; rejects if `p_karat`
-   doesn't match.
-2. Walks `gold_lots` where `karat = p_karat and remaining_grams > 0`
-   ordered by `purchase_date asc, id asc`.
-3. For each lot, inserts one `gold_consumption` row consuming
-   `least(remaining_grams, p_grams_remaining)`.
-4. Stops when `p_grams` is fully allocated, or raises if stock is
-   insufficient (rollback the whole call — no partial allocation).
+Indexes on `(stage_id)` and `(purchase_id)`. An `AFTER INSERT` trigger
+decrements `gold_purchases.remaining_grams` and raises if it would go
+negative.
 
-A `BEFORE INSERT` trigger on `gold_consumption` decrements
-`gold_lots.remaining_grams` and rejects if it would go negative.
+### 1.4 `allocate_gold(p_stage_id, p_karat, p_grams)` function
+
+Walks `gold_purchases WHERE karat = p_karat AND remaining_grams > 0`
+ordered by `purchase_date ASC, id ASC`, inserts one `gold_consumption`
+row per drawn-from purchase, raises on insufficient stock.
 
 ### 1.5 Relationship to `order_stages.gold_in_grams`
 
-`order_stages.gold_in_grams` stays as-is — it represents what the worker
-*declared* they took. `sum(gold_consumption.grams)` over a stage is what
-the *system drew* from inventory. They should match; when they don't,
-that's a reconciliation event for the owner to resolve. We do not
-auto-correct.
+Unchanged. `order_stages.gold_in_grams` is what the worker declared;
+`sum(gold_consumption.grams)` is what the system drew. Mismatches are a
+reconciliation event for the owner — no auto-correct.
 
-## 2. Inventory — stones
+## 2. Stones inventory
 
-### 2.1 `stone_suppliers`
+The decision is to **reuse** the existing generic `inventory_items` +
+`inventory_transactions` system rather than build dedicated stone tables.
+
+### 2.1 New `stone_suppliers`
 
 Same columns as `gold_suppliers`.
 
-### 2.2 `stone_lots`
+### 2.2 ALTER `inventory_items`
 
 ```
-id                  uuid pk
-supplier_id         uuid not null fk → stone_suppliers(id)
-stone_type          stone_type not null      -- existing enum
-stone_shape         stone_shape              -- existing enum, nullable
-size_mm             numeric(6,2)             -- nominal; longest axis for non-round
-colour_grade        text
-clarity_grade       text
-cut_grade           text
-cert_lab            text                     -- only for single-piece lots
-cert_number         text
-purchased_qty       int  not null check (purchased_qty > 0)
-purchased_carats    numeric(10,3) not null check (purchased_carats > 0)
-purchase_cost_qar   numeric(12,2) not null check (purchase_cost_qar >= 0)
-unit_cost_qar       numeric(12,4) generated always as
-                    (purchase_cost_qar / purchased_qty) stored
-remaining_qty       int  not null
-                    check (remaining_qty >= 0
-                       and remaining_qty <= purchased_qty)
-remaining_carats    numeric(10,3) not null
-                    check (remaining_carats >= 0
-                       and remaining_carats <= purchased_carats)
-purchase_date       date not null
-invoice_ref         text
-notes               text
-created_at          timestamptz default now()
-updated_at          timestamptz default now()
+ALTER TABLE public.inventory_items
+  ADD COLUMN supplier_id uuid REFERENCES public.stone_suppliers(id),
+  ADD COLUMN stone_attrs jsonb;
 ```
 
-Index on `(stone_type, stone_shape, size_mm, purchase_date)` for lot
-suggestion in the UI.
+`stone_attrs` is nullable. For rows where `category = 'stone'`, the JSONB
+holds:
 
-Single-stone lots are modelled as `purchased_qty = 1`. The cert lives on
-the lot row in that case; `order_gemstones.cert_number` / `.cert_lab`
-become redundant for factory-supplied single stones (left in place for
-client-supplied stones, where the cert travels with the customer).
-
-### 2.3 `stone_allocation`
-
-```
-id                  uuid pk
-order_gemstone_id   uuid not null fk → order_gemstones(id) on delete restrict
-lot_id              uuid not null fk → stone_lots(id) on delete restrict
-qty_pieces          int     not null check (qty_pieces > 0)
-carats              numeric(10,3) not null check (carats > 0)
-allocated_at        timestamptz not null default now()
-allocated_by        uuid fk → users(id)
-notes               text
+```jsonc
+{
+  "stone_type":    "diamond",         // matches public.stone_type enum
+  "stone_shape":   "round",           // matches public.stone_shape enum
+  "size_mm":       1.50,
+  "colour_grade":  "G",
+  "clarity_grade": "VS2",
+  "cut_grade":     "EX",
+  "cert_lab":      "GIA",
+  "cert_number":   "1234567890",
+  "carats_total":  10.000             // parcel total
+}
 ```
 
-Indexes on `(order_gemstone_id)` and `(lot_id)`.
+For non-stone items (tools, supplies), `stone_attrs IS NULL`. Forge UI
+only renders the stone fields when `category = 'stone'`.
 
-### 2.4 Allocation flow
+A partial index `(stone_attrs->>'stone_type', stone_attrs->>'stone_shape',
+(stone_attrs->>'size_mm')) WHERE category = 'stone' AND stock_qty > 0`
+supports the "find matching stones" lookup at order time.
 
-Owner creates an `order_gemstones` row with
-`source = 'factory_supplied'`. UI suggests matching lots by
-`(stone_type, stone_shape, size_mm)`. Owner picks one, server action
-inserts a `stone_allocation` row. A trigger on `stone_allocation`
-decrements `stone_lots.remaining_qty` and `remaining_carats`, rejecting
-on negatives. `client_supplied` rows skip allocation entirely — they're
-already tracked by `stage_gemstone_logs`.
+`supplier_id` FK targets `stone_suppliers` because stones are the only
+inventory category currently in use; if other categories appear later
+with structured supplier needs, this FK becomes a unified `suppliers`
+table or splits per-category.
+
+### 2.3 Stone allocation via `inventory_transactions`
+
+No new allocation table. When an owner adds a factory-supplied
+`order_gemstones` row, a server action also inserts an
+`inventory_transactions` row with `qty_change` negative, `order_id`
+set, `reason = 'order_alloc'`. A trigger keeps `inventory_items.stock_qty`
+in sync.
+
+If a `stock_qty` sync trigger does not already exist on
+`inventory_transactions`, the 0006 migration adds it. The trigger
+decrements / increments `inventory_items.stock_qty` by the inverse of
+`qty_change` and raises on negative stock.
+
+### 2.4 Linking inventory rows back to order_gemstones
+
+`order_gemstones` is not modified. The link is via
+`inventory_transactions.order_id` (already present) plus
+`inventory_transactions.item_id`. A view
+`v_order_stone_allocations(order_id, item_id, qty_pieces, carats_total,
+allocated_at)` makes the join readable. Per-gem-row linkage isn't tracked
+in this revision; if needed later, ALTER `inventory_transactions` to add a
+nullable `order_gemstone_id` FK.
 
 ## 3. Worker profiles
 
-### 3.1 `worker_profiles`
+### 3.1 ALTER `worker_profiles`
 
 ```
-user_id                 uuid pk fk → users(id) on delete cascade
-gold_loss_tolerance_pct numeric(5,2) not null default 2.00
-working_hours           text                       -- free-form for now
-hourly_rate_qar         numeric(10,2)              -- optional, cost analysis
-hire_date               date
-notes                   text
-created_at              timestamptz default now()
-updated_at              timestamptz default now()
+ALTER TABLE public.worker_profiles
+  ADD COLUMN working_hours text,
+  ADD COLUMN hire_date     date,
+  ADD COLUMN updated_at    timestamptz NOT NULL DEFAULT now();
 ```
 
-One row per user with `role='worker'`. Enforced by a `BEFORE INSERT/UPDATE`
-trigger that checks `users.role = 'worker'`. Cascading delete from `users`
-removes the profile.
+Existing fields preserved:
+- `id uuid pk` (kept, even though spec preferred user_id-keyed — changing
+  PK on a populated table is high-risk and the table has only 0 rows
+  today but other code may reference `worker_profiles.id`).
+- `user_id` (kept nullable — current schema doesn't enforce NOT NULL).
+- `specialisation text[]` (kept; no controlled vocabulary added).
+- `gold_loss_tolerance_pct numeric default 5.00` (kept; default stays at
+  5.00 — changing it is a separate product decision).
+- `hourly_rate_qar`, `notes`, `created_at`.
 
-### 3.2 `specialisation_types` (lookup)
+A separate add-only constraint: `UNIQUE (user_id)` to enforce 1:1 with
+users. (Skip if there are existing duplicate user_ids — current rows: 0.)
 
-```
-id              smallserial pk
-code            text unique not null
-display_name    text not null
-sort_order      smallint not null default 0
-is_active       bool default true
-```
+### 3.2 Gold-loss trigger verification
 
-Seeded in the migration with:
+The live schema's `order_stages.gold_loss_flag` column exists with the
+right enum. Whether the trigger that sets it reads from `worker_profiles`
+is unverified.
 
-| code | display_name |
-|---|---|
-| casting | Casting |
-| setting | Stone setting |
-| polishing | Polishing |
-| engraving | Engraving |
-| assembly | Assembly |
-| qc | Quality control |
-
-### 3.3 `worker_specialisations` (many-to-many)
+The 0007 migration's first step is to inspect the existing trigger via
+`pg_get_functiondef`. If it already reads `worker_profiles.gold_loss_tolerance_pct`,
+the migration only ALTERs `worker_profiles`. If it reads from somewhere
+else (or doesn't exist), the migration adds / replaces the function to
+do:
 
 ```
-worker_user_id      uuid fk → worker_profiles(user_id) on delete cascade
-specialisation_id   smallint fk → specialisation_types(id) on delete restrict
-proficiency         text check (proficiency in
-                                ('apprentice','journeyman','master'))
-primary key (worker_user_id, specialisation_id)
+SELECT gold_loss_tolerance_pct INTO v_tolerance
+  FROM public.worker_profiles
+ WHERE user_id = NEW.assigned_worker_id
+ LIMIT 1;
+v_tolerance := COALESCE(v_tolerance, 5.00);
 ```
 
-### 3.4 Existing gold-loss trigger update
-
-The gold-loss trigger (which sets `order_stages.gold_loss_flag` to
-`normal | monitor | high | critical`) currently reads tolerance from
-wherever it lives today. Update it to read
-`worker_profiles.gold_loss_tolerance_pct` joined via
-`order_stages.assigned_worker_id`. Fallback to a global default
-(`2.00`) when no profile exists yet. This is the only modification to
-existing-code behaviour in this spec.
+with fallback default of 5.00 (matching the column default).
 
 ## 4. Push subscriptions
 
-### 4.1 `push_subscriptions`
+### 4.1 New `push_subscriptions`
 
 ```
-id              uuid pk
-user_id         uuid not null fk → users(id) on delete cascade
-fcm_token       text not null
-platform        text not null check (platform in ('web','ios','android'))
-device_label    text                            -- "Chrome on MacBook"
-user_agent      text                            -- web only
-app_version     text                            -- native only
-last_seen_at    timestamptz not null default now()
-created_at      timestamptz not null default now()
+id            uuid pk default gen_random_uuid()
+user_id       uuid not null fk → users(id) on delete cascade
+fcm_token     text not null
+platform      text not null check (platform in ('web','ios','android'))
+device_label  text
+user_agent    text
+app_version   text
+last_seen_at  timestamptz not null default now()
+created_at    timestamptz not null default now()
+unique (user_id, fcm_token)
 ```
 
-Unique `(user_id, fcm_token)`. Indexes on `(user_id)` for fan-out and
-`(last_seen_at)` for pruning.
+Indexes on `(user_id)` and `(last_seen_at)`.
 
-### 4.2 Token lifecycle
+### 4.2 Transition strategy
 
-- Client (web SW or native) calls a server action on login and on token
-  refresh. The action upserts on `(user_id, fcm_token)` and bumps
-  `last_seen_at`.
-- A dispatcher (out of scope for this spec) reads pending
-  `notifications` rows with `channel='push'`, looks up every
-  `push_subscriptions` row for the recipient, fires to FCM.
-- On FCM responses `404 Not Found` or `UNREGISTERED`, the dispatcher
-  deletes that subscription row.
-- A scheduled job deletes rows where
-  `last_seen_at < now() - interval '90 days'`.
+- `users.push_token` is **kept**. Writes from the legacy single-token
+  client code continue to work.
+- New client code writes to `push_subscriptions` instead of (or in
+  addition to) `users.push_token`.
+- The push dispatcher (out of scope) reads from `push_subscriptions`
+  first; if zero rows, falls back to `users.push_token`. This lets
+  per-user migration happen on next login without a hard cutover.
+- A future migration (not in this spec) drops `users.push_token`.
 
-### 4.3 No changes to `notifications`
+### 4.3 RLS
 
-The `notifications` table is unchanged. `push_subscriptions` is purely
-the address book for the existing `channel='push'` rows.
+Users manage their own subscriptions; owners read all for debugging.
+Service role bypasses RLS for dispatcher writes.
 
 ## 5. Order messages
 
-### 5.1 `order_messages`
+### 5.1 ALTER `order_messages`
 
 ```
-id              uuid pk
-order_id        uuid not null fk → orders(id) on delete cascade
-thread_type     text not null check (thread_type in ('client','internal'))
-sender_id       uuid not null fk → users(id)
-body            text not null check (length(body) between 1 and 4000)
-is_system       bool not null default false
-read_by         jsonb not null default '{}'::jsonb
-                -- { "<user_id>": "<iso8601 read_at>" }
-created_at      timestamptz not null default now()
-edited_at       timestamptz
+ALTER TABLE public.order_messages
+  ADD COLUMN thread_type text NOT NULL DEFAULT 'client'
+    CHECK (thread_type IN ('client','internal')),
+  ADD COLUMN read_by   jsonb   NOT NULL DEFAULT '{}'::jsonb,
+  ADD COLUMN is_system boolean NOT NULL DEFAULT false,
+  ADD COLUMN edited_at timestamptz;
+
+CREATE INDEX order_messages_thread_idx
+  ON public.order_messages (order_id, thread_type, created_at DESC);
+
+CREATE INDEX order_messages_sender_idx
+  ON public.order_messages (sender_id, created_at DESC);
 ```
 
-Indexes:
+Existing columns preserved:
+- `attachment_url text` — kept for backwards compatibility. New messages
+  use the `message_attachments` table; old single-attachment messages
+  still resolve via this column.
+- `read_at timestamptz` — kept; legacy single-reader receipt. The new
+  `read_by jsonb` is the system of record going forward
+  (`{ "<user_id>": "<iso ts>" }`). Server actions write to both during a
+  transition window.
 
-- `(order_id, thread_type, created_at desc)` — primary read pattern.
-- `(sender_id, created_at desc)` — "my recent messages".
+Default of `thread_type = 'client'` backfills every existing row into the
+client-visible thread, which matches today's behaviour where there's only
+one thread per order.
 
-### 5.2 Visibility rules
-
-- `thread_type='client'`: SELECT for owner, the order's assigned worker,
-  and the order's client. INSERT for owner and client. Worker can read
-  but not post — keeps the client-facing thread tidy.
-- `thread_type='internal'`: SELECT and INSERT for owner and assigned
-  worker. Client policy denies.
-
-RLS policies enforce these. The check joins back to
-`orders.assigned_worker_id` and `orders.client_id` (via `clients.user_id`).
-
-### 5.3 `message_attachments`
+### 5.2 New `message_attachments`
 
 ```
-id              uuid pk
-message_id      uuid not null fk → order_messages(id) on delete cascade
-storage_path    text not null
-file_name       text not null
-mime_type       text not null
-size_bytes      int not null
-created_at      timestamptz not null default now()
+id           uuid pk default gen_random_uuid()
+message_id   uuid not null fk → order_messages(id) on delete cascade
+storage_path text not null
+file_name    text not null
+mime_type    text not null
+size_bytes   int  not null check (size_bytes >= 0)
+created_at   timestamptz not null default now()
 ```
 
-Index on `(message_id)`. Lives in a new storage bucket
-`forge-message-attachments` with path prefix
-`{order_id}/{thread_type}/...`. Bucket RLS mirrors the message visibility
-rules. Add the bucket creation and policies to a new
-`0010_message_storage_rls.sql` migration alongside the table migration.
+Index on `(message_id)`. Lives in storage bucket
+`forge-message-attachments` with path prefix `{order_id}/{thread_type}/...`.
+
+### 5.3 RLS
+
+Defined via a new helper `is_order_participant(order_id, thread_type)`:
+
+- `thread_type='client'`: owner, the order's assigned worker, the order's
+  client user can SELECT. INSERT for owner + the client user.
+- `thread_type='internal'`: owner + assigned worker SELECT and INSERT.
+  Client policy denies.
+- Sender may UPDATE their own message body (sets `edited_at`).
+- Participants may UPDATE `read_by` to merge their read receipt.
+- `message_attachments` inherits visibility from its parent message.
 
 ### 5.4 System messages
 
-Owner approves a stage / scope signs / invoice sent / payment received:
-the corresponding server action inserts an `order_messages` row with
-`is_system=true` into the client thread, body like
-`"Stage 3 (Polishing) approved"`. Same triggers that already fan out to
-`notifications` also fan out to this thread. No new tables; one helper
-call in `lib/notify.ts`.
+Server actions (approve stage, scope signed, invoice sent, payment
+received) insert an `is_system=true` row in the `client` thread
+("Stage 3 (Polishing) approved"). Same triggers that already fan out to
+`notifications` also fan out here. No new tables; one helper call added
+to `lib/notify.ts`.
 
-### 5.5 Read receipts
+## 6. Migrations
 
-`read_by` is a sparse JSONB map keyed by user id. When a user opens the
-thread, a server action merges their id and timestamp. UI shows
-"seen by client at 14:32" by checking whether the client's user id is a
-key in the map of the latest message in the thread. Avoids per-recipient
-rows for a 2-3-person thread; can be migrated to a `message_reads`
-relational table later without breaking the API.
-
-## Migrations
-
-Six new files, applied in order after the existing `0001`–`0004`:
+Six new files applied in order:
 
 | # | File | Contents |
 |---|---|---|
-| 0005 | `0005_inventory_gold.sql` | `gold_suppliers`, `gold_lots`, `gold_consumption`, `allocate_gold` function, consumption trigger |
-| 0006 | `0006_inventory_stones.sql` | `stone_suppliers`, `stone_lots`, `stone_allocation`, allocation trigger |
-| 0007 | `0007_worker_profiles.sql` | `worker_profiles`, `specialisation_types` (+ seed), `worker_specialisations`, role check trigger, gold-loss trigger update |
-| 0008 | `0008_push_subscriptions.sql` | `push_subscriptions` table + indexes |
-| 0009 | `0009_order_messages.sql` | `order_messages`, `message_attachments` + RLS policies |
-| 0010 | `0010_message_storage_rls.sql` | `forge-message-attachments` bucket + storage RLS |
+| 0005 | `0005_gold_inventory.sql` | `gold_suppliers` table; ALTER `gold_purchases` (`supplier_id`, `remaining_grams`, `updated_at`, backfill, check constraint); new `gold_consumption` table + decrement trigger; `allocate_gold(...)` function; RLS on all new tables. |
+| 0006 | `0006_stone_inventory.sql` | `stone_suppliers` table; ALTER `inventory_items` (`supplier_id`, `stone_attrs jsonb`); partial index for stone lookup; verify/add `inventory_transactions → inventory_items.stock_qty` sync trigger; `v_order_stone_allocations` view; RLS on `stone_suppliers`. |
+| 0007 | `0007_worker_profile_extend.sql` | ALTER `worker_profiles` (add `working_hours`, `hire_date`, `updated_at`, unique on user_id); inspect existing gold-loss trigger and update only if it doesn't already read from `worker_profiles`. |
+| 0008 | `0008_push_subscriptions.sql` | `push_subscriptions` table + RLS. `users.push_token` retained. |
+| 0009 | `0009_order_messages_threads.sql` | ALTER `order_messages` (thread_type / read_by / is_system / edited_at); indexes; `message_attachments` table; `is_order_participant()` helper; RLS policies for both tables. |
+| 0010 | `0010_message_storage_rls.sql` | `forge-message-attachments` bucket; `parse_message_attachment_path()` helper; storage RLS (select/insert/delete). |
 
-Each file is independently revertable (drop tables, restore prior
-trigger body for 0007). RLS policies are added in the same file as the
-tables they protect.
+Each file is independently revertable. ALTERs are additive (no drops), so
+rollback is `DROP COLUMN` / `DROP CONSTRAINT` / `DROP TABLE` of just the
+new objects.
 
 ## TypeScript additions
 
-`forge/lib/types.ts` gains:
+`forge/lib/types.ts` gets new types. Note: `lib/types.ts` is **already
+incomplete** vs. the live DB — this spec's TS additions only cover the
+new columns + new tables. A full reconciliation of `lib/types.ts` with
+the live schema is a separate task.
+
+New types:
 
 ```
-GoldSupplier, GoldLot, GoldConsumption
-StoneSupplier, StoneLot, StoneAllocation
-WorkerProfile, SpecialisationType, WorkerSpecialisation
+GoldSupplier
+GoldConsumption
+StoneSupplier
+StoneAttrs                                  // shape of inventory_items.stone_attrs
 PushSubscription, PushPlatform
-OrderMessage, MessageAttachment, ThreadType
+ThreadType ('client' | 'internal')
+MessageAttachment
 ```
 
-No existing types change.
+Updated types:
+
+```
+GoldPurchase            // add supplier_id, remaining_grams, updated_at
+InventoryItem           // add supplier_id, stone_attrs
+WorkerProfile           // add working_hours, hire_date, updated_at
+OrderMessage            // add thread_type, read_by, is_system, edited_at
+                        //    keep attachment_url, read_at for backcompat
+User                    // expose push_token (currently used by app code,
+                        //    not in types.ts — add it for honesty)
+```
 
 ## Risks and mitigations
 
-- **Gold-loss trigger change (0007)** — only existing-behaviour change.
-  Mitigation: trigger has a fallback to the hardcoded default when no
-  `worker_profiles` row exists, so applying the migration before
-  backfilling profiles doesn't break existing stages.
-- **Stones lot matching ambiguity** — `(stone_type, stone_shape, size_mm)`
-  may not be unique enough for some workshops (two lots of "round 1.5mm
-  diamonds" with different clarity). Mitigation: UI shows clarity /
-  colour / cert when suggesting lots; final pick is manual.
-- **FCM token refresh** — clients that don't call the refresh action
-  silently lose push delivery when their token rotates. Mitigation:
-  acceptable for v1; surface via "you haven't received push in N days"
-  banner later if it becomes a problem.
-- **Read-receipt JSONB scale** — fine for 2-3 readers per thread.
-  Mitigation: if threads ever grow (group customers, multiple workers),
-  migrate to a `message_reads` table.
+- **Gold-loss trigger ALTER (0007)** — only existing-behaviour change.
+  Mitigation: inspect the trigger first; only replace the tolerance
+  lookup if necessary; keep a 5.00 fallback so unprofiled workers still
+  flag the same way they do today.
+- **stone_attrs vs typed columns** — JSONB sacrifices DB-level type
+  safety for flexibility. Mitigation: a CHECK constraint enforces
+  required keys on stone-category rows
+  (`stone_attrs ? 'stone_type'` etc.); app code validates the enum
+  values before insert.
+- **Two read-receipt columns coexist on order_messages** — `read_at`
+  (legacy) and `read_by jsonb` (new). Mitigation: server actions write
+  both during the transition; a follow-up migration drops `read_at`.
+- **push_subscriptions vs users.push_token** — coexistence means
+  delivery code has to check both. Mitigation: documented fallback rule
+  in dispatcher (subscriptions first, push_token only if zero rows).
+- **inventory_items.supplier_id FK to stone_suppliers** — narrows the
+  generic table to a stone-specific FK target. Mitigation: acceptable
+  while stones are the only structured-supplier category; revisit if
+  other categories appear.
+- **Partial-unique on worker_profiles.user_id** — if any row exists with
+  NULL user_id (current count: 0), the unique constraint must use
+  `WHERE user_id IS NOT NULL`. Migration validates row count before
+  applying.
 
 ## Out of scope (deferred)
 
-- Push dispatcher (Edge Function consuming the pending `channel='push'`
+- Push dispatcher (Edge Function consuming pending `channel='push'`
   notifications).
-- Inventory reporting UI / cost-of-goods rollups.
-- Worker scheduling beyond the free-form `working_hours` field.
-- Group messaging (multi-client or multi-worker per order).
-- Reconciliation UI for `gold_in_grams` ≠ `sum(gold_consumption.grams)`.
+- `users.push_token` deprecation migration.
+- `order_messages.read_at` deprecation migration.
+- Migrating any `order_messages.attachment_url` rows into
+  `message_attachments` (currently zero rows).
+- Reporting / cost-of-goods UI / inventory dashboards.
+- Backfilling `gold_purchases.supplier_id` from existing `supplier_name`
+  text values. Owner fills these in via UI as suppliers are entered.
+- A m2m specialisation lookup table.
+- Stone allocation per `order_gemstones` row (currently linked by
+  `inventory_transactions.order_id`, not per-gem).
