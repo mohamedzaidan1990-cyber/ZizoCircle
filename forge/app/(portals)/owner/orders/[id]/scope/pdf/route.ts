@@ -60,7 +60,7 @@ export async function GET(
       items: (items ?? []) as ScopeItem[],
       client: client as Pick<Client, "full_name" | "company_name" | "email" | "phone" | "address"> | null,
       workshop: workshop as Pick<User, "full_name" | "email" | "phone"> | null,
-    })
+    }) as any
   );
 
   return new NextResponse(buffer, {
