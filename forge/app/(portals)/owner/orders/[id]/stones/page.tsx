@@ -12,6 +12,8 @@ import { PhotoGrid } from "@/components/photos/photo-grid";
 import { STORAGE } from "@/lib/storage";
 import { formatCarats, formatDateTime, formatQAR } from "@/lib/format";
 import { IssueStonesForm } from "./issue-form";
+import { InventoryAllocateForm } from "./inventory-allocate-form";
+import { listStoneItems } from "@/lib/db/inventory";
 import type { Order, OrderGemstone, User } from "@/lib/types";
 
 export default async function StonesPage({ params }: { params: { id: string } }) {
@@ -25,7 +27,7 @@ export default async function StonesPage({ params }: { params: { id: string } })
   if (!orderRow) notFound();
   const o = orderRow as Order;
 
-  const [{ data: gems }, { data: workers }] = await Promise.all([
+  const [{ data: gems }, { data: workers }, stoneInventoryItems] = await Promise.all([
     supabase
       .from("order_gemstones")
       .select("*")
@@ -37,6 +39,7 @@ export default async function StonesPage({ params }: { params: { id: string } })
       .eq("role", "worker")
       .eq("is_active", true)
       .order("full_name", { ascending: true }),
+    listStoneItems(),
   ]);
 
   const gemRows = (gems ?? []) as OrderGemstone[];
@@ -121,6 +124,19 @@ export default async function StonesPage({ params }: { params: { id: string } })
         </CardHeader>
         <CardContent>
           <IssueStonesForm orderId={o.id} workers={workerOptions} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Allocate from factory inventory</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="mb-4 text-sm text-muted-foreground">
+            Allocate stones directly from factory stock. This deducts from inventory and records
+            the allocation against this order.
+          </p>
+          <InventoryAllocateForm orderId={o.id} items={stoneInventoryItems} />
         </CardContent>
       </Card>
     </div>
