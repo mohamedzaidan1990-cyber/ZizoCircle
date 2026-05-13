@@ -362,3 +362,33 @@ export interface PushSubscription {
   last_seen_at: string;
   created_at: string;
 }
+
+// --- 0009 order_messages threads + attachments ---
+
+export type ThreadType = "client" | "internal";
+
+// Replace existing OrderMessage with this version (adds thread_type,
+// read_by, is_system, edited_at; keeps legacy attachment_url and read_at).
+export interface OrderMessage {
+  id: string;
+  order_id: string;
+  thread_type: ThreadType;
+  sender_id: string;
+  body: string;
+  is_system: boolean;
+  read_by: Record<string, string>;
+  attachment_url: string | null;
+  read_at: string | null;
+  edited_at: string | null;
+  created_at: string;
+}
+
+export interface MessageAttachment {
+  id: string;
+  message_id: string;
+  storage_path: string;
+  file_name: string;
+  mime_type: string;
+  size_bytes: number;
+  created_at: string;
+}
