@@ -18,7 +18,7 @@ type NotificationType =
 type NotificationChannel = "push" | "email" | "whatsapp" | "sms";
 
 const RESEND_KEY = process.env.RESEND_API_KEY;
-const FROM = process.env.RESEND_FROM ?? "Forge <onboarding@resend.dev>";
+const FROM = process.env.RESEND_FROM ?? "Sougha Concepts <onboarding@resend.dev>";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 const resend = RESEND_KEY ? new Resend(RESEND_KEY) : null;
@@ -177,12 +177,12 @@ function renderEmail(p: {
     <tr><td align="center">
       <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;border:1px solid #e7e3dc;padding:32px">
         <tr><td>
-          <h1 style="margin:0 0 16px;font-size:18px;font-weight:600;color:#7a5a2c">Forge</h1>
+          <h1 style="margin:0 0 16px;font-size:18px;font-weight:600;color:#7a5a2c">Sougha Concepts</h1>
           ${greeting}
           <h2 style="margin:0 0 12px;font-size:20px;font-weight:600">${escapeHtml(p.title)}</h2>
           <p style="margin:0 0 8px;line-height:1.55;white-space:pre-wrap">${escapeHtml(p.body)}</p>
           ${ctaHtml}
-          <p style="margin:24px 0 0;font-size:12px;color:#888">You're receiving this because you have a Forge portal account.</p>
+          <p style="margin:24px 0 0;font-size:12px;color:#888">You're receiving this because you have a Sougha Concepts portal account.</p>
         </td></tr>
       </table>
     </td></tr>

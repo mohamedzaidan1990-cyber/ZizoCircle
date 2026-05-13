@@ -24,12 +24,12 @@ export function InvoicePDF({ invoice, order, client, workshop }: InvoicePDFProps
   return (
     <Document
       title={`Invoice ${invoice.invoice_number}`}
-      author={workshop?.full_name ?? "Forge"}
+      author={workshop?.full_name ?? "Sougha Concepts"}
     >
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <View>
-            <Text style={styles.brand}>Forge</Text>
+            <Text style={styles.brand}>Sougha Concepts</Text>
             <Text style={styles.brandSub}>Jewelry workshop</Text>
             {workshop?.full_name && (
               <Text style={[styles.brandSub, { marginTop: 6 }]}>
@@ -152,7 +152,7 @@ export function InvoicePDF({ invoice, order, client, workshop }: InvoicePDFProps
         )}
 
         <Text style={styles.footer} fixed>
-          Forge · {invoice.invoice_number} · Generated{" "}
+          Sougha Concepts · {invoice.invoice_number} · Generated{" "}
           {formatDateTime(new Date().toISOString())}
         </Text>
       </Page>

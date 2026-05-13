@@ -13,7 +13,7 @@ export default async function ClientLayout({
     <div className="min-h-screen">
       <header className="flex items-center justify-between border-b px-6 py-3">
         <Link href="/client" className="text-lg font-semibold tracking-tight">
-          Forge
+          Sougha Concepts
         </Link>
         <div className="flex items-center gap-3">
           <div className="text-right text-xs">

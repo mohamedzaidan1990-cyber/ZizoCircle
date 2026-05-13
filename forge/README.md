@@ -1,6 +1,6 @@
-# Forge
+# Sougha Concepts
 
-Jewelry factory management platform. Next.js 14 (App Router) + Supabase.
+Jewelry workshop management platform. Next.js 14 (App Router) + Supabase.
 
 ## Stack
 
