@@ -9,6 +9,7 @@ const items = [
   { href: "/owner/orders", label: "Orders", match: /^\/owner\/orders/ },
   { href: "/owner/clients", label: "Clients", match: /^\/owner\/clients/ },
   { href: "/owner/workers", label: "Workers", match: /^\/owner\/workers/ },
+  { href: "/owner/inventory", label: "Inventory", match: /^\/owner\/(inventory|suppliers)/ },
   { href: "/owner/invoices", label: "Invoices", match: /^\/owner\/invoices/ },
 ];
 

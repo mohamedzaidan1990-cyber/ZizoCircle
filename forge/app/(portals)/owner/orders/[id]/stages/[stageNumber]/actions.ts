@@ -199,3 +199,37 @@ export async function backToOrderAction(formData: FormData) {
   const orderId = String(formData.get("order_id") ?? "");
   redirect(`/owner/orders/${orderId}`);
 }
+
+export async function allocateStageGold(
+  stageId: string,
+  karat: string,
+  grams: number
+): Promise<ActionState> {
+  await requireRole("owner");
+
+  if (!stageId) return failure("Missing stage ID.");
+  if (!karat) return failure("Missing karat.");
+  if (!Number.isFinite(grams) || grams <= 0) return failure("Grams must be a positive number.");
+
+  const supabase = createClient();
+  const { error } = await supabase.rpc("allocate_gold", {
+    p_stage_id: stageId,
+    p_karat: karat,
+    p_grams: grams,
+  });
+
+  if (error) return failure(error.message);
+
+  // Resolve stage to get order_id so we can revalidate the right path.
+  const { data: stageRow } = await supabase
+    .from("order_stages")
+    .select("order_id, stage_number")
+    .eq("id", stageId)
+    .maybeSingle();
+  const sr = stageRow as { order_id: string; stage_number: number } | null;
+  if (sr) {
+    revalidatePath(`/owner/orders/${sr.order_id}/stages/${sr.stage_number}`);
+  }
+
+  return { success: "Gold allocated from inventory." };
+}

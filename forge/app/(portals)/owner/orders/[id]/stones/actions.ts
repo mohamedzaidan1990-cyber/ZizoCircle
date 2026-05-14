@@ -11,6 +11,35 @@ import {
   uploadFile,
 } from "@/lib/storage";
 
+export async function allocateOrderStoneFromInventory(
+  orderId: string,
+  itemId: string,
+  qtyPieces: number,
+  carats: number
+): Promise<ActionState> {
+  await requireRole("owner");
+
+  if (!orderId) return failure("Missing order ID.");
+  if (!itemId) return failure("Missing item ID.");
+  if (!Number.isInteger(qtyPieces) || qtyPieces <= 0)
+    return failure("Quantity must be a positive integer.");
+  if (!Number.isFinite(carats) || carats <= 0)
+    return failure("Carats must be a positive number.");
+
+  const supabase = createClient();
+  const { error } = await supabase.rpc("allocate_stone_from_inventory", {
+    p_order_id: orderId,
+    p_item_id: itemId,
+    p_qty_pieces: qtyPieces,
+    p_carats: carats,
+  });
+
+  if (error) return failure(error.message);
+
+  revalidatePath(`/owner/orders/${orderId}/stones`);
+  return { success: "Stone allocated from factory inventory." };
+}
+
 const STONE_TYPES = [
   "diamond",
   "ruby",
