@@ -10,9 +10,13 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onCreated: () => void;
+  /** When provided, the dialog opens pre-filled for converting this contact
+   * into a deal — title is suggested, the contact picker is hidden, and the
+   * pipeline type matches the contact's pipelineType. */
+  presetContact?: Contact | null;
 }
 
-export function NewDealDialog({ open, onClose, onCreated }: Props) {
+export function NewDealDialog({ open, onClose, onCreated, presetContact }: Props) {
   const t = useTranslations("pipeline");
   const tCommon = useTranslations("common");
   const [title, setTitle] = useState("");
@@ -27,16 +31,30 @@ export function NewDealDialog({ open, onClose, onCreated }: Props) {
 
   useEffect(() => {
     if (!open) return;
+    setError(null);
+
+    if (presetContact) {
+      const name = [presetContact.firstName, presetContact.lastName]
+        .filter(Boolean)
+        .join(" ");
+      setTitle(name ? `${name} — lead` : "New deal");
+      setPipelineType(presetContact.pipelineType ?? "SALES");
+      setContactId(presetContact.id);
+      setValue(presetContact.budgetMax ? String(presetContact.budgetMax) : "");
+      setExpectedClose("");
+      return;
+    }
+
     setTitle("");
+    setPipelineType("SALES");
     setValue("");
     setExpectedClose("");
     setContactId(null);
-    setError(null);
     api
       .get("/api/contacts", { params: { limit: 200 } })
       .then((res) => setContacts(unwrap<Contact[]>(res)))
       .catch(() => setContacts([]));
-  }, [open]);
+  }, [open, presetContact]);
 
   if (!open) return null;
 
@@ -132,21 +150,33 @@ export function NewDealDialog({ open, onClose, onCreated }: Props) {
           </div>
         </div>
 
-        <div>
-          <label className="label">Contact</label>
-          <select
-            className="input"
-            value={contactId ?? ""}
-            onChange={(e) => setContactId(e.target.value || null)}
-          >
-            <option value="">—</option>
-            {contacts.map((c) => (
-              <option key={c.id} value={c.id}>
-                {[c.firstName, c.lastName].filter(Boolean).join(" ")} · {c.phone}
-              </option>
-            ))}
-          </select>
-        </div>
+        {presetContact ? (
+          <div>
+            <label className="label">Contact</label>
+            <div className="input bg-slate-50 text-slate-700">
+              {[presetContact.firstName, presetContact.lastName]
+                .filter(Boolean)
+                .join(" ")}{" "}
+              · {presetContact.phone}
+            </div>
+          </div>
+        ) : (
+          <div>
+            <label className="label">Contact</label>
+            <select
+              className="input"
+              value={contactId ?? ""}
+              onChange={(e) => setContactId(e.target.value || null)}
+            >
+              <option value="">—</option>
+              {contacts.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {[c.firstName, c.lastName].filter(Boolean).join(" ")} · {c.phone}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {error && (
           <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">

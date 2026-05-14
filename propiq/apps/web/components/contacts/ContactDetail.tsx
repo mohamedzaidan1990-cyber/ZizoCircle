@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { Trash2, Pencil, MessageCircle } from "lucide-react";
+import { Trash2, Pencil, MessageCircle, TrendingUp } from "lucide-react";
 import type { Contact } from "@propiq/shared";
 import { api, getErrorMessage, unwrap } from "@/lib/api";
 import { Spinner } from "@/components/ui/Spinner";
@@ -12,6 +12,7 @@ import { ContactForm } from "./ContactForm";
 import { ScoreLeadButton } from "./ScoreLeadButton";
 import { Timeline } from "@/components/activities/Timeline";
 import { WhatsAppSendDialog } from "@/components/whatsapp/WhatsAppSendDialog";
+import { NewDealDialog } from "@/components/pipeline/NewDealDialog";
 
 interface Props {
   locale: string;
@@ -28,8 +29,10 @@ export function ContactDetail({ locale, id }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [whatsappOpen, setWhatsappOpen] = useState(false);
+  const [dealDialogOpen, setDealDialogOpen] = useState(false);
   const tWa = useTranslations("whatsapp");
   const tAi = useTranslations("ai");
+  const tPipeline = useTranslations("pipeline");
 
   const load = async () => {
     setError(null);
@@ -122,6 +125,13 @@ export function ContactDetail({ locale, id }: Props) {
               >
                 <MessageCircle className="h-4 w-4" />
                 {tWa("send")}
+              </button>
+              <button
+                onClick={() => setDealDialogOpen(true)}
+                className="btn-ghost inline-flex items-center gap-1 text-sm text-brand-700"
+              >
+                <TrendingUp className="h-4 w-4" />
+                {tPipeline("create")}
               </button>
               <button
                 onClick={() => setEditing(true)}
@@ -230,6 +240,16 @@ export function ContactDetail({ locale, id }: Props) {
           setWhatsappOpen(false);
           load();
         }}
+      />
+
+      <NewDealDialog
+        open={dealDialogOpen}
+        onClose={() => setDealDialogOpen(false)}
+        onCreated={() => {
+          setDealDialogOpen(false);
+          router.push(`/${locale}/pipeline`);
+        }}
+        presetContact={contact}
       />
     </div>
   );

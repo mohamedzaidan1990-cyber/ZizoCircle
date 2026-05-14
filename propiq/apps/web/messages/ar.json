@@ -102,6 +102,7 @@
     "tier_warm": "دافئ",
     "tier_cold": "بارد",
     "tier_dead": "مغلق",
+    "changeTier": "تغيير الفئة",
     "empty": "لا يوجد عملاء بعد. بمجرد أن يؤهل بروبيفاي محادثات واتساب، ستظهر العملاء الساخنون والدافئون هنا تلقائياً."
   },
   "stub": {
@@ -179,7 +180,18 @@
     "copy": "نسخ",
     "copied": "تم النسخ.",
     "regenerate": "إعادة التوليد",
-    "csvHelp": "يجب أن يحتوي ملف CSV على عمودَي first_name و phone. الأعمدة الاختيارية تشمل pipeline_type (SALES أو LEASE)، contact_type، budget_min، budget_max، preferred_areas (مفصولة بفواصل منقوطة)، bedrooms_min، bedrooms_max، property_types (مفصولة بفواصل منقوطة)، notes."
+    "csvHelp": "يجب أن يحتوي ملف CSV على عمودَي first_name و phone. الأعمدة الاختيارية تشمل pipeline_type (SALES أو LEASE)، contact_type، budget_min، budget_max، preferred_areas (مفصولة بفواصل منقوطة)، bedrooms_min، bedrooms_max، property_types (مفصولة بفواصل منقوطة)، notes.",
+    "bulkSelected": "{count} محدد",
+    "bulkArchive": "أرشفة",
+    "bulkUnarchive": "استعادة",
+    "bulkScore": "إعادة التقييم",
+    "bulkClear": "مسح",
+    "bulkConfirmArchive": "أرشفة جهات الاتصال المحددة؟",
+    "bulkConfirmUnarchive": "استعادة جهات الاتصال المحددة؟",
+    "bulkUpdated": "تم التحديث",
+    "bulkScored": "تم التقييم",
+    "bulkScoreFailed": "فشل",
+    "bulkScoreLargeConfirm": "إعادة تقييم أكثر من 25 جهة اتصال ستستهلك حصة AI كبيرة. هل تريد المتابعة؟"
   },
   "properties": {
     "title": "العقارات",

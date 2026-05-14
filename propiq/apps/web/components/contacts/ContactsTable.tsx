@@ -43,7 +43,92 @@ export function ContactsTable({ locale }: Props) {
   const [reactivateContact, setReactivateContact] = useState<Contact | null>(
     null,
   );
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [bulkMsg, setBulkMsg] = useState<string | null>(null);
   const limit = 25;
+
+  const clearSelection = () => setSelected(new Set());
+
+  const toggleOne = (id: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+  const toggleAllOnPage = () => {
+    if (!items) return;
+    setSelected((prev) => {
+      const allSelected = items.every((c) => prev.has(c.id));
+      if (allSelected) {
+        const next = new Set(prev);
+        for (const c of items) next.delete(c.id);
+        return next;
+      }
+      const next = new Set(prev);
+      for (const c of items) next.add(c.id);
+      return next;
+    });
+  };
+
+  const runBulk = async (
+    action: "archive" | "unarchive",
+  ) => {
+    if (selected.size === 0) return;
+    if (!confirm(`${action === "archive" ? t("bulkConfirmArchive") : t("bulkConfirmUnarchive")} (${selected.size})`)) {
+      return;
+    }
+    setBulkBusy(true);
+    setBulkMsg(null);
+    try {
+      const res = await api.post("/api/contacts/bulk", {
+        action,
+        contactIds: [...selected],
+      });
+      const data = unwrap<{ updated: number }>(res);
+      setBulkMsg(`${data.updated} ${t("bulkUpdated")}`);
+      clearSelection();
+      await load();
+    } catch (err) {
+      setBulkMsg(getErrorMessage(err));
+    } finally {
+      setBulkBusy(false);
+    }
+  };
+
+  const runBulkScore = async () => {
+    if (selected.size === 0) return;
+    if (selected.size > 25) {
+      if (!confirm(t("bulkScoreLargeConfirm"))) return;
+    }
+    setBulkBusy(true);
+    setBulkMsg(null);
+    const ids = [...selected];
+    let scored = 0;
+    let failed = 0;
+    // Fan out three at a time so we don't hammer the API while still feeling
+    // snappy on small selections.
+    const POOL = 3;
+    let cursor = 0;
+    const worker = async () => {
+      while (cursor < ids.length) {
+        const myIndex = cursor++;
+        try {
+          await api.post("/api/ai/lead-scorer/score", { contactId: ids[myIndex] });
+          scored += 1;
+        } catch {
+          failed += 1;
+        }
+      }
+    };
+    await Promise.all(Array.from({ length: POOL }, () => worker()));
+    setBulkBusy(false);
+    setBulkMsg(`${scored} ${t("bulkScored")}${failed ? ` · ${failed} ${t("bulkScoreFailed")}` : ""}`);
+    clearSelection();
+    await load();
+  };
 
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(total / limit)),
@@ -159,6 +244,50 @@ export function ContactsTable({ locale }: Props) {
         </select>
       </div>
 
+      {selected.size > 0 && (
+        <div className="card flex flex-wrap items-center justify-between gap-3 border-brand-200 bg-brand-50/40 p-3">
+          <span className="text-sm font-medium text-brand-800">
+            {t("bulkSelected", { count: selected.size })}
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => runBulk("archive")}
+              disabled={bulkBusy}
+              className="btn-ghost text-xs disabled:opacity-50"
+            >
+              {t("bulkArchive")}
+            </button>
+            <button
+              onClick={() => runBulk("unarchive")}
+              disabled={bulkBusy}
+              className="btn-ghost text-xs disabled:opacity-50"
+            >
+              {t("bulkUnarchive")}
+            </button>
+            <button
+              onClick={runBulkScore}
+              disabled={bulkBusy}
+              className="btn-ghost text-xs disabled:opacity-50"
+            >
+              {bulkBusy ? <Spinner /> : t("bulkScore")}
+            </button>
+            <button
+              onClick={clearSelection}
+              disabled={bulkBusy}
+              className="btn-ghost text-xs disabled:opacity-50"
+            >
+              {t("bulkClear")}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {bulkMsg && (
+        <div className="rounded-md bg-slate-50 px-3 py-2 text-xs text-slate-700">
+          {bulkMsg}
+        </div>
+      )}
+
       {error && (
         <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
           {error}
@@ -177,6 +306,16 @@ export function ContactsTable({ locale }: Props) {
           <table className="w-full text-sm min-w-[640px]">
             <thead className="bg-slate-50 text-slate-600">
               <tr>
+                <th className="w-10 px-3 py-2 text-start font-medium">
+                  <input
+                    type="checkbox"
+                    checked={
+                      items.length > 0 && items.every((c) => selected.has(c.id))
+                    }
+                    onChange={toggleAllOnPage}
+                    aria-label="select all on page"
+                  />
+                </th>
                 <th className="px-4 py-2 text-start font-medium">
                   {tCommon("firstName")}
                 </th>
@@ -206,8 +345,16 @@ export function ContactsTable({ locale }: Props) {
                 return (
                   <tr
                     key={c.id}
-                    className="border-t border-slate-100 hover:bg-slate-50"
+                    className={`border-t border-slate-100 hover:bg-slate-50 ${selected.has(c.id) ? "bg-brand-50/40" : ""}`}
                   >
+                    <td className="px-3 py-2">
+                      <input
+                        type="checkbox"
+                        checked={selected.has(c.id)}
+                        onChange={() => toggleOne(c.id)}
+                        aria-label={`select ${fmtName(c)}`}
+                      />
+                    </td>
                     <td className="px-4 py-2">
                       <Link
                         href={`/${locale}/contacts/${c.id}`}

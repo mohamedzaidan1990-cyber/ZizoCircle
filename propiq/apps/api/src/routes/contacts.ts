@@ -7,6 +7,7 @@ import { validate } from "../middleware/validate";
 import { created, ok } from "../lib/response";
 import { Errors } from "../lib/errors";
 import {
+  bulkUpdateContacts,
   createContact,
   deleteContact,
   exportContactsCsv,
@@ -136,6 +137,33 @@ contactsRouter.post(
       const result = await importContactsCsv(
         req.user!.agencySlug,
         req.file.buffer,
+      );
+      ok(res, result);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+const bulkSchema = z.object({
+  action: z.enum(["archive", "unarchive", "assign"]),
+  contactIds: z.array(z.string().uuid()).min(1).max(500),
+  assignedTo: z.string().max(50).nullable().optional(),
+});
+
+contactsRouter.post(
+  "/bulk",
+  validate(bulkSchema),
+  async (req, res, next) => {
+    try {
+      const { action, contactIds, assignedTo } = req.body as z.infer<
+        typeof bulkSchema
+      >;
+      const result = await bulkUpdateContacts(
+        req.user!.agencySlug,
+        action,
+        contactIds,
+        { assignedTo: assignedTo ?? null },
       );
       ok(res, result);
     } catch (err) {

@@ -262,6 +262,75 @@ const leadsQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(100),
 });
 
+const tierEnum = z.enum(["hot", "warm", "cold", "dead"]);
+
+const leadUpdateSchema = z
+  .object({
+    ai_tier: tierEnum.optional(),
+    assigned_to: z.string().max(50).nullable().optional(),
+    propify_status: z.enum(["NEW", "ARCHIVED"]).optional(),
+  })
+  .refine(
+    (b) =>
+      b.ai_tier !== undefined ||
+      b.assigned_to !== undefined ||
+      b.propify_status !== undefined,
+    { message: "At least one field must be provided" },
+  );
+
+propifyRouter.patch(
+  "/leads/:id",
+  requireAuth,
+  validate(leadUpdateSchema),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const slug = req.user!.agencySlug;
+      const id = req.params.id!;
+      // UUID guard — :id is interpolated as a parameter but we still want a
+      // 400 (not a Postgres error) for malformed input.
+      if (!/^[0-9a-f-]{32,36}$/i.test(id)) {
+        return next(Errors.validation("Invalid contact id"));
+      }
+      const body = req.body as z.infer<typeof leadUpdateSchema>;
+
+      const sets: string[] = [];
+      const params: unknown[] = [];
+      let idx = 1;
+      if (body.ai_tier !== undefined) {
+        sets.push(`ai_tier = $${idx++}`);
+        params.push(body.ai_tier);
+        // Also flip is_archived to follow the tier — "dead" archives.
+        sets.push(`is_archived = $${idx++}`);
+        params.push(body.ai_tier === "dead");
+      }
+      if (body.assigned_to !== undefined) {
+        sets.push(`assigned_to = $${idx++}`);
+        params.push(body.assigned_to);
+      }
+      if (body.propify_status !== undefined) {
+        sets.push(`propify_status = $${idx++}`);
+        params.push(body.propify_status);
+      }
+      sets.push(`updated_at = NOW()`);
+
+      const updated = await withTenant(slug, (client) =>
+        client.query(
+          `UPDATE contacts SET ${sets.join(", ")} WHERE id = $${idx}
+           RETURNING id, ai_tier, assigned_to, propify_status, is_archived`,
+          [...params, id],
+        ),
+      );
+
+      if (updated.rowCount === 0) {
+        return next(Errors.notFound("Lead not found"));
+      }
+      ok(res, updated.rows[0]);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
 propifyRouter.get(
   "/leads",
   requireAuth,

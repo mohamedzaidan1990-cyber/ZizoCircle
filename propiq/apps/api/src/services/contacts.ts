@@ -314,6 +314,60 @@ export async function deleteContact(slug: string, id: string): Promise<void> {
   if (result.rowCount === 0) throw Errors.notFound("Contact not found");
 }
 
+// ── Bulk operations ─────────────────────────────────────────────────────────
+
+export type BulkContactAction = "archive" | "unarchive" | "assign";
+
+export interface BulkContactResult {
+  updated: number;
+}
+
+export async function bulkUpdateContacts(
+  slug: string,
+  action: BulkContactAction,
+  contactIds: string[],
+  payload: { assignedTo?: string | null } = {},
+): Promise<BulkContactResult> {
+  if (contactIds.length === 0) return { updated: 0 };
+  if (contactIds.length > 500) {
+    throw Errors.validation("Bulk action limited to 500 contacts at a time");
+  }
+  return withTenant(slug, async (client) => {
+    let result;
+    switch (action) {
+      case "archive":
+        result = await client.query(
+          `UPDATE contacts
+             SET is_archived = TRUE, updated_at = NOW()
+           WHERE id = ANY($1::uuid[])`,
+          [contactIds],
+        );
+        break;
+      case "unarchive":
+        result = await client.query(
+          `UPDATE contacts
+             SET is_archived = FALSE, updated_at = NOW()
+           WHERE id = ANY($1::uuid[])`,
+          [contactIds],
+        );
+        break;
+      case "assign":
+        result = await client.query(
+          `UPDATE contacts
+             SET assigned_to = $2, updated_at = NOW()
+           WHERE id = ANY($1::uuid[])`,
+          [contactIds, payload.assignedTo ?? null],
+        );
+        break;
+      default: {
+        const _exhaustive: never = action;
+        throw Errors.validation(`Unsupported bulk action: ${_exhaustive}`);
+      }
+    }
+    return { updated: result.rowCount ?? 0 };
+  });
+}
+
 // ── CSV import/export ───────────────────────────────────────────────────────
 
 const CSV_COLUMNS = [
