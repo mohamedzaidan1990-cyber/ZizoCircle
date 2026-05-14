@@ -2,6 +2,7 @@ import type { Property } from "@propiq/shared";
 import { anthropic, CLAUDE_MODEL, extractText } from "../anthropic";
 import { getProperty, updateProperty } from "../properties";
 import { Errors } from "../../lib/errors";
+import { factCheckListing, describeIssues } from "./guardrails";
 
 export interface ListingContent {
   description_en: string;
@@ -109,7 +110,7 @@ export async function generateListingContentForFacts(
     throw Errors.ai("AI returned incomplete listing content");
   }
 
-  return {
+  const result: ListingContent = {
     description_en: String(parsed.description_en).trim(),
     description_ar: String(parsed.description_ar).trim(),
     highlights_en: parsed.highlights_en.map(String).slice(0, 12),
@@ -117,6 +118,31 @@ export async function generateListingContentForFacts(
     meta_description_en: String(parsed.meta_description_en).trim().slice(0, 200),
     meta_description_ar: String(parsed.meta_description_ar).trim().slice(0, 200),
   };
+
+  // Guardrail: numeric claims in the EN copy (bedrooms, bathrooms, parking,
+  // area, price) must match the property's structured fields.
+  const englishCopy = [
+    result.description_en,
+    result.meta_description_en,
+    result.highlights_en.join(" | "),
+  ].join("\n");
+  const factCheckSubject: Parameters<typeof factCheckListing>[1] = {
+    bedrooms: property.bedrooms ?? null,
+    bathrooms: property.bathrooms ?? null,
+    parkingSpaces: property.parkingSpaces ?? null,
+    areaSqm: property.areaSqm == null ? null : Number(property.areaSqm),
+    price: property.price ?? null,
+    rentPrice: property.rentPrice ?? null,
+    currency: property.currency ?? null,
+  };
+  const issues = factCheckListing(englishCopy, factCheckSubject);
+  if (issues.length > 0) {
+    throw Errors.ai(
+      `Listing copy contained ${issues.length} fact mismatch(es): ${describeIssues(issues)}. Regenerate or edit before publishing.`,
+    );
+  }
+
+  return result;
 }
 
 export async function applyListingContent(

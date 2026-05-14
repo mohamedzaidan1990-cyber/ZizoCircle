@@ -121,7 +121,10 @@ aiRouter.post(
 
 // ── Lead Scorer ─────────────────────────────────────────────────────────────
 
-const scorerSchema = z.object({ contactId: z.string().uuid() });
+const scorerSchema = z.object({
+  contactId: z.string().uuid(),
+  force: z.boolean().optional(),
+});
 
 aiRouter.post(
   "/lead-scorer/score",
@@ -131,6 +134,7 @@ aiRouter.post(
       const result = await scoreLead(
         req.user!.agencySlug,
         req.body.contactId,
+        { force: req.body.force === true },
       );
       ok(res, result);
     } catch (err) {

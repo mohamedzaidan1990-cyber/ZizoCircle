@@ -31,6 +31,12 @@ export interface Contact {
   aiScore: number;
   aiScoreReason?: string | null;
   aiScoredAt?: string | null;
+  aiTier?: LeadTier | null;
+  aiQualifiers?: Record<string, unknown> | null;
+  conversationSummary?: string | null;
+  propifyStatus?: "NEW" | "ARCHIVED" | null;
+  propertyRef?: string | null;
+  propertyName?: string | null;
   assignedTo?: string | null;
   isArchived: boolean;
   createdAt: string;

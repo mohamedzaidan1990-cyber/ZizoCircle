@@ -1,6 +1,7 @@
 import { anthropic, CLAUDE_MODEL, extractText } from "./anthropic";
 import { getContact } from "./contacts";
 import { Errors } from "../lib/errors";
+import { detectBudgetLeakage, describeIssues } from "./ai/guardrails";
 
 export type ReactivationChannel = "WHATSAPP" | "EMAIL";
 
@@ -108,6 +109,20 @@ export async function generateReactivationMessage(
     channel === "EMAIL"
       ? String(parsed.subject ?? "").trim() || "Following up on your property search"
       : null;
+
+  // Guardrail: the message must NOT quote the contact's exact budget figures.
+  // The prompt forbids it; this layer enforces it before the message is
+  // shown to the agent.
+  const fullText = `${subject ?? ""}\n${body}`;
+  const leakage = detectBudgetLeakage(fullText, {
+    min: contact.budgetMin,
+    max: contact.budgetMax,
+  });
+  if (leakage.length > 0) {
+    throw Errors.ai(
+      `Re-engagement message quoted the contact's budget: ${describeIssues(leakage)}. Regenerate.`,
+    );
+  }
 
   return { channel, language, subject, body };
 }

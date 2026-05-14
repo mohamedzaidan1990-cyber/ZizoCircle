@@ -93,33 +93,61 @@ export async function generateCmaNarrative(
     comparables: comparables.map(compactProperty),
   };
 
+  // Compute the comp range up-front so we can constrain the AI and verify
+  // its output. Use rentPrice for RENT listings, price for SALE listings.
+  const compPriceField = subject.listingType === "RENT" ? "rentPrice" : "price";
+  const compPrices = comparables
+    .map((p) => p[compPriceField])
+    .filter((n): n is number => typeof n === "number" && n > 0);
+  const compMin = compPrices.length ? Math.min(...compPrices) : 0;
+  const compMax = compPrices.length ? Math.max(...compPrices) : 0;
+  // Allow ±25% beyond the comp envelope — anything wider is suspect.
+  const PRICE_BAND = 0.25;
+  const allowedLow = compPrices.length ? compMin * (1 - PRICE_BAND) : 0;
+  const allowedHigh = compPrices.length ? compMax * (1 + PRICE_BAND) : Number.MAX_SAFE_INTEGER;
+
   const client = anthropic();
-  const response = await client.messages.create({
-    model: CLAUDE_MODEL,
-    max_tokens: 2500,
-    system: [
-      { type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } },
-    ],
-    messages: [
-      {
+  const baseUserMessage = `${JSON.stringify(input, null, 2)}\n\nGenerate the CMA.${
+    compPrices.length
+      ? `\n\nThe comparable ${compPriceField === "rentPrice" ? "rent" : "sale"} prices range from ${compMin.toLocaleString()} to ${compMax.toLocaleString()} ${subject.currency ?? "QAR"}. Your suggested range MUST stay within ±${Math.round(PRICE_BAND * 100)}% of this comp envelope.`
+      : ""
+  }`;
+
+  const runOnce = async (
+    previousAttempt?: { text: string; reason: string },
+  ): Promise<Partial<CmaNarrative>> => {
+    const messages: Array<{ role: "user" | "assistant"; content: string }> = [
+      { role: "user", content: baseUserMessage },
+    ];
+    if (previousAttempt) {
+      messages.push({ role: "assistant", content: previousAttempt.text });
+      messages.push({
         role: "user",
-        content: `${JSON.stringify(input, null, 2)}\n\nGenerate the CMA.`,
-      },
-    ],
-  });
+        content: `Your previous range was rejected: ${previousAttempt.reason}. Regenerate the JSON object with a suggested range inside the allowed band [${Math.round(allowedLow)}, ${Math.round(allowedHigh)}]. Output ONLY the JSON.`,
+      });
+    }
+    const response = await client.messages.create({
+      model: CLAUDE_MODEL,
+      max_tokens: 2500,
+      system: [
+        { type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } },
+      ],
+      messages,
+    });
+    const text = extractText(response.content);
+    const cleaned = text
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/\s*```\s*$/, "")
+      .trim();
+    try {
+      return JSON.parse(cleaned) as Partial<CmaNarrative>;
+    } catch {
+      throw Errors.ai("AI returned non-JSON CMA");
+    }
+  };
 
-  const text = extractText(response.content);
-  const cleaned = text
-    .replace(/^```(?:json)?\s*/i, "")
-    .replace(/\s*```\s*$/, "")
-    .trim();
-
-  let parsed: Partial<CmaNarrative>;
-  try {
-    parsed = JSON.parse(cleaned);
-  } catch {
-    throw Errors.ai("AI returned non-JSON CMA");
-  }
+  let parsed = await runOnce();
+  let rawText = JSON.stringify(parsed);
 
   if (
     !parsed.summary ||
@@ -130,6 +158,58 @@ export async function generateCmaNarrative(
     throw Errors.ai("AI returned incomplete CMA");
   }
 
+  let suggestedMin = Math.max(
+    0,
+    Math.round(Number(parsed.pricingRecommendation.suggestedMin) || 0),
+  );
+  let suggestedMax = Math.max(
+    0,
+    Math.round(Number(parsed.pricingRecommendation.suggestedMax) || 0),
+  );
+
+  // If the model produced a range outside the allowed band, retry once with
+  // explicit feedback. On the second failure, clamp and annotate.
+  let clamped = false;
+  if (compPrices.length > 0) {
+    const outOfBand = suggestedMin < allowedLow || suggestedMax > allowedHigh;
+    if (outOfBand) {
+      const reason = `your suggested ${suggestedMin}-${suggestedMax} falls outside the allowed band ${Math.round(allowedLow)}-${Math.round(allowedHigh)}`;
+      const retry = await runOnce({ text: rawText, reason });
+      if (
+        retry.pricingRecommendation &&
+        retry.summary &&
+        retry.marketContext &&
+        Array.isArray(retry.comparableAnalysis)
+      ) {
+        parsed = retry;
+        rawText = JSON.stringify(retry);
+        suggestedMin = Math.max(
+          0,
+          Math.round(Number(retry.pricingRecommendation.suggestedMin) || 0),
+        );
+        suggestedMax = Math.max(
+          0,
+          Math.round(Number(retry.pricingRecommendation.suggestedMax) || 0),
+        );
+      }
+      if (suggestedMin < allowedLow || suggestedMax > allowedHigh) {
+        suggestedMin = Math.max(suggestedMin, Math.round(allowedLow));
+        suggestedMax = Math.min(suggestedMax, Math.round(allowedHigh));
+        clamped = true;
+      }
+    }
+    if (suggestedMin > suggestedMax) {
+      suggestedMin = Math.round(allowedLow);
+      suggestedMax = Math.round(allowedHigh);
+      clamped = true;
+    }
+  }
+
+  const rationale = String(parsed.pricingRecommendation?.rationale ?? "").trim() +
+    (clamped
+      ? ` (Range clamped to the comparable envelope [${suggestedMin.toLocaleString()}–${suggestedMax.toLocaleString()}].)`
+      : "");
+
   return {
     subject,
     comparables,
@@ -137,20 +217,12 @@ export async function generateCmaNarrative(
     narrative: {
       summary: String(parsed.summary).trim(),
       pricingRecommendation: {
-        suggestedMin: Math.max(
-          0,
-          Math.round(Number(parsed.pricingRecommendation.suggestedMin) || 0),
-        ),
-        suggestedMax: Math.max(
-          0,
-          Math.round(Number(parsed.pricingRecommendation.suggestedMax) || 0),
-        ),
-        rationale: String(
-          parsed.pricingRecommendation.rationale ?? "",
-        ).trim(),
+        suggestedMin,
+        suggestedMax,
+        rationale,
       },
       marketContext: String(parsed.marketContext).trim(),
-      comparableAnalysis: parsed.comparableAnalysis
+      comparableAnalysis: (parsed.comparableAnalysis ?? [])
         .map((c: { propertyId?: string; insight?: string }) => ({
           propertyId: String(c.propertyId ?? ""),
           insight: String(c.insight ?? ""),
