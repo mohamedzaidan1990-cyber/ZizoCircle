@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import { createClient } from "@/lib/supabase/server";
 import { dispatchPushNotifications } from "@/lib/push/dispatch";
+import { dispatchWhatsAppNotifications } from "@/lib/whatsapp/dispatch";
 
 type NotificationType =
   | "stage_submitted"
@@ -51,7 +52,7 @@ export async function notify(params: NotifyParams): Promise<void> {
   const supabase = createClient();
   const { data: users, error: usersErr } = await supabase
     .from("users")
-    .select("id, email, full_name")
+    .select("id, email, full_name, phone")
     .in("id", userIds)
     .eq("is_active", true);
 
@@ -61,7 +62,7 @@ export async function notify(params: NotifyParams): Promise<void> {
   }
 
   const recipients =
-    (users as { id: string; email: string | null; full_name: string }[]) ?? [];
+    (users as { id: string; email: string | null; full_name: string; phone: string | null }[]) ?? [];
   if (recipients.length === 0) return;
 
   const rows = await Promise.all(
@@ -69,7 +70,16 @@ export async function notify(params: NotifyParams): Promise<void> {
       let sentAt: string | null = null;
       let channel: NotificationChannel = "push";
 
-      if (u.email) {
+      // WhatsApp first if phone is set AND Twilio is configured.
+      // Falls through to email/push if not.
+      const twilioConfigured =
+        !!process.env.TWILIO_ACCOUNT_SID &&
+        !!process.env.TWILIO_AUTH_TOKEN &&
+        !!process.env.TWILIO_WHATSAPP_FROM;
+
+      if (u.phone && twilioConfigured) {
+        channel = "whatsapp";
+      } else if (u.email) {
         channel = "email";
         if (resend) {
           try {
@@ -91,7 +101,7 @@ export async function notify(params: NotifyParams): Promise<void> {
         } else if (process.env.NODE_ENV !== "production") {
           console.warn(
             "[notify] RESEND_API_KEY not set — skipping email to",
-            u.email
+            u.email,
           );
         }
       }
@@ -127,6 +137,15 @@ export async function notify(params: NotifyParams): Promise<void> {
       await dispatchPushNotifications();
     } catch (err) {
       console.error("[notify] inline push dispatch failed", err);
+    }
+  }
+
+  const anyPendingWhatsApp = rows.some((r) => r.channel === "whatsapp" && !r.sent_at);
+  if (anyPendingWhatsApp) {
+    try {
+      await dispatchWhatsAppNotifications();
+    } catch (err) {
+      console.error("[notify] inline whatsapp dispatch failed", err);
     }
   }
 }
