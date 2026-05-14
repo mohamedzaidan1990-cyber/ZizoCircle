@@ -41,12 +41,20 @@ export default async function WorkersPage() {
                   <th className="px-4 py-3">Phone</th>
                   <th className="px-4 py-3">Active</th>
                   <th className="px-4 py-3">Portal</th>
+                  <th className="px-4 py-3" />
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {workers.map((w) => (
-                  <tr key={w.id}>
-                    <td className="px-4 py-3 font-medium">{w.full_name}</td>
+                  <tr key={w.id} className="hover:bg-muted/30">
+                    <td className="px-4 py-3 font-medium">
+                      <Link
+                        href={`/owner/workers/${w.id}`}
+                        className="hover:underline"
+                      >
+                        {w.full_name}
+                      </Link>
+                    </td>
                     <td className="px-4 py-3">{w.email ?? "—"}</td>
                     <td className="px-4 py-3">{w.phone ?? "—"}</td>
                     <td className="px-4 py-3">
@@ -62,6 +70,14 @@ export default async function WorkersPage() {
                       ) : (
                         <Badge variant="warning">Awaiting signup</Badge>
                       )}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <Link
+                        href={`/owner/workers/${w.id}`}
+                        className="text-sm text-muted-foreground hover:text-foreground hover:underline"
+                      >
+                        Edit profile →
+                      </Link>
                     </td>
                   </tr>
                 ))}
