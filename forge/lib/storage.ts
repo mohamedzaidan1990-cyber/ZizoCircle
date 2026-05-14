@@ -6,6 +6,7 @@ export const STORAGE = {
   scopePdfs: "forge-scope-pdfs",
   invoicePdfs: "forge-invoice-pdfs",
   avatars: "forge-avatars",
+  messageAttachments: "forge-message-attachments",
 } as const;
 
 export type Bucket = (typeof STORAGE)[keyof typeof STORAGE];
@@ -71,4 +72,13 @@ export function buildIssuePhotoPath(orderId: string, filename: string) {
 export function buildOrderRefPath(orderId: string, filename: string) {
   const safe = filename.replace(/[^a-zA-Z0-9._-]/g, "_");
   return `${orderId}/_ref/${Date.now()}-${safe}`;
+}
+
+export function buildMessageAttachmentPath(
+  orderId: string,
+  threadType: "client" | "internal",
+  filename: string
+) {
+  const safe = filename.replace(/[^a-zA-Z0-9._-]/g, "_");
+  return `${orderId}/${threadType}/${Date.now()}-${safe}`;
 }

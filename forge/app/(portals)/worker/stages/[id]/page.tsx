@@ -11,7 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { PhotoGrid } from "@/components/photos/photo-grid";
-import { STORAGE, signUrl } from "@/lib/storage";
+import { STORAGE, signUrl, signMany } from "@/lib/storage";
 import {
   GoldLossBadge,
   StageStatusBadge,
@@ -20,6 +20,8 @@ import { startStageAction } from "./actions";
 import { PhotoUpload } from "./photo-upload";
 import { StoneLogForm } from "./stone-log-form";
 import { SubmitStageForm } from "./submit-form";
+import { listOrderMessages } from "@/lib/db/messages";
+import { Thread } from "@/components/messages/thread";
 import type {
   Order,
   OrderGemstone,
@@ -78,6 +80,12 @@ export default async function WorkerStagePage({
   const hasPhotos = (stage.photo_urls ?? []).length > 0;
   const hasDiscrepancy = logRows.some((l) => l.discrepancy_flag);
   const editable = stage.status !== "approved" && stage.status !== "submitted" && stage.status !== "rework_submitted";
+
+  const internalMessages = await listOrderMessages(stage.order_id, "internal");
+  const internalAttachmentPaths = internalMessages.flatMap((m) =>
+    m.attachments.map((a) => a.storage_path)
+  );
+  const internalAttachmentUrls = await signMany(STORAGE.messageAttachments, internalAttachmentPaths);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -208,6 +216,22 @@ export default async function WorkerStagePage({
               Stage is <code>{stage.status}</code>. Wait for the owner to review.
             </p>
           )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Internal thread</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Thread
+            orderId={stage.order_id}
+            threadType="internal"
+            currentUserId={me.id}
+            currentUserRole={me.role as "owner" | "worker" | "client"}
+            messages={internalMessages}
+            attachmentUrls={internalAttachmentUrls}
+          />
         </CardContent>
       </Card>
     </div>
