@@ -1,11 +1,10 @@
 // ============================================================
 // Forge — Firebase Cloud Messaging service worker
 // ============================================================
-// !! REPLACE THE firebaseConfig OBJECT BELOW WITH YOUR ACTUAL
-// !! FIREBASE WEB CONFIG VALUES BEFORE DEPLOYING.
-// Get these from Firebase Console → Project Settings → General →
-// "Your apps" → Web app config. These are public values (the same
-// ones that go into NEXT_PUBLIC_FIREBASE_* env vars).
+// These config values are PUBLIC by design — Firebase web SDK
+// configs are intended to be exposed in client code. Project
+// access is gated by Firebase Security Rules + our Supabase RLS.
+// The same values also go into NEXT_PUBLIC_FIREBASE_* env vars.
 // ============================================================
 
 importScripts(
@@ -16,12 +15,12 @@ importScripts(
 );
 
 firebase.initializeApp({
-  apiKey: "REPLACE_ME_apiKey",
-  authDomain: "REPLACE_ME_authDomain",
-  projectId: "REPLACE_ME_projectId",
-  storageBucket: "REPLACE_ME_storageBucket",
-  messagingSenderId: "REPLACE_ME_messagingSenderId",
-  appId: "REPLACE_ME_appId",
+  apiKey: "AIzaSyAFgcGnxwWJG1vOegSwiW3Pi_zH8t_nODI",
+  authDomain: "forge-d586a.firebaseapp.com",
+  projectId: "forge-d586a",
+  storageBucket: "forge-d586a.firebasestorage.app",
+  messagingSenderId: "622632399958",
+  appId: "1:622632399958:web:bc316b43d77509b313b7f7",
 });
 
 const messaging = firebase.messaging();
