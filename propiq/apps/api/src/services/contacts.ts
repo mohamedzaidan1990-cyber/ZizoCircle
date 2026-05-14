@@ -1,5 +1,6 @@
 import { parse as parseCsv } from "csv-parse/sync";
 import { stringify as stringifyCsv } from "csv-stringify/sync";
+import { z } from "zod";
 import type {
   Contact,
   ContactType,
@@ -17,6 +18,54 @@ const CONTACT_TYPES: ContactType[] = [
   "LANDLORD",
   "INVESTOR",
 ];
+
+const CONTACT_INSERT_COLS = new Set<string>([
+  "firstName",
+  "lastName",
+  "firstNameAr",
+  "lastNameAr",
+  "email",
+  "phone",
+  "phoneAlt",
+  "nationality",
+  "contactType",
+  "pipelineType",
+  "source",
+  "sourceDetail",
+  "budgetMin",
+  "budgetMax",
+  "currency",
+  "preferredAreas",
+  "bedroomsMin",
+  "bedroomsMax",
+  "propertyTypes",
+  "notes",
+  "assignedTo",
+]);
+
+const CONTACT_UPDATE_COLS = new Set<string>([
+  ...CONTACT_INSERT_COLS,
+  "isArchived",
+  "aiScore",
+  "aiScoreReason",
+  "aiScoredAt",
+  "aiTier",
+  "aiQualifiers",
+  "conversationSummary",
+  "propifyStatus",
+  "propertyRef",
+  "propertyName",
+  "updatedAt",
+]);
+
+// Cells starting with these characters are interpreted as formulas when a
+// downloaded CSV is opened in Excel/Sheets — prefix with a single quote.
+const CSV_FORMULA_LEADERS = /^[=+\-@\t\r\n]/;
+
+function sanitizeCsvCell<T>(value: T): T | string {
+  if (typeof value !== "string") return value;
+  return CSV_FORMULA_LEADERS.test(value) ? `'${value}` : value;
+}
 
 export interface ListContactsParams {
   search?: string;
@@ -222,7 +271,7 @@ export async function createContact(
     notes: input.notes ?? null,
     assignedTo: input.assignedTo ?? null,
   };
-  const { columns, placeholders, values } = buildInsert(data);
+  const { columns, placeholders, values } = buildInsert(data, CONTACT_INSERT_COLS);
   const inserted = await withTenant(slug, (client) =>
     client.query(
       `INSERT INTO contacts (${columns}) VALUES (${placeholders}) RETURNING id`,
@@ -247,7 +296,7 @@ export async function updateContact(
   }
   normalized.updatedAt = new Date();
 
-  const { clause, values } = buildUpdate(normalized);
+  const { clause, values } = buildUpdate(normalized, CONTACT_UPDATE_COLS);
   const updated = await withTenant(slug, (client) =>
     client.query(
       `UPDATE contacts SET ${clause} WHERE id = $${values.length + 1} RETURNING id`,
@@ -304,27 +353,72 @@ function parseList(value: unknown): string[] {
     .filter(Boolean);
 }
 
-function parseInt64(value: unknown): number | null {
-  if (value === null || value === undefined || value === "") return null;
-  const n = Number(value);
-  return Number.isFinite(n) ? Math.trunc(n) : null;
-}
+// Zod schema for one parsed CSV row. csv-parse hands us strings for every
+// field, so coercion happens here.
+const csvCell = z
+  .union([z.string(), z.number(), z.null(), z.undefined()])
+  .transform((v) => (v == null ? "" : typeof v === "number" ? String(v) : v.trim()));
 
-function normalizeContactType(value: unknown): ContactType {
-  if (typeof value !== "string") return "BUYER";
-  const upper = value.trim().toUpperCase();
+const csvIntCell = csvCell.transform((s) => {
+  if (s === "") return null;
+  const n = Number(s);
+  return Number.isFinite(n) ? Math.trunc(n) : null;
+});
+
+const csvContactTypeCell = csvCell.transform((s): ContactType => {
+  const upper = s.toUpperCase();
   return (CONTACT_TYPES as readonly string[]).includes(upper)
     ? (upper as ContactType)
     : "BUYER";
-}
+});
 
-function normalizePipelineType(value: unknown): PipelineType | undefined {
-  if (typeof value !== "string") return undefined;
-  const upper = value.trim().toUpperCase();
+const csvPipelineCell = csvCell.transform((s): PipelineType | undefined => {
+  const upper = s.toUpperCase();
   return upper === "SALES" || upper === "LEASE"
     ? (upper as PipelineType)
     : undefined;
-}
+});
+
+const csvRowSchema = z
+  .object({
+    first_name: csvCell.refine((s) => s.length > 0 && s.length <= 100, {
+      message: "first_name must be 1–100 characters",
+    }),
+    last_name: csvCell.refine((s) => s.length <= 100, "last_name too long"),
+    first_name_ar: csvCell.refine((s) => s.length <= 100, "first_name_ar too long"),
+    last_name_ar: csvCell.refine((s) => s.length <= 100, "last_name_ar too long"),
+    email: csvCell.refine(
+      (s) => s === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s),
+      "email is not a valid address",
+    ),
+    phone: csvCell.refine((s) => s.length >= 3 && s.length <= 50, {
+      message: "phone must be 3–50 characters",
+    }),
+    phone_alt: csvCell.refine((s) => s.length <= 50, "phone_alt too long"),
+    nationality: csvCell.refine((s) => s.length <= 50, "nationality too long"),
+    contact_type: csvContactTypeCell,
+    pipeline_type: csvPipelineCell,
+    source: csvCell.refine((s) => s.length <= 50, "source too long"),
+    source_detail: csvCell,
+    budget_min: csvIntCell.refine(
+      (n) => n === null || n >= 0,
+      "budget_min cannot be negative",
+    ),
+    budget_max: csvIntCell.refine(
+      (n) => n === null || n >= 0,
+      "budget_max cannot be negative",
+    ),
+    currency: csvCell.refine(
+      (s) => s === "" || s.length === 3,
+      "currency must be a 3-letter code",
+    ),
+    preferred_areas: csvCell,
+    bedrooms_min: csvIntCell,
+    bedrooms_max: csvIntCell,
+    property_types: csvCell,
+    notes: csvCell,
+  })
+  .passthrough();
 
 export async function importContactsCsv(
   slug: string,
@@ -342,38 +436,40 @@ export async function importContactsCsv(
     const row = records[idx];
     if (!row) continue;
     const rowNum = idx + 2;
-    const firstName = String(row.first_name ?? "").trim();
-    const phone = String(row.phone ?? "").trim();
-    if (!firstName || !phone) {
+
+    const parsed = csvRowSchema.safeParse(row);
+    if (!parsed.success) {
       result.skipped += 1;
-      result.errors.push({
-        row: rowNum,
-        reason: "Missing required first_name or phone",
-      });
+      const reason = parsed.error.issues
+        .map((i) => `${i.path.join(".") || "row"}: ${i.message}`)
+        .join("; ");
+      result.errors.push({ row: rowNum, reason });
       continue;
     }
+    const r = parsed.data;
+
     try {
       await createContact(slug, {
-        firstName,
-        lastName: row.last_name ? String(row.last_name) : null,
-        firstNameAr: row.first_name_ar ? String(row.first_name_ar) : null,
-        lastNameAr: row.last_name_ar ? String(row.last_name_ar) : null,
-        email: row.email ? String(row.email) : null,
-        phone,
-        phoneAlt: row.phone_alt ? String(row.phone_alt) : null,
-        nationality: row.nationality ? String(row.nationality) : null,
-        contactType: normalizeContactType(row.contact_type),
-        pipelineType: normalizePipelineType(row.pipeline_type),
-        source: row.source ? String(row.source) : null,
-        sourceDetail: row.source_detail ? String(row.source_detail) : null,
-        budgetMin: parseInt64(row.budget_min),
-        budgetMax: parseInt64(row.budget_max),
-        currency: row.currency ? String(row.currency) : "QAR",
-        preferredAreas: parseList(row.preferred_areas),
-        bedroomsMin: parseInt64(row.bedrooms_min),
-        bedroomsMax: parseInt64(row.bedrooms_max),
-        propertyTypes: parseList(row.property_types),
-        notes: row.notes ? String(row.notes) : null,
+        firstName: r.first_name,
+        lastName: r.last_name || null,
+        firstNameAr: r.first_name_ar || null,
+        lastNameAr: r.last_name_ar || null,
+        email: r.email || null,
+        phone: r.phone,
+        phoneAlt: r.phone_alt || null,
+        nationality: r.nationality || null,
+        contactType: r.contact_type,
+        pipelineType: r.pipeline_type,
+        source: r.source || null,
+        sourceDetail: r.source_detail || null,
+        budgetMin: r.budget_min,
+        budgetMax: r.budget_max,
+        currency: r.currency || "QAR",
+        preferredAreas: parseList(r.preferred_areas),
+        bedroomsMin: r.bedrooms_min,
+        bedroomsMax: r.bedrooms_max,
+        propertyTypes: parseList(r.property_types),
+        notes: r.notes || null,
       });
       result.imported += 1;
     } catch (err) {
@@ -394,30 +490,30 @@ export async function exportContactsCsv(slug: string): Promise<string> {
     ),
   );
   const rows = contacts.rows.map((r) => ({
-    first_name: r.first_name ?? "",
-    last_name: r.last_name ?? "",
-    first_name_ar: r.first_name_ar ?? "",
-    last_name_ar: r.last_name_ar ?? "",
-    email: r.email ?? "",
-    phone: r.phone ?? "",
-    phone_alt: r.phone_alt ?? "",
-    nationality: r.nationality ?? "",
-    contact_type: r.contact_type ?? "BUYER",
-    pipeline_type: r.pipeline_type ?? "SALES",
-    source: r.source ?? "",
-    source_detail: r.source_detail ?? "",
+    first_name: sanitizeCsvCell(r.first_name ?? ""),
+    last_name: sanitizeCsvCell(r.last_name ?? ""),
+    first_name_ar: sanitizeCsvCell(r.first_name_ar ?? ""),
+    last_name_ar: sanitizeCsvCell(r.last_name_ar ?? ""),
+    email: sanitizeCsvCell(r.email ?? ""),
+    phone: sanitizeCsvCell(r.phone ?? ""),
+    phone_alt: sanitizeCsvCell(r.phone_alt ?? ""),
+    nationality: sanitizeCsvCell(r.nationality ?? ""),
+    contact_type: sanitizeCsvCell(r.contact_type ?? "BUYER"),
+    pipeline_type: sanitizeCsvCell(r.pipeline_type ?? "SALES"),
+    source: sanitizeCsvCell(r.source ?? ""),
+    source_detail: sanitizeCsvCell(r.source_detail ?? ""),
     budget_min: r.budget_min ?? "",
     budget_max: r.budget_max ?? "",
-    currency: r.currency ?? "QAR",
+    currency: sanitizeCsvCell(r.currency ?? "QAR"),
     preferred_areas: Array.isArray(r.preferred_areas)
-      ? r.preferred_areas.join(";")
+      ? sanitizeCsvCell(r.preferred_areas.join(";"))
       : "",
     bedrooms_min: r.bedrooms_min ?? "",
     bedrooms_max: r.bedrooms_max ?? "",
     property_types: Array.isArray(r.property_types)
-      ? r.property_types.join(";")
+      ? sanitizeCsvCell(r.property_types.join(";"))
       : "",
-    notes: r.notes ?? "",
+    notes: sanitizeCsvCell(r.notes ?? ""),
   }));
   return stringifyCsv(rows, { header: true, columns: CSV_COLUMNS as unknown as string[] });
 }

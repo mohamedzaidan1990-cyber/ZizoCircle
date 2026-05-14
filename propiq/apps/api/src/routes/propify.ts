@@ -12,7 +12,9 @@ export const propifyRouter = Router();
 
 // ────────────────────────────────────────────────────────────────────────────
 // POST /api/propify/claude — Anthropic proxy for the static demo HTML.
-// Public, but rate-limited to prevent quota abuse.
+// Public, but rate-limited AND body-validated to prevent quota abuse: the
+// allow-listed shape rejects tools, file refs, oversized prompts, and any
+// model outside the Propify-supported family.
 // ────────────────────────────────────────────────────────────────────────────
 const claudeProxyLimiter = rateLimit({
   windowMs: 60 * 1000,
@@ -21,6 +23,54 @@ const claudeProxyLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+const PROPIFY_ALLOWED_MODELS = new Set<string>([
+  "claude-opus-4-7",
+  "claude-sonnet-4-6",
+  "claude-haiku-4-5-20251001",
+]);
+const PROPIFY_MAX_TOKENS_CAP = 2000;
+const PROPIFY_MAX_CONTENT_CHARS = 50_000;
+
+const proxyMessageContent = z.union([
+  z.string().max(PROPIFY_MAX_CONTENT_CHARS),
+  z
+    .array(
+      z.object({
+        type: z.literal("text"),
+        text: z.string().max(PROPIFY_MAX_CONTENT_CHARS),
+      }),
+    )
+    .max(20),
+]);
+
+const claudeProxyBody = z
+  .object({
+    model: z.string().refine(
+      (m) => PROPIFY_ALLOWED_MODELS.has(m),
+      `model must be one of ${[...PROPIFY_ALLOWED_MODELS].join(", ")}`,
+    ),
+    max_tokens: z
+      .number()
+      .int()
+      .positive()
+      .max(PROPIFY_MAX_TOKENS_CAP, `max_tokens must be ≤ ${PROPIFY_MAX_TOKENS_CAP}`),
+    messages: z
+      .array(
+        z.object({
+          role: z.enum(["user", "assistant"]),
+          content: proxyMessageContent,
+        }),
+      )
+      .min(1)
+      .max(40),
+    system: z.string().max(PROPIFY_MAX_CONTENT_CHARS).optional(),
+    temperature: z.number().min(0).max(1).optional(),
+    top_p: z.number().min(0).max(1).optional(),
+    stop_sequences: z.array(z.string().max(64)).max(8).optional(),
+    stream: z.boolean().optional(),
+  })
+  .strict();
+
 propifyRouter.post(
   "/claude",
   claudeProxyLimiter,
@@ -28,6 +78,36 @@ propifyRouter.post(
     if (!env.ANTHROPIC_API_KEY) {
       return next(Errors.internal("ANTHROPIC_API_KEY not configured"));
     }
+
+    const parsed = claudeProxyBody.safeParse(req.body);
+    if (!parsed.success) {
+      return next(
+        Errors.validation(
+          "Invalid Claude proxy payload",
+          parsed.error.flatten(),
+        ),
+      );
+    }
+
+    // Cap the total prompt size in characters as a second line of defence
+    // against quota burn (long-context attacks).
+    const totalChars = (() => {
+      let n = (parsed.data.system ?? "").length;
+      for (const m of parsed.data.messages) {
+        n += typeof m.content === "string"
+          ? m.content.length
+          : m.content.reduce((s, c) => s + c.text.length, 0);
+      }
+      return n;
+    })();
+    if (totalChars > PROPIFY_MAX_CONTENT_CHARS) {
+      return next(
+        Errors.validation(
+          `Prompt too long: ${totalChars} chars exceeds cap of ${PROPIFY_MAX_CONTENT_CHARS}`,
+        ),
+      );
+    }
+
     try {
       const upstream = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
@@ -36,7 +116,7 @@ propifyRouter.post(
           "x-api-key": env.ANTHROPIC_API_KEY,
           "anthropic-version": "2023-06-01",
         },
-        body: JSON.stringify(req.body),
+        body: JSON.stringify(parsed.data),
       });
       const body = await upstream.text();
       res.status(upstream.status).type("application/json").send(body);

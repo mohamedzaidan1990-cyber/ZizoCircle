@@ -16,6 +16,16 @@ export interface Template {
   createdAt: string;
 }
 
+const TEMPLATE_INSERT_COLS = new Set<string>([
+  "name",
+  "channel",
+  "subject",
+  "bodyEn",
+  "bodyAr",
+  "variables",
+  "createdBy",
+]);
+
 export interface CreateTemplateInput {
   name: string;
   channel: TemplateChannel;
@@ -70,7 +80,7 @@ export async function createTemplate(
     variables: input.variables ?? [],
     createdBy: input.createdBy,
   };
-  const { columns, placeholders, values } = buildInsert(data);
+  const { columns, placeholders, values } = buildInsert(data, TEMPLATE_INSERT_COLS);
   const result = await withTenant(slug, (client) =>
     client.query(
       `INSERT INTO templates (${columns}) VALUES (${placeholders}) RETURNING *`,

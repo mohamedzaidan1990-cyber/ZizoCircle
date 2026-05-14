@@ -44,6 +44,21 @@ export interface ListActivitiesParams {
   limit?: number;
 }
 
+const ACTIVITY_INSERT_COLS = new Set<string>([
+  "activityType",
+  "direction",
+  "subject",
+  "body",
+  "status",
+  "scheduledAt",
+  "completedAt",
+  "durationSeconds",
+  "contactId",
+  "dealId",
+  "propertyId",
+  "createdBy",
+]);
+
 export interface CreateActivityInput {
   activityType: ActivityType;
   direction?: ActivityDirection | null;
@@ -121,7 +136,7 @@ export async function createActivity(
     propertyId: input.propertyId ?? null,
     createdBy: input.createdBy,
   };
-  const { columns, placeholders, values } = buildInsert(data);
+  const { columns, placeholders, values } = buildInsert(data, ACTIVITY_INSERT_COLS);
   const result = await withTenant(slug, (client) =>
     client.query(
       `INSERT INTO activities (${columns}) VALUES (${placeholders}) RETURNING *`,

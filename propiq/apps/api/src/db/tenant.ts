@@ -34,7 +34,20 @@ export async function withTenant<T>(
     await client.query(`SET search_path TO "${schema}", public`);
     return await fn(client);
   } finally {
-    client.release();
+    // search_path is session-level — if we returned this client to the pool
+    // without resetting, a subsequent consumer that forgot to set search_path
+    // would silently land on this tenant's schema. Always reset; if the reset
+    // itself fails, destroy the connection so the pool can't reuse it.
+    try {
+      await client.query("RESET search_path");
+      client.release();
+    } catch {
+      try {
+        client.release(true);
+      } catch {
+        // pool already dropped it; nothing to do
+      }
+    }
   }
 }
 

@@ -20,10 +20,13 @@ export function rowsToCamel<T>(rows: Record<string, unknown>[]): T[] {
 
 /**
  * Build the column list and parameterized VALUES clause for an INSERT.
- * Skips undefined values; null is preserved.
+ * Skips undefined values; null is preserved. Keys must appear in
+ * `allowedColumns` (camelCase) — any other key throws, so callers can't
+ * accidentally bind user input directly into column names.
  */
 export function buildInsert(
   data: Record<string, unknown>,
+  allowedColumns: ReadonlySet<string>,
 ): { columns: string; placeholders: string; values: unknown[] } {
   const cols: string[] = [];
   const placeholders: string[] = [];
@@ -31,6 +34,9 @@ export function buildInsert(
   let i = 1;
   for (const [k, v] of Object.entries(data)) {
     if (v === undefined) continue;
+    if (!allowedColumns.has(k)) {
+      throw new Error(`buildInsert: column "${k}" is not in the allow-list`);
+    }
     cols.push(`"${camelToSnake(k)}"`);
     placeholders.push(`$${i++}`);
     values.push(v);
@@ -44,10 +50,12 @@ export function buildInsert(
 
 /**
  * Build the SET clause for an UPDATE. Returns the clause and bound values
- * starting at parameter index `startIndex`.
+ * starting at parameter index `startIndex`. Same allow-list contract as
+ * `buildInsert`.
  */
 export function buildUpdate(
   data: Record<string, unknown>,
+  allowedColumns: ReadonlySet<string>,
   startIndex = 1,
 ): { clause: string; values: unknown[] } {
   const parts: string[] = [];
@@ -55,6 +63,9 @@ export function buildUpdate(
   let i = startIndex;
   for (const [k, v] of Object.entries(data)) {
     if (v === undefined) continue;
+    if (!allowedColumns.has(k)) {
+      throw new Error(`buildUpdate: column "${k}" is not in the allow-list`);
+    }
     parts.push(`"${camelToSnake(k)}" = $${i++}`);
     values.push(v);
   }

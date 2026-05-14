@@ -14,6 +14,34 @@ export interface ListDealsParams {
   limit?: number;
 }
 
+const DEAL_INSERT_COLS = new Set<string>([
+  "title",
+  "dealType",
+  "pipelineType",
+  "stage",
+  "value",
+  "commissionRate",
+  "commissionValue",
+  "currency",
+  "probability",
+  "expectedClose",
+  "contactId",
+  "propertyId",
+  "assignedTo",
+  "notes",
+]);
+
+const DEAL_UPDATE_COLS = new Set<string>([
+  ...DEAL_INSERT_COLS,
+  "closedAt",
+  "lostReason",
+  "priority",
+  "source",
+  "aiNextAction",
+  "aiRiskFlags",
+  "updatedAt",
+]);
+
 export interface CreateDealInput {
   title: string;
   dealType?: DealType;
@@ -118,7 +146,7 @@ export async function createDeal(
     assignedTo: input.assignedTo ?? null,
     notes: input.notes ?? null,
   };
-  const { columns, placeholders, values } = buildInsert(data);
+  const { columns, placeholders, values } = buildInsert(data, DEAL_INSERT_COLS);
   const result = await withTenant(slug, (client) =>
     client.query(
       `INSERT INTO deals (${columns}) VALUES (${placeholders}) RETURNING *`,
@@ -152,7 +180,7 @@ export async function updateDeal(
   }
   normalized.updatedAt = new Date();
 
-  const { clause, values } = buildUpdate(normalized);
+  const { clause, values } = buildUpdate(normalized, DEAL_UPDATE_COLS);
   const result = await withTenant(slug, (client) =>
     client.query(
       `UPDATE deals SET ${clause} WHERE id = $${values.length + 1} RETURNING *`,

@@ -19,6 +19,54 @@ export interface ListPropertiesParams {
   limit?: number;
 }
 
+const PROPERTY_INSERT_COLS = new Set<string>([
+  "referenceNo",
+  "title",
+  "titleAr",
+  "description",
+  "descriptionAr",
+  "propertyType",
+  "listingType",
+  "status",
+  "price",
+  "rentPrice",
+  "rentPeriod",
+  "currency",
+  "areaSqm",
+  "bedrooms",
+  "bathrooms",
+  "parkingSpaces",
+  "floorNumber",
+  "totalFloors",
+  "furnished",
+  "country",
+  "city",
+  "area",
+  "subArea",
+  "buildingName",
+  "unitNumber",
+  "latitude",
+  "longitude",
+  "photos",
+  "ownerContactId",
+  "assignedTo",
+  "isExclusive",
+  "exclusiveUntil",
+  "createdBy",
+]);
+
+const PROPERTY_UPDATE_COLS = new Set<string>([
+  ...PROPERTY_INSERT_COLS,
+  "aiDescription",
+  "aiDescriptionAr",
+  "aiHighlights",
+  "bayutId",
+  "bayutSyncedAt",
+  "pfId",
+  "pfSyncedAt",
+  "updatedAt",
+]);
+
 export interface CreatePropertyInput {
   referenceNo?: string | null;
   title: string;
@@ -158,7 +206,7 @@ export async function createProperty(
     exclusiveUntil: input.exclusiveUntil ?? null,
     createdBy: input.createdBy ?? null,
   };
-  const { columns, placeholders, values } = buildInsert(data);
+  const { columns, placeholders, values } = buildInsert(data, PROPERTY_INSERT_COLS);
   const result = await withTenant(slug, (client) =>
     client.query(
       `INSERT INTO properties (${columns}) VALUES (${placeholders}) RETURNING *`,
@@ -183,7 +231,7 @@ export async function updateProperty(
   }
   normalized.updatedAt = new Date();
 
-  const { clause, values } = buildUpdate(normalized);
+  const { clause, values } = buildUpdate(normalized, PROPERTY_UPDATE_COLS);
   const result = await withTenant(slug, (client) =>
     client.query(
       `UPDATE properties SET ${clause} WHERE id = $${values.length + 1} RETURNING *`,
