@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireRole } from "@/lib/auth";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { RegisterPush } from "@/components/push/register-push";
 
 export default async function ClientLayout({
   children,
@@ -23,6 +24,9 @@ export default async function ClientLayout({
           <SignOutButton />
         </div>
       </header>
+      <div className="px-6 pt-3">
+        <RegisterPush />
+      </div>
       <main className="p-6">{children}</main>
     </div>
   );
