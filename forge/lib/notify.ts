@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { createClient } from "@/lib/supabase/server";
+import { dispatchPushNotifications } from "@/lib/push/dispatch";
 
 type NotificationType =
   | "stage_submitted"
@@ -112,6 +113,21 @@ export async function notify(params: NotifyParams): Promise<void> {
   const { error: insertErr } = await supabase.from("notifications").insert(rows);
   if (insertErr) {
     console.error("[notify] insert failed", insertErr);
+    return;
+  }
+
+  // Inline push dispatch: if any of the rows we just wrote are push-channel
+  // and weren't already marked sent (i.e. fallback rows for users with no
+  // email), fan them out to FCM right now. Avoids the need for a Vercel
+  // cron — which the Hobby plan caps at once-per-day anyway — and gets
+  // pushes to the device within seconds instead of minutes.
+  const anyPendingPush = rows.some((r) => r.channel === "push" && !r.sent_at);
+  if (anyPendingPush) {
+    try {
+      await dispatchPushNotifications();
+    } catch (err) {
+      console.error("[notify] inline push dispatch failed", err);
+    }
   }
 }
 
