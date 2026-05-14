@@ -84,12 +84,32 @@ async function runTemplateForTenant(filename: string, slug: string): Promise<voi
 
 export async function createTenantSchema(slug: string): Promise<void> {
   await runTemplateForTenant("createTenantSchema.sql", slug);
-  // Idempotent — also runs the Propify column additions so older schemas are caught up.
+  // Idempotent — also runs the Propify column additions and the search-index
+  // migration so older schemas are caught up to the latest shape.
   await runTemplateForTenant("propifyTenantMigration.sql", slug);
+  await runTemplateForTenant("addSearchIndexes.sql", slug);
 }
 
 export async function migratePropifySchema(slug: string): Promise<void> {
   await runTemplateForTenant("propifyTenantMigration.sql", slug);
+}
+
+export async function migrateSearchIndexes(slug: string): Promise<void> {
+  await runTemplateForTenant("addSearchIndexes.sql", slug);
+}
+
+/** Returns the list of existing tenant schemas — used by ops scripts to
+ * fan out a migration across every tenant. */
+export async function listTenantSchemas(): Promise<string[]> {
+  const result = await pool.query(
+    `SELECT schema_name
+       FROM information_schema.schemata
+      WHERE schema_name LIKE 'tenant_%'
+      ORDER BY schema_name`,
+  );
+  return result.rows
+    .map((r) => (r.schema_name as string).replace(/^tenant_/, ""))
+    .filter((slug) => SLUG_REGEX.test(slug));
 }
 
 export async function dropTenantSchema(slug: string): Promise<void> {
