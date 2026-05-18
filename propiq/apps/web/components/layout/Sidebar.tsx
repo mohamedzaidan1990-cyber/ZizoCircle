@@ -14,6 +14,7 @@ import {
   BarChart3,
   Settings,
   Megaphone,
+  Plug,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { PublicAgency } from "@propiq/shared";
@@ -28,6 +29,7 @@ const NAV = [
   { href: "calendar", icon: Calendar, key: "calendar", badge: null },
   { href: "ai-tools", icon: Sparkles, key: "aiTools", badge: null },
   { href: "reports", icon: BarChart3, key: "reports", badge: null },
+  { href: "integrations", icon: Plug, key: "integrations", badge: null },
   { href: "settings", icon: Settings, key: "settingsNav", badge: null },
 ] as const;
 
