@@ -22,6 +22,15 @@ import {
   resumeCampaign,
   type RecipientInput,
 } from "../services/campaigns";
+import {
+  createWebhook,
+  deleteWebhook,
+  firePropifyWebhooks,
+  fireTestWebhook,
+  listWebhooks,
+  PROPIFY_WEBHOOK_EVENTS,
+  type PropifyEvent,
+} from "../services/propifyWebhooks";
 
 export const propifyRouter = Router();
 
@@ -260,7 +269,106 @@ propifyRouter.post(
         return id;
       });
 
+      // Fire the lead.qualified webhook for any subscribed CRM. Fire-and-
+      // forget — the receiving system getting it slowly must never delay our
+      // 201 back to the Propify backend.
+      firePropifyWebhooks(lead.tenant_slug, "lead.qualified", {
+        contact_id: contactId,
+        phone: lead.phone,
+        property_ref: lead.property_ref,
+        property_name: lead.property_name,
+        score: lead.score,
+        tier: lead.tier,
+        qualifiers: lead.qualifiers,
+        summary: lead.conversation_summary,
+        source: lead.source,
+        agent_id: lead.agent_id ?? null,
+      });
+
       ok(res, { contact_id: contactId }, undefined, 201);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+// ────────────────────────────────────────────────────────────────────────────
+// Outbound CRM webhooks.
+//   GET    /api/propify/webhooks         — list configured webhooks
+//   POST   /api/propify/webhooks         — add one (URL, secret, events)
+//   DELETE /api/propify/webhooks/:id     — remove
+//   POST   /api/propify/webhooks/:id/test — fire a synthetic event
+// All JWT-auth + tenant-scoped.
+// ────────────────────────────────────────────────────────────────────────────
+const eventEnum = z.enum(PROPIFY_WEBHOOK_EVENTS);
+
+const createWebhookSchema = z.object({
+  name: z.string().min(1).max(255),
+  url: z.string().url().max(2000),
+  secret: z.string().min(8).max(255).nullable().optional(),
+  events: z.array(eventEnum).min(1).max(PROPIFY_WEBHOOK_EVENTS.length).optional(),
+});
+
+propifyRouter.get(
+  "/webhooks",
+  requireAuth,
+  requireTenant,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const webhooks = await listWebhooks(req.user!.agencySlug);
+      ok(res, webhooks);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+propifyRouter.post(
+  "/webhooks",
+  requireAuth,
+  requireTenant,
+  validate(createWebhookSchema),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const body = req.body as z.infer<typeof createWebhookSchema>;
+      const webhook = await createWebhook(req.user!.agencySlug, {
+        name: body.name,
+        url: body.url,
+        secret: body.secret ?? null,
+        events: (body.events ?? ["lead.qualified"]) as PropifyEvent[],
+      });
+      ok(res, webhook, undefined, 201);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+propifyRouter.delete(
+  "/webhooks/:id",
+  requireAuth,
+  requireTenant,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await deleteWebhook(req.user!.agencySlug, req.params.id!);
+      ok(res, { deleted: true });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+propifyRouter.post(
+  "/webhooks/:id/test",
+  requireAuth,
+  requireTenant,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await fireTestWebhook(
+        req.user!.agencySlug,
+        req.params.id!,
+      );
+      ok(res, result);
     } catch (err) {
       next(err);
     }
