@@ -16,6 +16,7 @@ import {
   Sparkles,
   BarChart3,
   Settings,
+  Megaphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { PublicAgency } from "@propiq/shared";
@@ -23,6 +24,7 @@ import type { PublicAgency } from "@propiq/shared";
 const NAV = [
   { href: "dashboard", icon: LayoutDashboard, key: "title" },
   { href: "leads", icon: UserPlus, key: "leads" },
+  { href: "campaigns", icon: Megaphone, key: "campaigns" },
   { href: "contacts", icon: Users, key: "contacts" },
   { href: "properties", icon: Building2, key: "properties" },
   { href: "pipeline", icon: Kanban, key: "pipeline" },
