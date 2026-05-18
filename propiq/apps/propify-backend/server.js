@@ -210,6 +210,54 @@ ${
   );
 }
 
+// ─── OPT-OUT ───────────────────────────────────────────────────────────────
+// Detection mirrors apps/api/src/services/campaigns.ts:looksLikeOptOut so the
+// bot and the CRM see the same keyword set in English and Arabic.
+const OPTOUT_KEYWORDS = [
+  "stop",
+  "unsubscribe",
+  "opt out",
+  "optout",
+  "إيقاف",
+  "لا شكرا",
+  "توقف",
+  "إلغاء الاشتراك",
+];
+
+function looksLikeOptOut(message) {
+  const lower = (message || "").toLowerCase().trim();
+  return OPTOUT_KEYWORDS.some((k) => lower.includes(k));
+}
+
+async function recordOptOutOnPropIQ(phone) {
+  if (
+    !process.env.PROPIQ_API_URL ||
+    !process.env.PROPIFY_WEBHOOK_SECRET ||
+    !process.env.PROPIQ_TENANT_SLUG
+  ) {
+    return;
+  }
+  try {
+    await axios.post(
+      `${process.env.PROPIQ_API_URL}/api/propify/optouts`,
+      {
+        tenant_slug: process.env.PROPIQ_TENANT_SLUG,
+        phone,
+        reason: "buyer replied STOP",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.PROPIFY_WEBHOOK_SECRET}`,
+        },
+        timeout: 8000,
+      },
+    );
+    console.log(`[OPTOUT] recorded ${phone} on PropIQ`);
+  } catch (err) {
+    console.error("[OPTOUT] failed to record:", err.response?.data || err.message);
+  }
+}
+
 // ─── PROPIQ SYNC ────────────────────────────────────────────────────────────
 function buildSummary(session) {
   const q = session.qualifiers;
@@ -289,6 +337,16 @@ app.post("/webhook", async (req, res) => {
       if (!text) continue;
 
       console.log(`[IN] ${phone}: ${text}`);
+
+      // Honour STOP / إيقاف / unsubscribe before doing any Claude work.
+      if (looksLikeOptOut(text)) {
+        await recordOptOutOnPropIQ(phone);
+        await sendWhatsApp(
+          phone,
+          "You've been unsubscribed. Reply START to re-subscribe.",
+        );
+        continue;
+      }
 
       const session = getSession(phone);
       session.lastMessage = new Date().toISOString();

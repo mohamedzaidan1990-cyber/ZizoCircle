@@ -1,12 +1,27 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
 import rateLimit from "express-rate-limit";
+import multer from "multer";
 import { z } from "zod";
 import { validate } from "../middleware/validate";
 import { requireAuth } from "../middleware/auth";
+import { requireTenant } from "../middleware/tenant";
 import { withTenant, assertSafeSlug } from "../db/tenant";
 import { env } from "../lib/env";
 import { Errors } from "../lib/errors";
-import { ok } from "../lib/response";
+import { ok, created } from "../lib/response";
+import {
+  createCampaign,
+  enqueueCampaignSend,
+  getCampaign,
+  isOptedOut,
+  listCampaigns,
+  listOptOuts,
+  parseRecipientsCsv,
+  pauseCampaign,
+  recordOptOut,
+  resumeCampaign,
+  type RecipientInput,
+} from "../services/campaigns";
 
 export const propifyRouter = Router();
 
@@ -325,6 +340,307 @@ propifyRouter.patch(
         return next(Errors.notFound("Lead not found"));
       }
       ok(res, updated.rows[0]);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+// ────────────────────────────────────────────────────────────────────────────
+// Opt-outs. Two surfaces:
+//   POST /api/propify/optouts — Bearer-auth, called by propify-backend when a
+//     buyer replies STOP / إيقاف.
+//   GET  /api/propify/optouts/:phone?tenant_slug=… — Bearer-auth, called by
+//     propify-backend before sending a templated message.
+//   GET  /api/propify/optouts — JWT-auth, agency-facing list.
+// ────────────────────────────────────────────────────────────────────────────
+const optOutPostSchema = z.object({
+  tenant_slug: z.string().regex(/^[a-z0-9_]{3,40}$/),
+  phone: z.string().min(3).max(50),
+  reason: z.string().max(500).optional(),
+});
+
+propifyRouter.post(
+  "/optouts",
+  requirePropifySecret,
+  validate(optOutPostSchema),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const body = req.body as z.infer<typeof optOutPostSchema>;
+      assertSafeSlug(body.tenant_slug);
+      const result = await recordOptOut(
+        body.tenant_slug,
+        body.phone,
+        body.reason,
+      );
+      ok(res, result);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+const optOutCheckQuerySchema = z.object({
+  tenant_slug: z.string().regex(/^[a-z0-9_]{3,40}$/),
+});
+
+propifyRouter.get(
+  "/optouts/:phone",
+  requirePropifySecret,
+  validate(optOutCheckQuerySchema, "query"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { tenant_slug } = req.query as unknown as z.infer<
+        typeof optOutCheckQuerySchema
+      >;
+      assertSafeSlug(tenant_slug);
+      const phone = req.params.phone!;
+      const optedOut = await isOptedOut(tenant_slug, phone);
+      ok(res, { phone, opted_out: optedOut });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+propifyRouter.get(
+  "/optouts",
+  requireAuth,
+  requireTenant,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const phones = await listOptOuts(req.user!.agencySlug);
+      ok(res, { phones });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+// ────────────────────────────────────────────────────────────────────────────
+// Outbound WhatsApp campaigns.
+// ────────────────────────────────────────────────────────────────────────────
+const campaignUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
+
+const templateParamMappingSchema = z
+  .array(
+    z.object({
+      key: z.string().regex(/^\d+$/),
+      value: z.string().min(1).max(200),
+    }),
+  )
+  .max(10);
+
+const createCampaignFormSchema = z.object({
+  name: z.string().min(1).max(255),
+  template_name: z.string().min(1).max(255),
+  template_lang: z.string().min(2).max(10).optional(),
+  template_params: z.string().optional(),
+  scheduled_at: z.string().datetime().optional(),
+  contact_ids: z.string().optional(),
+  recipients: z.string().optional(),
+});
+
+propifyRouter.get(
+  "/campaigns",
+  requireAuth,
+  requireTenant,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const campaigns = await listCampaigns(req.user!.agencySlug);
+      ok(res, campaigns);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+propifyRouter.get(
+  "/campaigns/:id",
+  requireAuth,
+  requireTenant,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const campaign = await getCampaign(
+        req.user!.agencySlug,
+        req.params.id!,
+      );
+      ok(res, campaign);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+propifyRouter.post(
+  "/campaigns",
+  requireAuth,
+  requireTenant,
+  campaignUpload.single("recipients_csv"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const parsedForm = createCampaignFormSchema.safeParse(req.body);
+      if (!parsedForm.success) {
+        return next(
+          Errors.validation("Invalid campaign body", parsedForm.error.flatten()),
+        );
+      }
+      const form = parsedForm.data;
+
+      let templateParams: Array<{ key: string; value: string }> = [];
+      if (form.template_params) {
+        try {
+          const raw = JSON.parse(form.template_params);
+          templateParams = templateParamMappingSchema.parse(raw);
+        } catch (err) {
+          return next(
+            Errors.validation(
+              "template_params must be a JSON array of {key, value}",
+              err,
+            ),
+          );
+        }
+      }
+
+      // Build recipients. Three input shapes supported:
+      //   (a) recipients_csv multipart file
+      //   (b) recipients JSON string (array of {phone, contactId?, fields?})
+      //   (c) contact_ids JSON string of UUIDs — looked up in contacts table
+      let recipients: RecipientInput[] = [];
+
+      if (req.file) {
+        const { recipients: rs, errors } = parseRecipientsCsv(req.file.buffer);
+        if (rs.length === 0) {
+          return next(
+            Errors.validation(
+              `No valid recipients in CSV (${errors.length} rows rejected)`,
+              errors.slice(0, 10),
+            ),
+          );
+        }
+        recipients = rs;
+      } else if (form.recipients) {
+        const recipientsSchema = z
+          .array(
+            z.object({
+              phone: z.string().min(3).max(50),
+              contactId: z.string().uuid().optional(),
+              fields: z.record(z.string()).optional(),
+            }),
+          )
+          .max(5000);
+        try {
+          const raw = JSON.parse(form.recipients);
+          const parsed = recipientsSchema.parse(raw);
+          recipients = parsed.map((r) => ({
+            phone: r.phone.replace(/\D/g, ""),
+            contactId: r.contactId,
+            fields: r.fields ?? {},
+          }));
+        } catch (err) {
+          return next(Errors.validation("Invalid recipients JSON", err));
+        }
+      } else if (form.contact_ids) {
+        let ids: string[];
+        try {
+          ids = z.array(z.string().uuid()).max(5000).parse(JSON.parse(form.contact_ids));
+        } catch (err) {
+          return next(Errors.validation("Invalid contact_ids", err));
+        }
+        if (ids.length === 0) {
+          return next(Errors.validation("contact_ids cannot be empty"));
+        }
+        const rows = await withTenant(req.user!.agencySlug, (client) =>
+          client.query(
+            `SELECT id, phone, first_name, last_name, email, nationality
+               FROM contacts
+              WHERE id = ANY($1::uuid[]) AND phone IS NOT NULL`,
+            [ids],
+          ),
+        );
+        recipients = rows.rows.map((row) => ({
+          phone: String(row.phone).replace(/\D/g, ""),
+          contactId: row.id,
+          fields: {
+            phone: String(row.phone),
+            first_name: row.first_name ?? "",
+            last_name: row.last_name ?? "",
+            email: row.email ?? "",
+            nationality: row.nationality ?? "",
+          },
+        }));
+      } else {
+        return next(
+          Errors.validation(
+            "Provide one of: recipients_csv file, recipients JSON, or contact_ids",
+          ),
+        );
+      }
+
+      const result = await createCampaign(
+        req.user!.agencySlug,
+        {
+          name: form.name,
+          templateName: form.template_name,
+          templateLang: form.template_lang ?? "en",
+          templateParams,
+          scheduledAt: form.scheduled_at ?? null,
+          createdBy: req.user!.userId,
+        },
+        recipients,
+      );
+      created(res, result);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+propifyRouter.post(
+  "/campaigns/:id/send",
+  requireAuth,
+  requireTenant,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await enqueueCampaignSend(req.user!.agencySlug, req.params.id!);
+      ok(res, { queued: true });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+propifyRouter.post(
+  "/campaigns/:id/pause",
+  requireAuth,
+  requireTenant,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const campaign = await pauseCampaign(
+        req.user!.agencySlug,
+        req.params.id!,
+      );
+      ok(res, campaign);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+propifyRouter.post(
+  "/campaigns/:id/resume",
+  requireAuth,
+  requireTenant,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const campaign = await resumeCampaign(
+        req.user!.agencySlug,
+        req.params.id!,
+      );
+      ok(res, campaign);
     } catch (err) {
       next(err);
     }

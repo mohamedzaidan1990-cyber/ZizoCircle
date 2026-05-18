@@ -26,6 +26,9 @@ const schema = z.object({
   BACKEND_URL: z.string().url().default("http://localhost:3001"),
   PROPIFY_WEBHOOK_SECRET: z.string().min(16).optional(),
   ADDITIONAL_CORS_ORIGINS: z.string().optional(),
+  DIALOG360_API_KEY: z.string().optional(),
+  DIALOG360_BASE_URL: z.string().url().default("https://waba.360dialog.io"),
+  CAMPAIGN_SEND_DELAY_MS: z.coerce.number().int().positive().default(1000),
 });
 
 export const env = schema.parse(process.env);

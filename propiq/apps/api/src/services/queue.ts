@@ -21,6 +21,7 @@ export function redis(): IORedis {
 
 export const QUEUE_NAMES = {
   emailSequence: "email-sequence",
+  propifyCampaigns: "propify-campaigns",
 } as const;
 
 export type QueueName = (typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES];

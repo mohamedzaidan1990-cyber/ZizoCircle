@@ -23,6 +23,7 @@ import { errorHandler, notFoundHandler } from "./middleware/error";
 import { ok } from "./lib/response";
 import { localUploadsRoot } from "./services/storage";
 import { startEmailSequenceWorker } from "./jobs/emailSequence.job";
+import { startCampaignWorker } from "./jobs/campaign.job";
 import { shutdownQueues } from "./services/queue";
 import { migrateAllTenants } from "./db/tenant";
 
@@ -107,10 +108,13 @@ const server = app.listen(env.PORT, () => {
   console.log(`[propiq-api] listening on http://localhost:${env.PORT}`);
 });
 
-// Start the BullMQ workers — one for the email-sequence queue.
+// Start the BullMQ workers.
 const emailWorker = startEmailSequenceWorker();
 // eslint-disable-next-line no-console
 console.log(`[propiq-api] email-sequence worker started (${emailWorker.name})`);
+const campaignWorker = startCampaignWorker();
+// eslint-disable-next-line no-console
+console.log(`[propiq-api] propify-campaign worker started (${campaignWorker.name})`);
 
 // Fan out additive migrations across every existing tenant. Idempotent and
 // non-blocking — the server is already listening; tenant schemas catch up to
