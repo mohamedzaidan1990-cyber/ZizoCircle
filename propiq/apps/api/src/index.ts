@@ -24,6 +24,7 @@ import { ok } from "./lib/response";
 import { localUploadsRoot } from "./services/storage";
 import { startEmailSequenceWorker } from "./jobs/emailSequence.job";
 import { shutdownQueues } from "./services/queue";
+import { migrateAllTenants } from "./db/tenant";
 
 const app = express();
 
@@ -110,6 +111,25 @@ const server = app.listen(env.PORT, () => {
 const emailWorker = startEmailSequenceWorker();
 // eslint-disable-next-line no-console
 console.log(`[propiq-api] email-sequence worker started (${emailWorker.name})`);
+
+// Fan out additive migrations across every existing tenant. Idempotent and
+// non-blocking — the server is already listening; tenant schemas catch up to
+// HEAD in the background. One bad tenant won't stop the others or crash boot.
+migrateAllTenants()
+  .then(({ slugs, errors }) => {
+    // eslint-disable-next-line no-console
+    console.log(
+      `[propiq-api] migrated ${slugs.length - errors.length}/${slugs.length} tenants`,
+    );
+    for (const e of errors) {
+      // eslint-disable-next-line no-console
+      console.error(`[propiq-api] migration failed for ${e.slug}: ${e.error}`);
+    }
+  })
+  .catch((err) => {
+    // eslint-disable-next-line no-console
+    console.error("[propiq-api] migrateAllTenants threw:", err);
+  });
 
 const shutdown = async (signal: string) => {
   // eslint-disable-next-line no-console

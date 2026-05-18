@@ -84,10 +84,9 @@ async function runTemplateForTenant(filename: string, slug: string): Promise<voi
 
 export async function createTenantSchema(slug: string): Promise<void> {
   await runTemplateForTenant("createTenantSchema.sql", slug);
-  // Idempotent — also runs the Propify column additions and the search-index
-  // migration so older schemas are caught up to the latest shape.
-  await runTemplateForTenant("propifyTenantMigration.sql", slug);
-  await runTemplateForTenant("addSearchIndexes.sql", slug);
+  // Idempotent — also runs every later migration so the tenant is at HEAD
+  // immediately. Add new migrations to migrateAllForTenant() too.
+  await migrateAllForTenant(slug);
 }
 
 export async function migratePropifySchema(slug: string): Promise<void> {
@@ -98,8 +97,20 @@ export async function migrateSearchIndexes(slug: string): Promise<void> {
   await runTemplateForTenant("addSearchIndexes.sql", slug);
 }
 
-/** Returns the list of existing tenant schemas — used by ops scripts to
- * fan out a migration across every tenant. */
+export async function migrateCampaignsSchema(slug: string): Promise<void> {
+  await runTemplateForTenant("propifyCampaignsMigration.sql", slug);
+}
+
+/** Runs every additive migration for a single tenant, in the order they
+ * were introduced. Each underlying SQL is idempotent. */
+export async function migrateAllForTenant(slug: string): Promise<void> {
+  await migratePropifySchema(slug);
+  await migrateSearchIndexes(slug);
+  await migrateCampaignsSchema(slug);
+}
+
+/** Returns the list of existing tenant schemas — used by ops scripts and
+ * the boot-time migration sweep to fan out across every tenant. */
 export async function listTenantSchemas(): Promise<string[]> {
   const result = await pool.query(
     `SELECT schema_name
@@ -110,6 +121,30 @@ export async function listTenantSchemas(): Promise<string[]> {
   return result.rows
     .map((r) => (r.schema_name as string).replace(/^tenant_/, ""))
     .filter((slug) => SLUG_REGEX.test(slug));
+}
+
+export interface MigrateAllTenantsResult {
+  slugs: string[];
+  errors: Array<{ slug: string; error: string }>;
+}
+
+/** Fans out every additive migration across every existing tenant. Safe to
+ * call repeatedly — each underlying SQL uses IF NOT EXISTS / ADD COLUMN IF
+ * NOT EXISTS. One failing tenant doesn't stop the others. */
+export async function migrateAllTenants(): Promise<MigrateAllTenantsResult> {
+  const slugs = await listTenantSchemas();
+  const errors: Array<{ slug: string; error: string }> = [];
+  for (const slug of slugs) {
+    try {
+      await migrateAllForTenant(slug);
+    } catch (err) {
+      errors.push({
+        slug,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }
+  return { slugs, errors };
 }
 
 export async function dropTenantSchema(slug: string): Promise<void> {
