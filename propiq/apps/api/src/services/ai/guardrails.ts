@@ -114,7 +114,9 @@ export function factCheckListing(
   if (priceFact != null && priceFact > 0) {
     const numericPriceRe = /(?:(?:QAR|AED|USD|SAR|EUR|GBP)\s*)?(\d{1,3}(?:,\d{3})+|\d{4,})(?:\.(\d+))?\s*(?:(M|K|million|thousand|m|k)\b)?/gi;
     for (const m of text.matchAll(numericPriceRe)) {
-      let n = Number(m[1].replace(/,/g, ""));
+      const raw = m[1];
+      if (!raw) continue;
+      let n = Number(raw.replace(/,/g, ""));
       if (m[2]) n += Number(`0.${m[2]}`);
       const unit = (m[3] ?? "").toLowerCase();
       if (unit === "m" || unit === "million") n *= 1_000_000;
@@ -158,7 +160,9 @@ export function detectBudgetLeakage(
   const issues: FactCheckIssue[] = [];
   const numRe = /\b(\d{1,3}(?:,\d{3})+|\d{4,})(?:\.(\d+))?\s*(M|K|million|thousand|m|k)?\b/gi;
   for (const m of text.matchAll(numRe)) {
-    let n = Number(m[1].replace(/,/g, ""));
+    const raw = m[1];
+    if (!raw) continue;
+    let n = Number(raw.replace(/,/g, ""));
     if (m[2]) n += Number(`0.${m[2]}`);
     const unit = (m[3] ?? "").toLowerCase();
     if (unit === "m" || unit === "million") n *= 1_000_000;

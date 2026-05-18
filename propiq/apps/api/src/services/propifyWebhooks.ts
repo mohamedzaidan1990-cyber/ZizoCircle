@@ -62,8 +62,10 @@ export async function createWebhook(
   if (!/^https:\/\//i.test(input.url) && !/^http:\/\/localhost(:\d+)?\b/i.test(input.url)) {
     throw Errors.validation("Webhook URL must be https:// (http:// is allowed only for localhost during testing)");
   }
-  const events =
-    input.events && input.events.length > 0 ? input.events : ["lead.qualified"];
+  const events: PropifyEvent[] =
+    input.events && input.events.length > 0
+      ? input.events
+      : ["lead.qualified"];
   for (const e of events) {
     if (!PROPIFY_WEBHOOK_EVENTS.includes(e)) {
       throw Errors.validation(`Unknown event: ${e}`);
